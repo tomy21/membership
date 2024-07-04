@@ -24,7 +24,6 @@ export default function Topup() {
   const handleProceed = () => {
     if (selectedMethod) {
       setIsModalVisible(true);
-      navigate("/verifikasi");
     } else {
       alert("Pilih metode pembayaran terlebih dahulu.");
     }
@@ -32,6 +31,7 @@ export default function Topup() {
 
   const closeModal = () => {
     setIsModalVisible(false);
+    navigate("/verifikasi");
   };
 
   const paymentMethod = [
