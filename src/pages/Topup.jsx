@@ -28,7 +28,7 @@ export default function Topup() {
       alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
-
+  console.log(selectedMethod);
   const closeModal = () => {
     setIsModalVisible(false);
     navigate("/verifikasi");
