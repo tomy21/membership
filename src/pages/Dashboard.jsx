@@ -6,10 +6,16 @@ import {
   MdOutlineAccountBalanceWallet,
 } from "react-icons/md";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const handleTopUp = () => {
+    navigate("/topup");
+  };
+
   const items = [
     {
       src: "/assets/membership.png",
@@ -110,7 +116,10 @@ export default function Dashboard() {
               </div>
             </div>
             {/* Top Up Button */}
-            <button className="bg-gray-200 text-gray-700 p-2 font-medium rounded-lg flex items-center space-x-1">
+            <button
+              className="bg-gray-200 text-gray-700 p-2 font-medium rounded-lg flex items-center space-x-1"
+              onClick={() => handleTopUp()}
+            >
               <span>Top up</span>
             </button>
           </div>
@@ -134,13 +143,13 @@ export default function Dashboard() {
           <h1 className="font-semibold text-sm text-amber-500">view all</h1>
         </div>
 
-        <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-60 overflow-y-auto">
+        <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto">
           {listRiwayat.map((items, index) => (
             <div
               key={index}
               className="flex flex-row justify-between items-center bg-slate-100 w-full py-2 rounded-lg px-3"
             >
-              <div className="flex flex-row justify-center items-center space-x-3">
+              <div className="flex flex-row justify-center items-center space-x-3 py-2">
                 {items.TypeTransaction === "topup" ? (
                   <MdOutlineAccountBalanceWallet
                     size={30}

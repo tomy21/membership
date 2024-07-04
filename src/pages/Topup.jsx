@@ -37,6 +37,10 @@ export default function Topup() {
     setIsModalVisible(false);
   };
 
+  const handleBack = () => {
+    navigate("/dashboard");
+  };
+
   const paymentMethod = [
     {
       id: 1,
@@ -79,7 +83,7 @@ export default function Topup() {
         )}
         <NavbarMobile />
         <div className="flex space-x-20 justify-start items-center w-full mb-5 py-3 bg-amber-300">
-          <FaArrowLeftLong className="pl-3 w-10" />
+          <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
           <h1 className="text-lg font-bold px-3">Top up Point</h1>
         </div>
 
