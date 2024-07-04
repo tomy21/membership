@@ -21,7 +21,7 @@ export default function Dashboard() {
       src: "/assets/membership.png",
       alt: "Membership",
       label: "Membership",
-      path: "/topup",
+      path: "/member",
     },
     {
       src: "/assets/map.png",
