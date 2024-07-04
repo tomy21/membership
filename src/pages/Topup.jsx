@@ -22,10 +22,14 @@ export default function Topup() {
   };
 
   const handleProceed = () => {
-    if (selectedMethod) {
+    if (selectedMethod && amount >= 10000) {
       setIsModalVisible(true);
     } else {
-      alert("Pilih metode pembayaran terlebih dahulu.");
+      if (amount < 10000) {
+        alert("Minimal topup Rp. 10.000");
+      } else {
+        alert("Pilih metode pembayaran terlebih dahulu.");
+      }
     }
   };
 
