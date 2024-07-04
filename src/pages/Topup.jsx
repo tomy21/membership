@@ -28,10 +28,13 @@ export default function Topup() {
       alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
-  console.log(selectedMethod);
-  const closeModal = () => {
+
+  const verifikasi = () => {
     setIsModalVisible(false);
     navigate("/verifikasi");
+  };
+  const closeModal = () => {
+    setIsModalVisible(false);
   };
 
   const paymentMethod = [
@@ -70,7 +73,7 @@ export default function Topup() {
 
   return (
     <>
-      <div className="relative  w-full">
+      <div className="container w-full">
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
@@ -173,12 +176,20 @@ export default function Topup() {
             </p>
           </div>
 
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-5 w-full"
-            onClick={closeModal}
-          >
-            Konfirmasi
-          </button>
+          <div className="flex flex-col justify-center items-center space-y-1">
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-5 w-full"
+              onClick={verifikasi}
+            >
+              Lanjutkan
+            </button>
+            <button
+              className="bg-red-500 text-white py-2 px-4 rounded-lg mt-5 w-full"
+              onClick={closeModal}
+            >
+              Batal
+            </button>
+          </div>
           <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
             <div className="relative w-36 h-36 bg-blue-600 opacity-40 rounded-full"></div>
             <div className="absolute inset-0 w-24 h-24 bg-blue-600 opacity-100 rounded-full m-auto">
