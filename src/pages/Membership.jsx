@@ -7,46 +7,76 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { TbExclamationMark } from "react-icons/tb";
 
-const people = [
+const lokasi = [
   {
     id: 1,
-    name: "Wade Cooper",
+    Code: "004SK",
+    name: "SKY UNIVERSITAS PELITA HARAPAN	",
+    Quota: 2000,
+    Used: 1500,
   },
   {
     id: 2,
-    name: "Arlene Mccoy",
+    Code: "007SK",
+    name: "SKY ZONA 3 SILOAM KARAWACI",
+    Quota: 3000,
+    Used: 2300,
   },
   {
     id: 3,
-    name: "Devon Webb",
+    Code: "002SK",
+    name: "SKY CYBERPARK KARAWACI",
+    Quota: 800,
+    Used: 800,
   },
   {
     id: 4,
-    name: "Tom Cook",
+    Code: "003SK",
+    name: "SKY KARAWACI OFFICE PARK",
+    Quota: 2000,
+    Used: 1800,
   },
   {
     id: 5,
-    name: "Tanya Fox",
+    Code: "901SK",
+    name: "SKY BCA FORESTA",
+    Quota: 1000,
+    Used: 1000,
   },
   {
     id: 6,
-    name: "Hellen Schmidt",
+    Code: "009SK",
+    name: "SKY MAXBOXX LIPPO VILLAGE",
+    Quota: 1000,
+    Used: 1000,
   },
   {
     id: 7,
-    name: "Caroline Schultz",
+    Code: "005SK",
+    name: "SKY ZONA 2 HELI",
+    Quota: 2000,
+    Used: 1500,
   },
   {
     id: 8,
-    name: "Mason Heaney",
+    Code: "05QSK",
+    name: "SKY OT BUILDING",
+    Quota: 2000,
+    Used: 1500,
   },
   {
     id: 9,
-    name: "Claudie Smitham",
+    Code: "00000",
+    name: "SKY HYPERMART KARAWACI",
+    Quota: 2000,
+    Used: 1500,
   },
   {
     id: 10,
-    name: "Emil Schaefer",
+    Code: "00001",
+    name: "SKY LIPPO THAMRIN",
+    Quota: 2000,
+    Used: 1500,
   },
 ];
 
@@ -65,22 +95,50 @@ const paket = [
   {
     id: 1,
     name: "1 Bulan",
+    type: 1,
+    tariff: 300000,
   },
   {
     id: 2,
     name: "2 Bulan",
+    type: 1,
+    tariff: 300000,
   },
   {
     id: 3,
     name: "3 Bulan",
+    type: 1,
+    tariff: 300000,
   },
   {
     id: 4,
     name: "6 Bulan",
+    type: 1,
+    tariff: 500000,
   },
   {
     id: 5,
     name: "1 Tahun",
+    type: 1,
+    tariff: 1300000,
+  },
+  {
+    id: 6,
+    name: "1 Bulan",
+    type: 2,
+    tariff: 110000,
+  },
+  {
+    id: 7,
+    name: "2 Bulan",
+    type: 2,
+    tariff: 220000,
+  },
+  {
+    id: 8,
+    name: "3 Bulan",
+    type: 2,
+    tariff: 330000,
   },
 ];
 
@@ -109,15 +167,27 @@ const pembayaran = [
 
 export default function Membership() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(null);
+
+  const [location, setLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("");
+
+  const [vehicleType, setVehicleType] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+
+  const [packageMember, setPackageMember] = useState(null);
+  const [selectedPackage, setSelectedPackage] = useState("");
+
+  const [payment, setPayment] = useState(null);
+  const [selectPayment, setSelectPayment] = useState("");
+
   const navigate = useNavigate();
 
   const handleProceed = () => {
-    if (selectedMethod) {
-      setIsModalVisible(true);
-    } else {
-      alert("Pilih metode pembayaran terlebih dahulu.");
-    }
+    // if (selectedMethod) {
+    //   setIsModalVisible(true);
+    // } else {
+    //   alert("Pilih metode pembayaran terlebih dahulu.");
+    // }
   };
 
   const verifikasi = () => {
@@ -131,11 +201,17 @@ export default function Membership() {
   const handleBack = () => {
     navigate(-1);
   };
+
+  const filteredPaket = vehicleType
+    ? paket.filter((p) => p.type === vehicleType.id)
+    : [];
+
+  // console.log(location.Quota);
   return (
     <>
-      <div className="container min-h-screen">
+      <div className="container  overflow-auto">
         <NavbarMobile />
-        <div className="flex flex-col items-start justify-start min-h-screen w-full">
+        <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
             <FaArrowLeftLong
               className="pl-3 w-10"
@@ -151,19 +227,39 @@ export default function Membership() {
             </p>
           </div>
 
-          <ListComponent list={people} title={"Pilih Lokasi"} />
-          <ListComponent list={vehicle} title={"Pilih Type Kendaraan"} />
-          <ListComponent list={paket} title={"Pilih Paket Member"} />
+          <ListComponent
+            list={lokasi}
+            title={"Pilih Lokasi"}
+            search={"Cari Lokasi"}
+            selected={location}
+            setSelected={setLocation}
+            query={selectedLocation}
+            setQuery={setSelectedLocation}
+          />
+          <ListComponent
+            list={vehicle}
+            title={"Pilih Type Kendaraan"}
+            search={"Cari Type Kendaraan"}
+            selected={vehicleType}
+            setSelected={setVehicleType}
+            query={selectedVehicle}
+            setQuery={setSelectedVehicle}
+          />
+
+          {vehicleType && (
+            <ListComponent
+              list={filteredPaket}
+              title={"Pilih Paket Member"}
+              search={"Cari Paket"}
+              selected={packageMember}
+              setSelected={setPackageMember}
+              query={selectedPackage}
+              setQuery={setSelectedPackage}
+            />
+          )}
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
-            <input
-              type="text"
-              className="block w-full rounded-md border-0 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              value={"800/1000"}
-              disabled
-            />
-
-            <div className="relative mt-3 rounded-md shadow-sm w-full">
+            <div className="relative rounded-md shadow-sm w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
                 <span className="text-gray-500 sm:text-sm">IDR</span>
               </div>
@@ -173,12 +269,26 @@ export default function Membership() {
                 type="text"
                 placeholder="0.00"
                 className="block w-full rounded-md border-0 py-3 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                value={"9.000.000"}
+                value={packageMember ? `${packageMember.tariff}` : "-"}
                 disabled
               />
             </div>
+            <input
+              type="text"
+              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              value={location ? `${location.Quota}/${location.Quota}` : "-"}
+              disabled
+            />
           </div>
-          <ListComponent list={pembayaran} title={"Pilih Metode Pembayaran"} />
+          <ListComponent
+            list={pembayaran}
+            title={"Pilih Metode Pembayaran"}
+            search={"Pilih methode pembayaran"}
+            selected={payment}
+            setSelected={setPayment}
+            query={selectPayment}
+            setQuery={setSelectPayment}
+          />
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
             <button
@@ -207,7 +317,7 @@ export default function Membership() {
 
           <div className="flex justify-between items-center mt-5 border-b border-gray-300 pb-2 pt-3">
             <div className="text-base text-gray-400">Metode pembayaran</div>
-            <p className="font-semibold">{selectedMethod}</p>
+            {/* <p className="font-semibold">{selectedMethod}</p> */}
           </div>
 
           <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">

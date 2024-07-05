@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
-  Label,
   Listbox,
   ListboxButton,
   ListboxOption,
@@ -8,17 +7,24 @@ import {
 } from "@headlessui/react";
 import { HiChevronUpDown } from "react-icons/hi2";
 
-function ListComponent({ list, title }) {
-  const [selected, setSelected] = useState("");
-  const [query, setQuery] = useState("");
-
+function ListComponent({
+  list,
+  title,
+  search,
+  selected,
+  setSelected,
+  query,
+  setQuery,
+}) {
   const filteredPeople = list.filter((person) =>
     person.name.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {
     setQuery("");
-  }, [selected]);
+  }, [selected, setQuery]);
+
+  //   console.log(selected);
 
   return (
     <div className="px-3 flex flex-col justify-start items-start w-full mt-2">
@@ -42,7 +48,7 @@ function ListComponent({ list, title }) {
             <div className="px-3 py-2">
               <input
                 type="text"
-                placeholder="Cari lokasi..."
+                placeholder={search}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
