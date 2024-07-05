@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Topup from "./pages/Topup";
 import VeryfikasiPin from "./pages/VeryfikasiPin";
+import Membership from "./pages/Membership";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/topup" element={<Topup />}></Route>
           <Route path="/verifikasi" element={<VeryfikasiPin />}></Route>
+          <Route path="/membership" element={<Membership />}></Route>
         </Routes>
       </Router>
     </div>
