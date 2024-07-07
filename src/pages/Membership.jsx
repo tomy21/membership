@@ -142,29 +142,6 @@ const paket = [
   },
 ];
 
-const pembayaran = [
-  {
-    id: 1,
-    name: "Gopay",
-  },
-  {
-    id: 2,
-    name: "OVO",
-  },
-  {
-    id: 3,
-    name: "Virtual Account Nobu",
-  },
-  {
-    id: 4,
-    name: "Virtual Account BCA",
-  },
-  {
-    id: 5,
-    name: "Virtual Account mandiri",
-  },
-];
-
 export default function Membership() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -177,25 +154,16 @@ export default function Membership() {
   const [packageMember, setPackageMember] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState("");
 
-  const [payment, setPayment] = useState(null);
-  const [selectPayment, setSelectPayment] = useState("");
-
   const navigate = useNavigate();
 
   const handleProceed = () => {
-    // if (selectedMethod) {
-    //   setIsModalVisible(true);
-    // } else {
-    //   alert("Pilih metode pembayaran terlebih dahulu.");
-    // }
-  };
-
-  const verifikasi = () => {
-    setIsModalVisible(false);
-    navigate("/verifikasi");
-  };
-  const closeModal = () => {
-    setIsModalVisible(false);
+    navigate("/payment_member", {
+      state: {
+        location: location,
+        vehicleType: vehicleType,
+        packageMember: packageMember,
+      },
+    });
   };
 
   const handleBack = () => {
@@ -209,7 +177,7 @@ export default function Membership() {
   // console.log(location.Quota);
   return (
     <>
-      <div className="container  overflow-auto">
+      <div className="container overflow-auto">
         <NavbarMobile />
         <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
@@ -269,26 +237,23 @@ export default function Membership() {
                 type="text"
                 placeholder="0.00"
                 className="block w-full rounded-md border-0 py-3 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                value={packageMember ? `${packageMember.tariff}` : "-"}
+                value={
+                  packageMember
+                    ? `${parseInt(packageMember.tariff).toLocaleString(
+                        "id-ID"
+                      )}`
+                    : "-"
+                }
                 disabled
               />
             </div>
             <input
               type="text"
               className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              value={location ? `${location.Quota}/${location.Quota}` : "-"}
+              value={location ? `${location.Used}/${location.Quota}` : "-"}
               disabled
             />
           </div>
-          <ListComponent
-            list={pembayaran}
-            title={"Pilih Metode Pembayaran"}
-            search={"Pilih methode pembayaran"}
-            selected={payment}
-            setSelected={setPayment}
-            query={selectPayment}
-            setQuery={setSelectPayment}
-          />
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
             <button
@@ -300,71 +265,6 @@ export default function Membership() {
           </div>
         </div>
       </div>
-      {isModalVisible && (
-        <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="fixed bottom-0 left-0 w-full bg-white p-5 shadow-2xl rounded-t-3xl border border-slate-400 z-20"
-        >
-          <h2 className="text-base max-h-[90vh] text-slate-400 font-medium mb-1 mt-20">
-            Nominal Topup
-          </h2>
-          <h1 className="text-4xl font-medium">
-            <span className="font-semibold">IDR</span>{" "}
-            {parseInt("9000000").toLocaleString("id-ID")}
-          </h1>
-
-          <div className="flex justify-between items-center mt-5 border-b border-gray-300 pb-2 pt-3">
-            <div className="text-base text-gray-400">Metode pembayaran</div>
-            {/* <p className="font-semibold">{selectedMethod}</p> */}
-          </div>
-
-          <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
-            <div className="text-base text-gray-400">Biaya admin</div>
-            <p className="font-semibold">
-              <span className="font-semibold">IDR</span>{" "}
-              {parseInt("9000000").toLocaleString("id-ID")}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
-            <div className="text-base text-gray-400">Total points</div>
-            <p className="font-semibold">{parseInt("9000000") / 1000} Points</p>
-          </div>
-
-          <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
-            <div className="text-base text-gray-400">Tanggal</div>
-            <p className="font-semibold">
-              {format(new Date(), "dd MMM yy HH:mm:ss")}
-            </p>
-          </div>
-
-          <div className="flex flex-col justify-center items-center space-y-1">
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-5 w-full"
-              onClick={verifikasi}
-            >
-              Lanjutkan
-            </button>
-            <button
-              className="bg-red-500 text-white py-2 px-4 rounded-lg mt-5 w-full"
-              onClick={closeModal}
-            >
-              Batal
-            </button>
-          </div>
-          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
-            <div className="relative w-36 h-36 bg-blue-600 opacity-40 rounded-full"></div>
-            <div className="absolute inset-0 w-24 h-24 bg-blue-600 opacity-100 rounded-full m-auto">
-              <TbExclamationMark
-                size={50}
-                className="m-auto mt-5 text-amber-500"
-              />
-            </div>
-          </div>
-        </motion.div>
-      )}
     </>
   );
 }
