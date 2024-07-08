@@ -9,6 +9,7 @@ import Membership from "./pages/Membership";
 import PaymentMember from "./pages/PaymentMember";
 import Lokasi from "./pages/Lokasi";
 import Voucher from "./pages/Voucher";
+import Riwayat from "./pages/Riwayat";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/payment_member" element={<PaymentMember />}></Route>
           <Route path="/lokasi" element={<Lokasi />}></Route>
           <Route path="/voucher" element={<Voucher />}></Route>
+          <Route path="/riwayat" element={<Riwayat />}></Route>
         </Routes>
       </Router>
     </div>
