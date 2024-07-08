@@ -1,5 +1,4 @@
 import React from "react";
-import { IoMdNotifications } from "react-icons/io";
 import {
   MdArrowDropDown,
   MdArrowDropUp,
@@ -140,7 +139,9 @@ export default function Dashboard() {
 
         <div className="flex justify-between items-center px-5 my-2">
           <h1 className="font-semibold text-sm">Riwayat Transaksi</h1>
-          <h1 className="font-semibold text-sm text-amber-500">view all</h1>
+          <Link to={"/riwayat"}>
+            <h1 className="font-semibold text-sm text-amber-500">view all</h1>
+          </Link>
         </div>
 
         <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto">
