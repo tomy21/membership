@@ -3,9 +3,7 @@ import NavbarMobile from "../components/NavbarMobile";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import ListComponent from "../components/ListComponent";
-import { motion } from "framer-motion";
-import { format } from "date-fns";
-import { TbExclamationMark } from "react-icons/tb";
+import { HiPhoto } from "react-icons/hi2";
 
 const lokasi = [
   {
@@ -253,6 +251,39 @@ export default function Membership() {
               value={location ? `${location.Used}/${location.Quota}` : "-"}
               disabled
             />
+            <input
+              type="text"
+              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="Masukan Plat nomor kendaraan"
+            />
+          </div>
+
+          <div className="col-span-full px-3 w-full">
+            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-5">
+              <div className="text-center">
+                <HiPhoto
+                  aria-hidden="true"
+                  className="mx-auto h-12 w-12 text-gray-300"
+                />
+                <div className="mt-4 flex items-center justify-center text-sm leading-6 text-gray-600">
+                  <label
+                    htmlFor="file-upload"
+                    className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                  >
+                    <span>Upload foto STNK</span>
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      className="sr-only"
+                    />
+                  </label>
+                </div>
+                <p className="text-xs leading-5 text-gray-600">
+                  PNG, JPG, GIF up to 10MB
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">

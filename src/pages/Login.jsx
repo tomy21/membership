@@ -1,10 +1,23 @@
+// Login.js
 import React, { useEffect, useState } from "react";
 import { MdOutlineRefresh } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loading from "../components/Loading";
+
+const users = {
+  email: "tomy21@gmail.com",
+  password: "Admin123",
+};
 
 export default function Login() {
   const [captcha, setCaptcha] = useState("");
-  const [valid, setValid] = useState(false);
+  const [inputCaptcha, setInputCaptcha] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const refreshString = () => {
     setCaptcha(Math.random().toString(36).slice(2, 8));
@@ -14,8 +27,41 @@ export default function Login() {
     refreshString();
   }, []);
 
+  const handleLogin = () => {
+    if (!email) {
+      toast.error("Email is required!", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+      });
+      return;
+    }
+
+    if (inputCaptcha !== captcha) {
+      toast.error("Captcha does not match!", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+      });
+      return;
+    }
+
+    setLoading(true);
+    toast.success("Login successful!", {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 5000,
+    });
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/dashboard");
+    }, 2000); // Simulate an API call delay
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <>
+      <ToastContainer />
       <div className="flex min-h-screen flex-col items-center justify-between p-6 md:p-20">
         <div className="container w-full md:w-[80%] h-full">
           <div className="flex flex-col items-center space-y-2">
@@ -55,19 +101,19 @@ export default function Login() {
                 type="text"
                 className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="No handphone, email atau username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <input
                 type="password"
                 className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
-                placeholder="No handphone, email atau username"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
 
               <div className="relative bg-black w-full select-none">
-                <div
-                  className={`${
-                    valid ? "bg-green-500" : "bg-black text-white"
-                  } font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]`}
-                >
+                <div className="bg-black text-white font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]">
                   {captcha}
                 </div>
                 <button
@@ -83,12 +129,18 @@ export default function Login() {
                 type="text"
                 className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Captcha"
+                value={inputCaptcha}
+                onChange={(e) => setInputCaptcha(e.target.value)}
               />
 
               <p className="text-cyan-600 font-semibold text-xs">
                 Lupa password ?
               </p>
-              <button className="bg-cyan-600 text-white w-full h-10 rounded-md">
+              <button
+                type="button"
+                className="bg-cyan-600 text-white w-full h-10 rounded-md"
+                onClick={handleLogin}
+              >
                 Masuk
               </button>
               <p className="flex text-center items-center justify-center text-xs">

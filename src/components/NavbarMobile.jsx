@@ -3,8 +3,8 @@ import React from "react";
 import { IoMdNotifications } from "react-icons/io";
 
 const userNavigation = [
-  { name: "Profil", href: "#" },
-  { name: "Keluar", href: "#" },
+  { name: "Profil", href: "/profil" },
+  { name: "Keluar", href: "/" },
 ];
 const notifications = [
   {
