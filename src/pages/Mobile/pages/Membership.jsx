@@ -82,10 +82,12 @@ const vehicle = [
   {
     id: 1,
     name: "Mobil",
+    tariff: 330000,
   },
   {
     id: 2,
     name: "Motor",
+    tariff: 110000,
   },
 ];
 
@@ -141,16 +143,11 @@ const paket = [
 ];
 
 export default function Membership() {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [location, setLocation] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState("");
 
   const [vehicleType, setVehicleType] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState("");
-
-  const [packageMember, setPackageMember] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState("");
 
   const navigate = useNavigate();
 
@@ -159,7 +156,6 @@ export default function Membership() {
       state: {
         location: location,
         vehicleType: vehicleType,
-        packageMember: packageMember,
       },
     });
   };
@@ -167,10 +163,6 @@ export default function Membership() {
   const handleBack = () => {
     navigate(-1);
   };
-
-  const filteredPaket = vehicleType
-    ? paket.filter((p) => p.type === vehicleType.id)
-    : [];
 
   // console.log(location.Quota);
   return (
@@ -211,7 +203,7 @@ export default function Membership() {
             query={selectedVehicle}
             setQuery={setSelectedVehicle}
           />
-
+          {/* 
           {vehicleType && (
             <ListComponent
               list={filteredPaket}
@@ -222,12 +214,14 @@ export default function Membership() {
               query={selectedPackage}
               setQuery={setSelectedPackage}
             />
-          )}
+          )} */}
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
             <div className="relative rounded-md shadow-sm w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
-                <span className="text-gray-500 sm:text-sm">IDR</span>
+                <span className="text-gray-500 sm:text-sm border-r border-gray-400 pr-2">
+                  IDR
+                </span>
               </div>
               <input
                 id="price"
@@ -236,10 +230,8 @@ export default function Membership() {
                 placeholder="0.00"
                 className="block w-full rounded-md border-0 py-3 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 value={
-                  packageMember
-                    ? `${parseInt(packageMember.tariff).toLocaleString(
-                        "id-ID"
-                      )}`
+                  vehicleType
+                    ? `${parseInt(vehicleType.tariff).toLocaleString("id-ID")}`
                     : "-"
                 }
                 disabled

@@ -30,7 +30,7 @@ export default function Login() {
   const handleLogin = () => {
     if (!email) {
       toast.error("Email is required!", {
-        position: toast.POSITION.TOP_RIGHT,
+        position: "top-right",
         autoClose: 5000,
       });
       return;
@@ -38,7 +38,7 @@ export default function Login() {
 
     if (inputCaptcha !== captcha) {
       toast.error("Captcha does not match!", {
-        position: toast.POSITION.TOP_RIGHT,
+        position: "top-right",
         autoClose: 5000,
       });
       return;
@@ -46,7 +46,7 @@ export default function Login() {
 
     setLoading(true);
     toast.success("Login successful!", {
-      position: toast.POSITION.TOP_RIGHT,
+      position: "top-right",
       autoClose: 5000,
     });
     setTimeout(() => {
