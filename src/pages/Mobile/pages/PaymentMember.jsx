@@ -44,11 +44,7 @@ function PaymentMember() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    location: selectedLocation,
-    vehicleType,
-    packageMember,
-  } = location.state || {};
+  const { location: selectedLocation, vehicleType } = location.state || {};
 
   const handleMethodClick = (method) => {
     setSelectedMethod(method);
@@ -113,7 +109,7 @@ function PaymentMember() {
                   {vehicleType ? vehicleType.name : "-"}
                 </p>
                 <p className="text-gray-400">
-                  {packageMember ? packageMember.name : "-"}
+                  {vehicleType ? vehicleType.name : "-"}
                 </p>
               </div>
 
@@ -122,8 +118,8 @@ function PaymentMember() {
                 {`${currentPeriod.start} - ${currentPeriod.end}`}
               </p>
               <p className="text-gray-400 pb-2">
-                {packageMember
-                  ? `IDR ${parseInt(packageMember.tariff).toLocaleString(
+                {vehicleType
+                  ? `IDR ${parseInt(vehicleType.tariff).toLocaleString(
                       "id-ID"
                     )}`
                   : "-"}
@@ -187,10 +183,8 @@ function PaymentMember() {
           </h2>
           <h1 className="text-4xl font-medium">
             <span className="font-semibold">IDR</span>{" "}
-            {packageMember
-              ? `${parseInt(packageMember.tariff + 5000).toLocaleString(
-                  "id-ID"
-                )}`
+            {vehicleType
+              ? `${parseInt(vehicleType.tariff + 5000).toLocaleString("id-ID")}`
               : "-"}
           </h1>
 
@@ -203,7 +197,7 @@ function PaymentMember() {
             <div className="text-base text-gray-400">Biaya member</div>
             <p className="font-semibold">
               <span className="font-semibold">IDR</span>{" "}
-              {parseInt(packageMember.tariff).toLocaleString("id-ID")}
+              {parseInt(vehicleType.tariff).toLocaleString("id-ID")}
             </p>
           </div>
 
