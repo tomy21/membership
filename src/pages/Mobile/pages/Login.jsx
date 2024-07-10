@@ -12,7 +12,7 @@ const users = {
 };
 
 export default function Login() {
-  const [captcha, setCaptcha] = useState("");
+  const [captcha, setCaptcha] = useState("ABC123");
   const [inputCaptcha, setInputCaptcha] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,9 +23,9 @@ export default function Login() {
     setCaptcha(Math.random().toString(36).slice(2, 8));
   };
 
-  useEffect(() => {
-    refreshString();
-  }, []);
+  // useEffect(() => {
+  //   refreshString();
+  // }, []);
 
   const handleLogin = () => {
     if (!email) {
@@ -116,13 +116,13 @@ export default function Login() {
                 <div className="bg-black text-white font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]">
                   {captcha}
                 </div>
-                <button
+                {/* <button
                   type="button"
                   className="absolute text-white top-2 right-5"
                   onClick={refreshString}
                 >
                   <MdOutlineRefresh />
-                </button>
+                </button> */}
               </div>
 
               <input
