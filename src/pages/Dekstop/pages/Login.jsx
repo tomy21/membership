@@ -1,13 +1,82 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Login() {
   return (
     <>
       <div className="container max-h-screen m-auto w-[80%] mt-20">
-        <div className="flex flex-row border border-gray-400 items-center justify-center h-full w-full">
-          <img src={"/assets/skyparking2.webp"} className="w-10" alt="" />
-          <div className="flex flex-col items-center justify-center w-full">
-            login form
+        <div className="flex flex-row items-start justify-center gap-3 h-full w-full p-3 border border-gray-400 rounded-md">
+          <img
+            src={"/assets/skyparking_image.jpg"}
+            className="w-[600px] h-[400px] rounded-sm shadow-md"
+            alt=""
+          />
+          <div className="flex flex-col w-full">
+            <div className="flex flex-col items-start justify-start w-full h-full border-b border-gray-400 pt-2 pb-3">
+              <h1 className="text-base font-semibold">
+                Selamat datang kembali
+              </h1>
+              <p className="text-sm text-gray-400 ">
+                Silahkan masuk ke akun anda
+              </p>
+            </div>
+            <form
+              action=""
+              className="flex flex-col items-end justify-end space-y-3 mt-2"
+            >
+              <input
+                type="text"
+                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                placeholder="No handphone, email atau username"
+                // value={email}
+                // onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                placeholder="Password"
+                // value={password}
+                // onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <div className="relative bg-black w-full select-none">
+                <div className="bg-black text-white font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]">
+                  {/* {captcha} */}
+                </div>
+                {/* <button
+                  type="button"
+                  className="absolute text-white top-2 right-5"
+                  onClick={refreshString}
+                >
+                  <MdOutlineRefresh />
+                </button> */}
+              </div>
+
+              <input
+                type="text"
+                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg text-sm"
+                placeholder="Captcha"
+                // value={inputCaptcha}
+                // onChange={(e) => setInputCaptcha(e.target.value)}
+              />
+
+              <p className="text-cyan-600 font-semibold text-xs">
+                Lupa password ?
+              </p>
+              <button
+                type="button"
+                className="bg-cyan-600 text-white w-full h-10 rounded-md"
+                // onClick={handleLogin}
+              >
+                Masuk
+              </button>
+              <p className="flex text-center items-center justify-center text-xs">
+                Belum punya akun ?
+                <span className="text-cyan-600 font-semibold ml-1">
+                  <Link to={"/register"}>Daftar akun</Link>
+                </span>
+              </p>
+            </form>
           </div>
         </div>
       </div>
