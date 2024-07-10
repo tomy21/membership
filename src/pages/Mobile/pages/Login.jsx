@@ -28,21 +28,21 @@ export default function Login() {
   // }, []);
 
   const handleLogin = () => {
-    if (!email) {
-      toast.error("Email is required!", {
-        position: "top-right",
-        autoClose: 5000,
-      });
-      return;
-    }
+    // if (!email) {
+    //   toast.error("Email is required!", {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //   });
+    //   return;
+    // }
 
-    if (inputCaptcha !== captcha) {
-      toast.error("Captcha does not match!", {
-        position: "top-right",
-        autoClose: 5000,
-      });
-      return;
-    }
+    // if (inputCaptcha !== captcha) {
+    //   toast.error("Captcha does not match!", {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //   });
+    //   return;
+    // }
 
     setLoading(true);
     toast.success("Login successful!", {
