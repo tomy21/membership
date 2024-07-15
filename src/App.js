@@ -15,6 +15,9 @@ import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
 import DekstopDashboard from "./pages/Dekstop/pages/Dashboard";
+import DekstopDashboardClient from "./pages/Dekstop/pages/DashboardClient";
+import HistoryTransaction from "./pages/Dekstop/pages/HistoryTransaction";
+import Location from "./pages/Dekstop/pages/Location";
 
 function App() {
   return (
@@ -50,6 +53,10 @@ function App() {
               <Route path="/" element={<DekstopLogin />}></Route>
               <Route path="/register" element={<MobileRegister />}></Route>
               <Route path="/dashboard" element={<DekstopDashboard />}></Route>
+              <Route
+                path="/dashboard-client"
+                element={<DekstopDashboardClient />}
+              ></Route>
               <Route path="/topup" element={<MobileTopup />}></Route>
               <Route
                 path="/verifikasi"
@@ -68,6 +75,8 @@ function App() {
                 path="/input_identitas"
                 element={<MobileIdentitas />}
               ></Route>
+              <Route path="/history" element={<HistoryTransaction />}></Route>
+              <Route path="/location" element={<Location />}></Route>
             </>
           )}
         </Routes>
