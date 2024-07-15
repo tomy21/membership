@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import NavbarClient from "../components/NavbarClient";
-import { IoCloudDownloadOutline } from "react-icons/io5";
+import NavbarClient from "../../components/NavbarClient";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { IoCloudDownloadOutline } from "react-icons/io5";
 
 const initialData = [
   // Data yang sama seperti sebelumnya
@@ -126,7 +126,7 @@ const initialData = [
 
 const itemsPerPage = 10;
 
-function Location() {
+const TableDashboard = () => {
   const [data, setData] = useState(initialData);
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
@@ -152,7 +152,9 @@ function Location() {
         <div className="overflow-x-auto">
           <div className="flex justify-between mb-5">
             <div>
-              <h1 className="text-start font-semibold text-xl">Location</h1>
+              <h1 className="text-start font-semibold text-xl">
+                History Transaction
+              </h1>
             </div>
           </div>
           <div className="flex justify-between items-center mb-3">
@@ -271,6 +273,6 @@ function Location() {
       </div>
     </>
   );
-}
+};
 
-export default Location;
+export default TableDashboard;

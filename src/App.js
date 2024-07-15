@@ -14,10 +14,10 @@ import MobileRiwayat from "./pages/Mobile/pages/Riwayat";
 import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
-import DekstopDashboard from "./pages/Dekstop/pages/Dashboard";
-import DekstopDashboardClient from "./pages/Dekstop/pages/DashboardClient";
-import HistoryTransaction from "./pages/Dekstop/pages/HistoryTransaction";
-import Location from "./pages/Dekstop/pages/Location";
+import DekstopDashboard from "./pages/Dekstop/pages/admin/Dashboard";
+import DekstopDashboardClient from "./pages/Dekstop/pages/client/DashboardClient";
+import HistoryTransaction from "./pages/Dekstop/pages/client/HistoryTransaction";
+import Location from "./pages/Dekstop/pages/client/Location";
 
 function App() {
   return (

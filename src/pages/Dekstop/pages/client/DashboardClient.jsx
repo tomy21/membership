@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import NavbarClient from "../components/NavbarClient";
-import ListData from "../components/ListData";
-import TableDashboard from "../components/TableDashboard";
+import NavbarClient from "../../components/NavbarClient";
+import ListData from "../../components/ListData";
+import TableDashboard from "../../components/TableDashboard";
 import { IoLocationOutline } from "react-icons/io5";
 
 const lokasi = [
