@@ -6,7 +6,7 @@ import {
   PopoverGroup,
 } from "@headlessui/react";
 import React from "react";
-import { BsGear } from "react-icons/bs";
+import { BsGear, BsPlusCircle } from "react-icons/bs";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { Link, NavLink } from "react-router-dom";
 
@@ -71,6 +71,13 @@ function NavbarClient() {
             </div>
 
             <PopoverGroup className="flex gap-x-5 justify-center items-center">
+              <Link
+                to="#"
+                className="flex flex-row space-x-2 justify-center items-center text-sm font-medium leading-6 text-gray-900 px-3 py-2 bg-emerald-300 rounded-md"
+              >
+                <BsPlusCircle size={15} />
+                <h1 className="text-xs">Member</h1>
+              </Link>
               <Link
                 to="#"
                 className="text-sm font-medium leading-6 text-gray-900"

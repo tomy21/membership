@@ -182,7 +182,7 @@ function DashboardClient() {
                 </div>
               </div>
 
-              <div className="border border-slate-300 w-full rounded-md">
+              <div className="border border-gray-400 w-full rounded-md">
                 <TableDashboard />
               </div>
             </div>
