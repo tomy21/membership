@@ -66,7 +66,7 @@ function DashboardClient() {
   const [selectedPlateQuery, setSelectedPlateQuery] = useState("");
   return (
     <>
-      <NavbarClient />
+      <NavbarClient client={true} />
       <div className="container max-h-screen m-auto ">
         <div className="flex justify-between items-center">
           <div className="flex flex-col justify-start items-start py-4">
