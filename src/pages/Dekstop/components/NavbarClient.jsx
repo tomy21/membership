@@ -167,14 +167,14 @@ function NavbarClient({ client }) {
                   Dashboard
                 </NavLink>
                 <NavLink
-                  to="/history"
+                  to={client === true ? "/history" : "/transaction"}
                   className={({ isActive }) =>
                     isActive
                       ? "text-sm font-medium leading-6 text-gray-900 py-2 px-2 border-b-2 border-amber-400"
                       : "text-sm font-medium leading-6 text-gray-900 py-2 px-2 hover:border-b-2 border-amber-400"
                   }
                 >
-                  History
+                  {client === true ? "History" : "Transaction"}
                 </NavLink>
                 <NavLink
                   to="/location"

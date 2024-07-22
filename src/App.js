@@ -18,6 +18,7 @@ import DekstopDashboard from "./pages/Dekstop/pages/admin/Dashboard";
 import DekstopDashboardClient from "./pages/Dekstop/pages/client/DashboardClient";
 import HistoryTransaction from "./pages/Dekstop/pages/client/HistoryTransaction";
 import Location from "./pages/Dekstop/pages/client/Location";
+import Transaction from "./pages/Dekstop/pages/admin/Transaction";
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
               ></Route>
               <Route path="/history" element={<HistoryTransaction />}></Route>
               <Route path="/location" element={<Location />}></Route>
+              <Route path="/transaction" element={<Transaction />}></Route>
             </>
           )}
         </Routes>
