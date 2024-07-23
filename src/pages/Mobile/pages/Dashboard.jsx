@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   MdArrowDropDown,
   MdArrowDropUp,
@@ -7,9 +7,21 @@ import {
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";
+import CardComponent from "../components/CardComponent";
+import SliderComponent from "../components/Slider";
+import QRCode from "qrcode.react";
 
 export default function Dashboard() {
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
   const handleTopUp = () => {
     navigate("/topup");
@@ -98,20 +110,24 @@ export default function Dashboard() {
       <div className="container min-w-screen m-auto">
         <NavbarMobile />
 
-        <div className="w-full bg-amber-300 h-32"></div>
+        <div className="w-full bg-amber-300 h-52">
+          <SliderComponent openModal={openModal} />
+        </div>
 
         <div className="relative -mt-10 w-full max-w-md px-6">
           <div className="bg-white shadow-lg rounded-xl p-4 flex items-center justify-between">
             {/* Points Section */}
             <div className="flex items-center space-x-2">
-              <div className="bg-gray-100 p-2 rounded-full">
+              <div className="bg-gray-100 p-2 rounded-full shadow-md">
                 <MdOutlineAccountBalanceWallet
                   size={30}
                   className="text-sky-500"
                 />
               </div>
               <div>
-                <p className="text-xl font-semibold">0 Points</p>
+                <p className="text-xl font-normal">
+                  0 <span className="text-sm">Points</span>
+                </p>
               </div>
             </div>
             {/* Top Up Button */}
@@ -182,6 +198,27 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[70%] text-center relative">
+            <h2 className="text-xl font-semibold">Qr Code Member</h2>
+            <p className="text-xs text-slate-400">Silahkan scan QRCODE kamu</p>
+
+            <div className="border-b border-slate-400 w-full h-1 mb-8"></div>
+
+            <div className="flex flex-col justify-center items-center w-full space-y-10">
+              <QRCode value={"Ini contoh aja"} size={150} />
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded w-full"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

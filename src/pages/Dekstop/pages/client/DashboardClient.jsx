@@ -115,20 +115,17 @@ function DashboardClient() {
                 </p>
                 <div className="w-full border-b-2 border-dashed h-1 border-slate-400 px-10 my-5"></div>
 
-                <h1 className="text-sm font-medium text-gray-400 mb-3">
-                  Last Activity
-                </h1>
-
-                <p className="text-sm text-slate-400 font-medium">Parking</p>
-                <h1 className="text-3xl font-semibold">IN</h1>
-                <p className="text-xs text-slate-400 font-medium mb-7">
-                  13 Jun 2024 10:40
-                </p>
-                <div className="flex flex-row justify-center items-center space-x-2 mb-4">
-                  <IoLocationOutline size={20} />
-                  <p className="text-xs text-slate-400 font-medium">
-                    SKY Karawaci Office Park
-                  </p>
+                <div className="relative">
+                  <img
+                    src={"/assets/card02.png"}
+                    alt=""
+                    className="w-72 m-auto"
+                  />
+                  <div className="absolute bottom-2 left-7 text-white flex flex-row justify-center items-center space-x-2 mb-4">
+                    <p className="text-xs  font-medium">
+                      SKY Karawaci Office Park
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
