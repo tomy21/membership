@@ -107,7 +107,7 @@ export default function Dashboard() {
   };
   return (
     <>
-      <div className="container min-w-screen m-auto">
+      <div className="container min-w-screen min-h-screen m-auto">
         <NavbarMobile />
 
         <div className="w-full bg-amber-300 h-52">
@@ -160,11 +160,11 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto">
+        <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto py-2">
           {listRiwayat.map((items, index) => (
             <div
               key={index}
-              className="flex flex-row justify-between items-center bg-slate-100 w-full py-2 rounded-lg px-3"
+              className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
             >
               <div className="flex flex-row justify-center items-center space-x-3 py-2">
                 {items.TypeTransaction === "topup" ? (

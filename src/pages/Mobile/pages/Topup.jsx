@@ -1,15 +1,62 @@
 import React, { useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import NavbarMobile from "../components/NavbarMobile";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
+const paymentMethod = [
+  {
+    id: 1,
+    title: "Gopay",
+    path: "/assets/payment/logo_gopay.png",
+    name: "Gopay",
+    type: "ewallet",
+  },
+  {
+    id: 2,
+    title: "OVO",
+    path: "/assets/payment/logo_ovo.png",
+    name: "OVO",
+    type: "ewallet",
+  },
+  {
+    id: 3,
+    title: "Virtual Account Nobu",
+    path: "/assets/payment/nobu_logo.png",
+    name: "VA Nobu",
+    type: "virtual account",
+  },
+  {
+    id: 4,
+    title: "Virtual Account BCA",
+    path: "/assets/payment/bca_logo.png",
+    name: "VA BCA",
+    type: "virtual account",
+  },
+  {
+    id: 5,
+    title: "Virtual Account Mandiri",
+    path: "/assets/payment/logo_mandiri.png",
+    name: "VA Mandiri",
+    type: "virtual account",
+  },
+  {
+    id: 6,
+    title: "Virtual Account BNI",
+    path: "/assets/payment/bni_logo.png",
+    name: "VA BNI",
+    type: "virtual account",
+  },
+];
+
 export default function Topup() {
   const [amount, setAmount] = useState(0);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [activeType, setActiveType] = useState("ewallet");
+  const [activeIndex, setActiveIndex] = useState(null);
   const navigate = useNavigate();
 
   const handleAmountChange = (e) => {
@@ -19,6 +66,10 @@ export default function Topup() {
 
   const handleMethodClick = (method) => {
     setSelectedMethod(method);
+  };
+
+  const handleButtonClick = (value) => {
+    setAmount(value);
   };
 
   const handleProceed = () => {
@@ -45,39 +96,13 @@ export default function Topup() {
     navigate("/dashboard");
   };
 
-  const paymentMethod = [
-    {
-      id: 1,
-      title: "Gopay",
-      path: "/assets/payment/logo_gopay.png",
-      name: "Gopay",
-    },
-    { id: 2, title: "OVO", path: "/assets/payment/logo_ovo.png", name: "OVO" },
-    {
-      id: 3,
-      title: "Virtual Account Nobu",
-      path: "/assets/payment/nobu_logo.png",
-      name: "VA Nobu",
-    },
-    {
-      id: 4,
-      title: "Virtual Account BCA",
-      path: "/assets/payment/bca_logo.png",
-      name: "VA BCA",
-    },
-    {
-      id: 5,
-      title: "Virtual Account Mandiri",
-      path: "/assets/payment/logo_mandiri.png",
-      name: "VA Mandiri",
-    },
-    {
-      id: 6,
-      title: "Virtual Account BNI",
-      path: "/assets/payment/bni_logo.png",
-      name: "VA BNI",
-    },
-  ];
+  const handleTypeClick = (type) => {
+    setActiveType(type);
+  };
+
+  const handleAccordionClick = (index) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
 
   return (
     <>
@@ -86,14 +111,14 @@ export default function Topup() {
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
         <NavbarMobile />
-        <div className="flex space-x-20 justify-start items-center w-full mb-5 py-3 bg-amber-300">
+        <div className="flex space-x-20 justify-start items-center w-full py-3 bg-amber-300">
           <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
           <h1 className="text-lg font-bold px-3">Top up Point</h1>
         </div>
 
         <div className="flex flex-col items-center justify-start px-5 bg-white ">
           <div className="text-center mb-5 border-b border-slate-300 pb-5">
-            <h2 className="text-xl font-medium text-slate-300">
+            <h2 className="text-xl font-medium text-slate-400 mt-5">
               Nominal Top Up
             </h2>
             <input
@@ -101,45 +126,131 @@ export default function Topup() {
               value={`IDR ${amount.toLocaleString("id-ID")}`}
               onChange={handleAmountChange}
               className="text-4xl font-semibold my-3 text-center border-gray-300 focus:outline-none focus:border-blue-500"
+              maxLength={15}
             />
             <p className="text-gray-400">
-              {(amount / 1000).toLocaleString("id-ID")} Points
+              {amount.toLocaleString("id-ID")} Points
             </p>
+
+            <div className="flex flex-row justify-center items-center space-x-2 mt-3">
+              <div
+                className="rounded-xl bg-blue-100 text-blue-700 px-3 py-1"
+                onClick={() => handleButtonClick(500000)}
+              >
+                500K
+              </div>
+              <div
+                className="rounded-xl bg-blue-100 text-blue-700 px-3 py-1"
+                onClick={() => handleButtonClick(300000)}
+              >
+                300K
+              </div>
+              <div
+                className="rounded-xl bg-blue-100 text-blue-700 px-3 py-1"
+                onClick={() => handleButtonClick(100000)}
+              >
+                100K
+              </div>
+              <div
+                className="rounded-xl bg-blue-100 text-blue-700 px-3 py-1"
+                onClick={() => handleButtonClick(70000)}
+              >
+                70K
+              </div>
+              <div
+                className="rounded-xl bg-blue-100 text-blue-700 px-3 py-1"
+                onClick={() => handleButtonClick(50000)}
+              >
+                50K
+              </div>
+            </div>
           </div>
 
+          <p className="text-start text-md font-medium mb-2">
+            Pilih metode pembayaran
+          </p>
           <div className="w-full mb-2 text-start max-h-[50vh] overflow-y-auto">
             <div className="w-full mb-10">
-              <p className="text-md font-medium mb-2">
-                Pilih metode pembayaran
-              </p>
-              <div className="flex flex-col items-center justify-start space-y-2">
-                {paymentMethod.map((method, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-start justify-between p-3 rounded-lg shadow-md cursor-pointer w-full ${
-                      selectedMethod === method.name
-                        ? "bg-blue-400"
-                        : "bg-gray-100"
-                    }`}
-                    onClick={() => handleMethodClick(method.name)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-white shadow-md rounded-full p-2 w-12 h-12 flex justify-center items-center">
-                        <img
-                          src={method.path}
-                          alt={method.name}
-                          className="w-12"
-                        />
-                      </div>
-                      <p className="text-md font-semibold">{method.title}</p>
-                    </div>
+              <div className="flex flex-col space-y-2">
+                {/* Accordion Header */}
+                <div
+                  className="flex justify-between items-center w-full px-2 py-2 cursor-pointer"
+                  onClick={() => handleAccordionClick(1)}
+                >
+                  <h1 className="text-base font-semibold">Virtual Account</h1>
+                  <span>
+                    {activeIndex === 1 ? <FaChevronUp /> : <FaChevronDown />}
+                  </span>
+                </div>
+
+                {/* Accordion Content for Virtual Account */}
+                {activeIndex === 1 && (
+                  <div className="flex flex-col space-y-2 p-2">
+                    {paymentMethod
+                      .filter((item) => item.type === "virtual account")
+                      .map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-start justify-between p-3 rounded-lg shadow-md cursor-pointer w-full bg-gray-100"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-white shadow-md rounded-full p-2 w-12 h-12 flex justify-center items-center">
+                              <img
+                                src={item.path}
+                                alt={item.name}
+                                className="w-12"
+                              />
+                            </div>
+                            <p className="text-md font-semibold">
+                              {item.title}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                   </div>
-                ))}
+                )}
+                {/* Accordion Header */}
+                <div
+                  className="flex justify-between items-center w-full px-2 py-2 cursor-pointer"
+                  onClick={() => handleAccordionClick(0)}
+                >
+                  <h1 className="text-base font-semibold">E-Wallet</h1>
+                  <span>
+                    {activeIndex === 0 ? <FaChevronUp /> : <FaChevronDown />}
+                  </span>
+                </div>
+
+                {/* Accordion Content for E-Wallet */}
+                {activeIndex === 0 && (
+                  <div className="flex flex-col space-y-2 p-2 transition-all">
+                    {paymentMethod
+                      .filter((item) => item.type === "ewallet")
+                      .map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-start justify-between p-3 rounded-lg shadow-md cursor-pointer w-full bg-gray-100"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-white shadow-md rounded-full p-2 w-12 h-12 flex justify-center items-center">
+                              <img
+                                src={item.path}
+                                alt={item.name}
+                                className="w-12"
+                              />
+                            </div>
+                            <p className="text-md font-semibold">
+                              {item.title}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
             <button
               className="flex items-center justify-center w-full bg-blue-500 text-white py-3 rounded-lg shadow-md cursor-pointer mt-5"
-              onClick={handleProceed}
+              onClick={() => alert("Proceeding")}
             >
               <span>Lanjutkan</span>
             </button>

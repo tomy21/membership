@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import NavbarClient from "../../components/NavbarClient";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import {
+  IoIosArrowBack,
+  IoIosArrowForward,
+  IoMdAddCircleOutline,
+} from "react-icons/io";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import TableTransaction from "./components/TableTransaction";
 
@@ -19,7 +23,7 @@ const dataTransaksi = [
   },
   {
     id: 2,
-    orderId: "MB0001",
+    orderId: "MB0002",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -31,7 +35,7 @@ const dataTransaksi = [
   },
   {
     id: 3,
-    orderId: "MB0001",
+    orderId: "MB0003",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -43,7 +47,7 @@ const dataTransaksi = [
   },
   {
     id: 4,
-    orderId: "MB0001",
+    orderId: "MB0004",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -55,7 +59,7 @@ const dataTransaksi = [
   },
   {
     id: 5,
-    orderId: "MB0001",
+    orderId: "MB0005",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -67,7 +71,7 @@ const dataTransaksi = [
   },
   {
     id: 6,
-    orderId: "MB0001",
+    orderId: "MB0006",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -79,7 +83,7 @@ const dataTransaksi = [
   },
   {
     id: 7,
-    orderId: "MB0001",
+    orderId: "MB0007",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -91,7 +95,7 @@ const dataTransaksi = [
   },
   {
     id: 8,
-    orderId: "MB0001",
+    orderId: "MB0008",
     name: "Hypermart",
     email: "Hypermart",
     phone: "8123098111",
@@ -137,13 +141,17 @@ const Transaction = () => {
           <div className="flex justify-between items-center mb-3">
             <input
               type="text"
-              placeholder="Search history..."
+              placeholder="Search order..."
               value={filter}
               onChange={handleFilterChange}
               className="border p-2 rounded-md text-xs w-52"
             />
             <div className="flex flex-row space-x-2">
-              <div className="flex flex-row space-x-2 justify-end items-center text-emerald-500 border-l border-gray-300 px-3">
+              <div className="flex flex-row space-x-2 justify-end items-center text-blue-500 px-3 cursor-pointer hover:text-blue-800">
+                <IoMdAddCircleOutline />
+                <p className="text-xs">Add Order</p>
+              </div>
+              <div className="flex flex-row space-x-2 justify-end items-center text-emerald-500 border-l border-gray-300 cursor-pointer px-3 hover:text-emerald-800">
                 <IoCloudDownloadOutline />
                 <p className="text-xs">Export</p>
               </div>

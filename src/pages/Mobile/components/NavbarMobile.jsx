@@ -1,6 +1,11 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { logoutUsers } from "../../../api/apiUsers";
+import Loading from "./Loading";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const userNavigation = [
   { name: "Profil", href: "/profil" },
@@ -21,14 +26,54 @@ const notifications = [
   },
 ];
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+// const user = {
+//   name: "Tom Cook",
+//   email: "tom@example.com",
+//   imageUrl:
+//     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+// };
 
 export default function NavbarMobile() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      setTimeout(() => {
+        const token = Cookies.get("refreshToken");
+        if (token) {
+          const decodedToken = jwtDecode(token);
+          setUser(decodedToken);
+        }
+      }, 500); // Delay 500 milliseconds
+    };
+    fetchToken();
+  }, []);
+  // console.log(user);
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      await logoutUsers.logout();
+      // Assuming a successful logout, redirect to login page
+      navigate("/");
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Logout failed", error);
+      // Handle error appropriately, possibly show an error message
+    }
+  };
+  console.log("data", user);
+
+  const getInitial = (name) => {
+    if (!name) return "T";
+    return name.charAt(0).toUpperCase();
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       <div className="flex justify-between items-center bg-amber-300 w-full p-3 shadow-md">
@@ -38,11 +83,14 @@ export default function NavbarMobile() {
               <MenuButton className="relative flex max-w-xs items-start rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
-                <img
+                {/* <img
                   alt=""
                   src={user.imageUrl}
                   className="h-12 w-12 rounded-full"
-                />
+                /> */}
+                <div className="w-10 h-10 rounded-full bg-white flex justify-center items-center">
+                  {getInitial(user?.sub)}
+                </div>
               </MenuButton>
             </div>
             <MenuItems
@@ -53,6 +101,7 @@ export default function NavbarMobile() {
                 <MenuItem key={item.name}>
                   <a
                     href={item.href}
+                    onClick={item.name === "Keluar" ? handleLogout : null}
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                   >
                     {item.name}
@@ -62,8 +111,8 @@ export default function NavbarMobile() {
             </MenuItems>
           </Menu>
           <div className="flex flex-col items-start justify-start">
-            <p className="text-sm font-semibold">Hi, Tomy Agung S</p>
-            <p className="text-xs">tomy21.agung@gmail.com</p>
+            <p className="text-sm font-semibold">{user?.sub || "-"}</p>
+            <p className="text-xs">{user?.email || "-"}</p>
           </div>
         </div>
 
