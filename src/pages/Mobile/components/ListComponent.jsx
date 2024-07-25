@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Listbox,
   ListboxButton,
@@ -7,24 +7,16 @@ import {
 } from "@headlessui/react";
 import { HiChevronUpDown } from "react-icons/hi2";
 
-function ListComponent({
-  list,
-  title,
-  search,
-  selected,
-  setSelected,
-  query,
-  setQuery,
-}) {
+function ListComponent({ list, title, search, selected, setSelected }) {
+  const [query, setQuery] = useState("");
+
   const filteredPeople = list.filter((person) =>
     person.name.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {
-    setQuery("");
-  }, [selected, setQuery]);
-
-  //   console.log(selected);
+    setSelected("");
+  }, [setSelected]);
 
   return (
     <div className="px-3 flex flex-col justify-start items-start w-full mt-2">

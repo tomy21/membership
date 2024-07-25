@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { loginUsers } from "../../../api/apiUsers";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
   const [captcha, setCaptcha] = useState("");
@@ -62,13 +61,7 @@ export default function Login() {
         });
 
         const token = response;
-        console.log(token);
         Cookies.set("refreshToken", token);
-
-        // Decode the token to get user info
-        const decodedToken = jwtDecode(token);
-        console.log(decodedToken);
-        localStorage.setItem("user", JSON.stringify(decodedToken));
 
         // Add a delay before navigating to the dashboard
         setTimeout(() => {

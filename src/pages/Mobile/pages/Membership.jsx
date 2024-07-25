@@ -1,82 +1,11 @@
 import React, { useEffect, useState } from "react";
-import NavbarMobile from "../components/NavbarMobile";
+// import NavbarMobile from "../components/NavbarMobile";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import ListComponent from "../components/ListComponent";
 import { HiPhoto } from "react-icons/hi2";
-
-const lokasi = [
-  {
-    id: 1,
-    Code: "004SK",
-    name: "SKY UNIVERSITAS PELITA HARAPAN	",
-    Quota: 2000,
-    Used: 1500,
-  },
-  {
-    id: 2,
-    Code: "007SK",
-    name: "SKY ZONA 3 SILOAM KARAWACI",
-    Quota: 3000,
-    Used: 2300,
-  },
-  {
-    id: 3,
-    Code: "002SK",
-    name: "SKY CYBERPARK KARAWACI",
-    Quota: 800,
-    Used: 800,
-  },
-  {
-    id: 4,
-    Code: "003SK",
-    name: "SKY KARAWACI OFFICE PARK",
-    Quota: 2000,
-    Used: 1800,
-  },
-  {
-    id: 5,
-    Code: "901SK",
-    name: "SKY BCA FORESTA",
-    Quota: 1000,
-    Used: 1000,
-  },
-  {
-    id: 6,
-    Code: "009SK",
-    name: "SKY MAXBOXX LIPPO VILLAGE",
-    Quota: 1000,
-    Used: 1000,
-  },
-  {
-    id: 7,
-    Code: "005SK",
-    name: "SKY ZONA 2 HELI",
-    Quota: 2000,
-    Used: 1500,
-  },
-  {
-    id: 8,
-    Code: "05QSK",
-    name: "SKY OT BUILDING",
-    Quota: 2000,
-    Used: 1500,
-  },
-  {
-    id: 9,
-    Code: "00000",
-    name: "SKY HYPERMART KARAWACI",
-    Quota: 2000,
-    Used: 1500,
-  },
-  {
-    id: 10,
-    Code: "00001",
-    name: "SKY LIPPO THAMRIN",
-    Quota: 2000,
-    Used: 1500,
-  },
-];
+import Cookies from "js-cookie";
+import { apiLocations } from "../../../api/apiLocations";
 
 const vehicle = [
   {
@@ -91,65 +20,29 @@ const vehicle = [
   },
 ];
 
-const paket = [
-  {
-    id: 1,
-    name: "1 Bulan",
-    type: 1,
-    tariff: 300000,
-  },
-  {
-    id: 2,
-    name: "2 Bulan",
-    type: 1,
-    tariff: 300000,
-  },
-  {
-    id: 3,
-    name: "3 Bulan",
-    type: 1,
-    tariff: 300000,
-  },
-  {
-    id: 4,
-    name: "6 Bulan",
-    type: 1,
-    tariff: 500000,
-  },
-  {
-    id: 5,
-    name: "1 Tahun",
-    type: 1,
-    tariff: 1300000,
-  },
-  {
-    id: 6,
-    name: "1 Bulan",
-    type: 2,
-    tariff: 110000,
-  },
-  {
-    id: 7,
-    name: "2 Bulan",
-    type: 2,
-    tariff: 220000,
-  },
-  {
-    id: 8,
-    name: "3 Bulan",
-    type: 2,
-    tariff: 330000,
-  },
-];
-
 export default function Membership() {
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
 
   const [vehicleType, setVehicleType] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState("");
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      const token = Cookies.get("refreshToken");
+      if (token) {
+        try {
+          const response = await apiLocations.getLocation();
+          setLocation(response);
+        } catch (error) {
+          console.error("Failed to fetch location data:", error);
+        }
+      }
+    };
+
+    fetchLocation();
+  }, []);
 
   const handleProceed = () => {
     navigate("/payment_member", {
@@ -168,7 +61,7 @@ export default function Membership() {
   return (
     <>
       <div className="container overflow-auto">
-        <NavbarMobile />
+        {/* <NavbarMobile /> */}
         <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
             <FaArrowLeftLong
@@ -186,13 +79,11 @@ export default function Membership() {
           </div>
 
           <ListComponent
-            list={lokasi}
+            list={location}
             title={"Pilih Lokasi"}
             search={"Cari Lokasi"}
-            selected={location}
-            setSelected={setLocation}
-            query={selectedLocation}
-            setQuery={setSelectedLocation}
+            selected={selectedLocation}
+            setSelected={setSelectedLocation}
           />
           <ListComponent
             list={vehicle}
