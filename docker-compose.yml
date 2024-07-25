@@ -11,7 +11,7 @@ services:
     environment:
       - PORT=4002
     ports:
-      - "7090:4002"
+      - "7091:4002"
     # command: npm install cookie-parser && npm start
     networks:
       - membership_network
@@ -20,5 +20,5 @@ volumes:
   node_modules:
 
 networks:
-  backend_network:
+  membership_network:
     driver: bridge
