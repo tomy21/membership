@@ -21,6 +21,7 @@ export const getUserById = {
       const response = await apiClient.get(
         `/v01/member/api/auth/user/${idUser}`
       );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw error.response.data;

@@ -6,7 +6,7 @@ import CardComponent from "./CardComponent";
 
 export default function SliderComponent({ openModal, memberProducts }) {
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,

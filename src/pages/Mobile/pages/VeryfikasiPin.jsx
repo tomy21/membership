@@ -14,11 +14,11 @@ export default function VeryfikasiPin() {
     <>
       <div className="min-h-screen bg-white flex flex-col items-center">
         <NavbarMobile />
-        <div className="w-full max-w-md p-4">
+        <div className="w-full max-w-md px-4">
           <PinInput />
 
           <button
-            className="mt-4 w-full bg-red-500 text-white py-2 rounded"
+            className="w-full bg-red-500 text-white py-2 rounded mt-10"
             onClick={() => handleBack()}
           >
             Batal

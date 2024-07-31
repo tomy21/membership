@@ -3,20 +3,21 @@ import { verifikasiUsers } from "../../../api/apiUsers";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
-import PinVerificationModal from "./PinVerificationModal";
-import { apiBayarindVa } from "../../../api/apiBayarind";
+import { apiBayarindTopUp, apiBayarindVa } from "../../../api/apiBayarind";
+import Loading from "../components/Loading";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PinInput() {
   const [pin, setPin] = useState(Array(6).fill(""));
   const [idUser, setIdUser] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const inputRefs = useRef([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [dataModal, setDataModal] = useState([]);
-  const [verificationSuccess, setVerificationSuccess] = useState(false);
   const location = useLocation();
 
   const verifyPin = async (enteredPin) => {
+    setLoading(true);
     try {
       const response = await verifikasiUsers.verifikasiPin({
         memberUserId: idUser,
@@ -24,50 +25,74 @@ function PinInput() {
       });
 
       if (response.statusCode === 200) {
-        setVerificationSuccess(true);
-        setModalOpen(true);
+        const dataForm = {
+          providerId: location.state?.providerId ?? "",
+          productId: location.state?.productId ?? "",
+          plateNumber: location.state?.data?.location?.state?.platNomor ?? "",
+          expiredByMinute: 30,
+          amount: Math.floor(
+            location.state?.data?.location?.state?.tariff ??
+              location.state.amount
+          ).toFixed(2),
+          files: Array.isArray(location.state?.data?.location?.state?.file)
+            ? location.state.data.location.state.file
+            : [],
+        };
+        console.log("TopUp", location.state.type);
+
+        if (location.state.type === "member") {
+          const responseBayarind = await apiBayarindVa.createVa(dataForm);
+          if (responseBayarind.data.responseCode === "2002700") {
+            const data = {
+              bankProvider: location.state.providerName,
+              expairedDate:
+                responseBayarind.data.virtualAccountData.expiredDate,
+              virtualAccountNomor:
+                responseBayarind.data.virtualAccountData.virtualAccountNo,
+              amount:
+                responseBayarind.data.virtualAccountData.totalAmount.value,
+              accountName:
+                responseBayarind.data.virtualAccountData.virtualAccountName,
+            };
+
+            navigate("/payment_process", { state: data });
+          }
+        } else if (location.state.type === "topup") {
+          const dataFormTopUp = {
+            providerId: location.state.providerId,
+            amount: dataForm.amount,
+            expiredByMinute: dataForm.expiredByMinute,
+          };
+          console.log(dataFormTopUp);
+
+          const responseBayarind = await apiBayarindTopUp.createVaTopup(
+            dataFormTopUp
+          );
+
+          if (responseBayarind.data.responseCode === "2002700") {
+            const data = {
+              bankProvider: location.state.providerName,
+              expairedDate:
+                responseBayarind.data.virtualAccountData.expiredDate,
+              virtualAccountNomor:
+                responseBayarind.data.virtualAccountData.virtualAccountNo,
+              amount:
+                responseBayarind.data.virtualAccountData.totalAmount.value,
+              accountName:
+                responseBayarind.data.virtualAccountData.virtualAccountName,
+            };
+
+            navigate("/payment_process", { state: data });
+          }
+        }
       } else {
-        setVerificationSuccess(false);
-        setModalOpen(true);
+        toast.error("Silahkan coba kembali");
       }
     } catch (err) {
       console.error("Error verifying PIN:", err);
-      setVerificationSuccess(false);
-      setModalOpen(true);
-    }
-  };
-
-  const handleContinue = async () => {
-    try {
-      const dataForm = {
-        providerId: location.state.providerId,
-        productId: location.state.productId,
-        plateNumber: location.state.data.location.state.platNomor,
-        expiredByMinute: 30,
-        amount: Math.floor(location.state.data.location.state.tariff),
-        files: Array.isArray(location.state.data.location.state.file)
-          ? location.state.data.location.state.file
-          : [],
-      };
-
-      const responseBayarind = await apiBayarindVa.createVa(dataForm);
-      console.log(responseBayarind.data.responseCode);
-      if (responseBayarind.data.responseCode === "2002700") {
-        const data = {
-          bankProvider: location.state.providerName,
-          expairedDate: responseBayarind.data.virtualAccountData.expiredDate,
-          virtualAccountNomor:
-            responseBayarind.data.virtualAccountData.virtualAccountNo,
-          amount: responseBayarind.data.virtualAccountData.totalAmount.value,
-          accountName:
-            responseBayarind.data.virtualAccountData.virtualAccountName,
-        };
-
-        setDataModal(data);
-        navigate("/payment_process", { state: data });
-      }
-    } catch (err) {
-      console.error("Error creating VA:", err);
+      toast.error("Terjadi kesalahan, silahkan coba lagi");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,9 +160,14 @@ function PinInput() {
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="text-center mb-4 text-lg font-semibold">
+    <div className="flex flex-col items-center justify-center">
+      <ToastContainer />
+      <div className="text-center mb-4 text-lg font-semibold mt-5">
         Masukkan 6 digit PIN Kamu
       </div>
       <div className="flex justify-center space-x-2 mb-4">
@@ -148,7 +178,7 @@ function PinInput() {
               key={index}
               type="password"
               maxLength="1"
-              className="w-12 h-12 border border-gray-300 rounded-full text-center text-xl"
+              className="w-10 h-10 border border-gray-300 rounded-full text-center text-xl"
               autoFocus={index === 0}
               onChange={(e) => handleInput(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -164,33 +194,25 @@ function PinInput() {
           <button
             key={idx}
             onClick={() => handleKeypadClick(num.toString())}
-            className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+            className="w-[4rem] h-[4rem] border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
           >
             {num}
           </button>
         ))}
-        <div className="w-20 h-20"></div>
+        <div className="w-[4rem] h-[4rem]"></div>
         <button
           onClick={() => handleKeypadClick("0")}
-          className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+          className="w-[4rem] h-[4rem] border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
         >
           0
         </button>
         <button
           onClick={handleBackspace}
-          className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+          className="w-[4rem] h-[4rem] border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
         >
           ⌫
         </button>
       </div>
-
-      <PinVerificationModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        success={verificationSuccess}
-        data={dataModal}
-        onContinue={handleContinue}
-      />
     </div>
   );
 }

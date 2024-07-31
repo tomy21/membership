@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Accordion from "../components/Accordion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loading from "../components/Loading";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -42,15 +45,16 @@ const copyToClipboard = (text) => {
   const trimmedText = text.trim();
   navigator.clipboard.writeText(trimmedText).then(
     () => {
-      alert("Teks berhasil disalin ke clipboard!");
+      toast.success("Berhasil dicopy");
     },
     (err) => {
-      console.error("Gagal menyalin teks ke clipboard: ", err);
+      toast.error("Gagal", err);
     }
   );
 };
 
 export default function PaymentProcess() {
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const formatAmount = formatNumber(Math.floor(location.state.amount));
   const formattedDate = formatDate(location.state.expairedDate);
@@ -60,8 +64,13 @@ export default function PaymentProcess() {
     navigate("/dashboard");
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="bg-gray-100 h-screen">
+      <ToastContainer />
       <div className="w-full flex flex-col justify-center items-center py-3 space-y-2 bg-white mb-3">
         <h1 className="text-xs font-normal text-gray-400">
           Lakukan pembayaran sebelum
@@ -100,7 +109,7 @@ export default function PaymentProcess() {
               <span className="text-bold">Rp</span> {formatAmount}
             </h1>
             <button
-              onClick={() => copyToClipboard(Math.floor(location.state.amount))}
+              onClick={() => copyToClipboard(location.state.amount)}
               className="border border-blue-500 rounded-md px-2 py-1 text-blue-500 text-center text-sm"
             >
               Salin

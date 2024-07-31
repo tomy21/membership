@@ -41,7 +41,6 @@ export default function NavbarMobile() {
       }
       if (token) {
         const decodedToken = jwtDecode(token);
-        console.log(decodedToken);
         setIdUser(decodedToken.Id);
       }
     };

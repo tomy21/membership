@@ -71,7 +71,7 @@ export default function Dashboard() {
       }
       if (token) {
         const decodedToken = jwtDecode(token);
-        setIdUser(decodedToken.id);
+        setIdUser(decodedToken.Id);
       }
     };
     fetchToken();
@@ -82,8 +82,8 @@ export default function Dashboard() {
       if (idUser) {
         try {
           const response = await getUserById.userById(idUser);
-          console.log("User Data:", response.data);
-          setBalance(response.data.Points);
+          // console.log("User Data:", response.data);
+          setBalance(formatCurrency(response.points));
         } catch (error) {
           console.error("Failed to fetch user data:", error);
         }
@@ -111,7 +111,7 @@ export default function Dashboard() {
       if (idUser) {
         try {
           const productMember = await getMemberByUserId.getByUserId(idUser);
-          console.log("Product Member Data:", productMember.data);
+          console.log("Product Member Data:", productMember);
           setMemberProduct(productMember.data);
         } catch (error) {
           if (error.response && error.response.status !== 404) {
@@ -139,6 +139,18 @@ export default function Dashboard() {
     });
   };
 
+  const formatPoints = (value) => {
+    const num = parseFloat(value);
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + "m";
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(0) + "k";
+    } else {
+      return num.toFixed(0);
+    }
+  };
+
+  console.log(memberProduct);
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
@@ -163,7 +175,8 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-xl font-normal">
-                  {balance} <span className="text-sm">Points</span>
+                  {formatPoints(balance)}{" "}
+                  <span className="text-sm">Points</span>
                 </p>
               </div>
             </div>

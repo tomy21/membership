@@ -9,7 +9,4 @@ export const apiClient = axios.create({
 
 export const apiSkyBayarind = axios.create({
   baseURL: "https://dev-paymentapi.skyparking.online",
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
 });
