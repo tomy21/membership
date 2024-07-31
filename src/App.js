@@ -11,6 +11,7 @@ import MobilePaymentMember from "./pages/Mobile/pages/PaymentMember";
 import MobileLokasi from "./pages/Mobile/pages/Lokasi";
 import MobileVoucher from "./pages/Mobile/pages/Voucher";
 import MobileRiwayat from "./pages/Mobile/pages/Riwayat";
+import MobilePayment from "./pages/Mobile/pages/PaymentProcess";
 import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
@@ -36,6 +37,10 @@ function App() {
                 element={<MobileVeryfikasiPin />}
               ></Route>
               <Route path="/membership" element={<MobileMembership />}></Route>
+              <Route
+                path="/payment_process"
+                element={<MobilePayment />}
+              ></Route>
               <Route
                 path="/payment_member"
                 element={<MobilePaymentMember />}

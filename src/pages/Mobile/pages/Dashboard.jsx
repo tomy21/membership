@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MdArrowDropDown,
   MdArrowDropUp,
@@ -7,12 +7,48 @@ import {
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";
-import CardComponent from "../components/CardComponent";
 import SliderComponent from "../components/Slider";
 import QRCode from "qrcode.react";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { getUserById, historyMembers } from "../../../api/apiUsers";
+import Skeleton from "react-loading-skeleton";
+import { getMemberByUserId } from "../../../api/apiProduct";
+
+const items = [
+  {
+    src: "/assets/membership.png",
+    alt: "Membership",
+    label: "Membership",
+    path: "/membership",
+  },
+  {
+    src: "/assets/map.png",
+    alt: "Lokasi Parkir",
+    label: "Lokasi Parkir",
+    path: "/lokasi",
+  },
+  {
+    src: "/assets/gift-voucher.png",
+    alt: "Voucher",
+    label: "Voucher",
+    path: "/voucher",
+  },
+  {
+    src: "/assets/clock.png",
+    alt: "History",
+    label: "Riwayat",
+    path: "/riwayat",
+  },
+];
 
 export default function Dashboard() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [idUser, setIdUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [listRiwayat, setListRiwayat] = useState([]);
+  const [memberProduct, setMemberProduct] = useState([]);
   const navigate = useNavigate();
 
   const openModal = () => {
@@ -27,77 +63,74 @@ export default function Dashboard() {
     navigate("/topup");
   };
 
-  const items = [
-    {
-      src: "/assets/membership.png",
-      alt: "Membership",
-      label: "Membership",
-      path: "/membership",
-    },
-    {
-      src: "/assets/map.png",
-      alt: "Lokasi Parkir",
-      label: "Lokasi Parkir",
-      path: "/lokasi",
-    },
-    {
-      src: "/assets/gift-voucher.png",
-      alt: "Voucher",
-      label: "Voucher",
-      path: "/voucher",
-    },
-    {
-      src: "/assets/clock.png",
-      alt: "History",
-      label: "Riwayat",
-      path: "/riwayat",
-    },
-  ];
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = Cookies.get("refreshToken");
+      if (!token) {
+        navigate("/");
+      }
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        setIdUser(decodedToken.id);
+      }
+    };
+    fetchToken();
+  }, [navigate]);
 
-  const listRiwayat = [
-    {
-      TypeTransaction: "topup",
-      CreatedOn: "2021-12-12 12:12:12",
-      Description: "Berhasil top up",
-      Amount: 100000,
-    },
-    {
-      TypeTransaction: "in",
-      CreatedOn: "2024-07-03 08:12:12",
-      Description: "Masuk area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-    {
-      TypeTransaction: "out",
-      CreatedOn: "2021-07-03 17:12:12",
-      Description: "Keluar area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-    {
-      TypeTransaction: "in",
-      CreatedOn: "2024-07-02 08:12:12",
-      Description: "Masuk area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-    {
-      TypeTransaction: "out",
-      CreatedOn: "2021-07-02 17:12:12",
-      Description: "Keluar area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-    {
-      TypeTransaction: "in",
-      CreatedOn: "2024-07-01 08:12:12",
-      Description: "Masuk area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-    {
-      TypeTransaction: "out",
-      CreatedOn: "2021-07-01 17:12:12",
-      Description: "Keluar area parkir",
-      LocationName: "SKY Karawaci Office Park",
-    },
-  ];
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (idUser) {
+        try {
+          const response = await getUserById.userById(idUser);
+          console.log("User Data:", response.data);
+          setBalance(response.data.Points);
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+        }
+      }
+    };
+
+    const fetchHistory = async () => {
+      if (idUser) {
+        try {
+          const history = await historyMembers.getHistory(idUser);
+          setListRiwayat(history.data);
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            console.error("Failed to fetch history:", error);
+          } else {
+            setListRiwayat([]); // Set default empty list if not found
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    const fetchProductMember = async () => {
+      if (idUser) {
+        try {
+          const productMember = await getMemberByUserId.getByUserId(idUser);
+          console.log("Product Member Data:", productMember.data);
+          setMemberProduct(productMember.data);
+        } catch (error) {
+          if (error.response && error.response.status !== 404) {
+            console.error("Failed to fetch product member data:", error);
+          } else {
+            setMemberProduct([]); // Set default empty list if not found
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    if (idUser) {
+      fetchUser();
+      fetchHistory();
+      fetchProductMember();
+    }
+  }, [idUser]);
 
   const formatCurrency = (amount) => {
     return amount.toLocaleString("id-ID", {
@@ -105,13 +138,17 @@ export default function Dashboard() {
       currency: "IDR",
     });
   };
+
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
         <NavbarMobile />
 
-        <div className="w-full bg-amber-300 h-52">
-          <SliderComponent openModal={openModal} />
+        <div className={`w-full bg-amber-300 h-52`}>
+          <SliderComponent
+            openModal={openModal}
+            memberProducts={memberProduct}
+          />
         </div>
 
         <div className="relative -mt-10 w-full max-w-md px-6">
@@ -126,7 +163,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-xl font-normal">
-                  0 <span className="text-sm">Points</span>
+                  {balance} <span className="text-sm">Points</span>
                 </p>
               </div>
             </div>
@@ -160,43 +197,73 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto py-2">
-          {listRiwayat.map((items, index) => (
-            <div
-              key={index}
-              className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
-            >
-              <div className="flex flex-row justify-center items-center space-x-3 py-2">
-                {items.TypeTransaction === "topup" ? (
-                  <MdOutlineAccountBalanceWallet
-                    size={30}
-                    className="text-sky-500"
-                  />
-                ) : items.TypeTransaction === "in" ? (
-                  <MdArrowDropUp size={30} className="text-emerald-500" />
-                ) : (
-                  <MdArrowDropDown size={30} className="text-red-500" />
-                )}
-                <div className="flex flex-col justify-start items-start">
-                  <p className="text-xs font-semibold">{items.Description}</p>
-                  <p className="text-xs text-slate-400 font-semibold">
-                    {items.TypeTransaction === "topup"
-                      ? formatCurrency(items.Amount)
-                      : items.LocationName}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col justify-start items-start w-14">
-                <h1 className="text-xs font-medium">
-                  {format(new Date(items.CreatedOn), "dd MMM yy")}
-                </h1>
-                <h1 className="text-xs font-medium">
-                  {format(new Date(items.CreatedOn), "HH:mm:ss")}
-                </h1>
-              </div>
-            </div>
-          ))}
-        </div>
+        {listRiwayat.length === 0 ? (
+          <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+            <img src={"/parchment.png"} className="w-24 opacity-20" alt="" />
+            <p className="text-sm text-gray-500 mt-5">
+              Belum ada riwayat transaksi
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto py-2">
+            {isLoading
+              ? [...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                  >
+                    <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                      <Skeleton circle={true} height={30} width={30} />
+                      <div className="flex flex-col justify-start items-start">
+                        <Skeleton width={100} />
+                        <Skeleton width={80} />
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-start items-start w-14">
+                      <Skeleton width={40} />
+                      <Skeleton width={30} />
+                    </div>
+                  </div>
+                ))
+              : listRiwayat.map((items, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                  >
+                    <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                      {items.Activity === "topup" ? (
+                        <MdOutlineAccountBalanceWallet
+                          size={30}
+                          className="text-sky-500"
+                        />
+                      ) : items.Activity === "in" ? (
+                        <MdArrowDropUp size={30} className="text-emerald-500" />
+                      ) : (
+                        <MdArrowDropDown size={30} className="text-red-500" />
+                      )}
+                      <div className="flex flex-col justify-start items-start">
+                        <p className="text-xs font-semibold">
+                          {items.Activity.toUpperCase()}
+                        </p>
+                        <p className="text-xs text-slate-400 font-semibold">
+                          {items.Activity === "topup"
+                            ? formatCurrency(items.Price)
+                            : items.LocationName}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-start items-start w-14">
+                      <h1 className="text-xs font-medium">
+                        {format(new Date(items.CreatedAt), "dd MMM yy")}
+                      </h1>
+                      <h1 className="text-xs font-medium">
+                        {format(new Date(items.CreatedAt), "HH:mm:ss")}
+                      </h1>
+                    </div>
+                  </div>
+                ))}
+          </div>
+        )}
       </div>
 
       {isOpen && (

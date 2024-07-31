@@ -1,14 +1,133 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { verifikasiUsers } from "../../../api/apiUsers";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { useLocation, useNavigate } from "react-router-dom";
+import PinVerificationModal from "./PinVerificationModal";
+import { apiBayarindVa } from "../../../api/apiBayarind";
 
 function PinInput() {
+  const [pin, setPin] = useState(Array(6).fill(""));
+  const [idUser, setIdUser] = useState(null);
+  const navigate = useNavigate();
   const inputRefs = useRef([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [dataModal, setDataModal] = useState([]);
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
+  const location = useLocation();
+
+  const verifyPin = async (enteredPin) => {
+    try {
+      const response = await verifikasiUsers.verifikasiPin({
+        memberUserId: idUser,
+        pinVerifikasi: enteredPin,
+      });
+
+      if (response.statusCode === 200) {
+        setVerificationSuccess(true);
+        setModalOpen(true);
+      } else {
+        setVerificationSuccess(false);
+        setModalOpen(true);
+      }
+    } catch (err) {
+      console.error("Error verifying PIN:", err);
+      setVerificationSuccess(false);
+      setModalOpen(true);
+    }
+  };
+
+  const handleContinue = async () => {
+    try {
+      const dataForm = {
+        providerId: location.state.providerId,
+        productId: location.state.productId,
+        plateNumber: location.state.data.location.state.platNomor,
+        expiredByMinute: 30,
+        amount: Math.floor(location.state.data.location.state.tariff),
+        files: Array.isArray(location.state.data.location.state.file)
+          ? location.state.data.location.state.file
+          : [],
+      };
+
+      const responseBayarind = await apiBayarindVa.createVa(dataForm);
+      console.log(responseBayarind.data.responseCode);
+      if (responseBayarind.data.responseCode === "2002700") {
+        const data = {
+          bankProvider: location.state.providerName,
+          expairedDate: responseBayarind.data.virtualAccountData.expiredDate,
+          virtualAccountNomor:
+            responseBayarind.data.virtualAccountData.virtualAccountNo,
+          amount: responseBayarind.data.virtualAccountData.totalAmount.value,
+          accountName:
+            responseBayarind.data.virtualAccountData.virtualAccountName,
+        };
+
+        setDataModal(data);
+        navigate("/payment_process", { state: data });
+      }
+    } catch (err) {
+      console.error("Error creating VA:", err);
+    }
+  };
 
   const handleInput = (e, index) => {
     const value = e.target.value;
     if (value.length === 1 && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
+    const newPin = [...pin];
+    newPin[index] = value;
+    setPin(newPin);
+
+    // Check if PIN is complete
+    if (index === inputRefs.current.length - 1 && value.length === 1) {
+      verifyPin(newPin.join(""));
+    }
   };
+
+  const handleKeypadClick = (value) => {
+    const newPin = [...pin];
+    const firstEmptyIndex = newPin.findIndex((p) => p === "");
+    if (firstEmptyIndex !== -1) {
+      newPin[firstEmptyIndex] = value;
+      setPin(newPin);
+      inputRefs.current[firstEmptyIndex].focus();
+
+      // Check if PIN is complete
+      if (firstEmptyIndex === inputRefs.current.length - 1) {
+        verifyPin(newPin.join(""));
+      }
+    }
+  };
+
+  const handleBackspace = () => {
+    const newPin = [...pin];
+    const lastFilledIndex = newPin
+      .slice()
+      .reverse()
+      .findIndex((p) => p !== "");
+    if (lastFilledIndex !== -1) {
+      const index = 5 - lastFilledIndex;
+      newPin[index] = "";
+      setPin(newPin);
+      inputRefs.current[index].focus();
+    }
+  };
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = Cookies.get("refreshToken");
+      if (!token) {
+        navigate("/");
+      }
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        setIdUser(decodedToken.Id);
+      }
+    };
+    fetchToken();
+  }, [navigate]);
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && index > 0 && e.target.value === "") {
@@ -17,9 +136,11 @@ function PinInput() {
   };
 
   return (
-    <div className="my-4">
-      <div className="text-center mb-2">Masukan PIN</div>
-      <div className="flex justify-center space-x-2">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="text-center mb-4 text-lg font-semibold">
+        Masukkan 6 digit PIN Kamu
+      </div>
+      <div className="flex justify-center space-x-2 mb-4">
         {Array(6)
           .fill(0)
           .map((_, index) => (
@@ -27,15 +148,49 @@ function PinInput() {
               key={index}
               type="password"
               maxLength="1"
-              className="w-12 h-12 border border-gray-300 rounded text-center text-xl"
+              className="w-12 h-12 border border-gray-300 rounded-full text-center text-xl"
               autoFocus={index === 0}
               onChange={(e) => handleInput(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               ref={(el) => (inputRefs.current[index] = el)}
+              value={pin[index]}
               inputMode="numeric"
             />
           ))}
       </div>
+      <button className="mb-6 text-blue-600">Lupa PIN?</button>
+      <div className="grid grid-cols-3 gap-4">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleKeypadClick(num.toString())}
+            className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+          >
+            {num}
+          </button>
+        ))}
+        <div className="w-20 h-20"></div>
+        <button
+          onClick={() => handleKeypadClick("0")}
+          className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+        >
+          0
+        </button>
+        <button
+          onClick={handleBackspace}
+          className="w-20 h-20 border border-gray-300 rounded-full bg-white shadow-md text-xl flex items-center justify-center"
+        >
+          ⌫
+        </button>
+      </div>
+
+      <PinVerificationModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        success={verificationSuccess}
+        data={dataModal}
+        onContinue={handleContinue}
+      />
     </div>
   );
 }
