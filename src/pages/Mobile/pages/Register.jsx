@@ -18,11 +18,11 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    userName: "",
+    username: "",
     password: "",
     passwordConfirm: "",
     email: "",
-    phoneNumber: "",
+    phone: "",
     pin: "",
   });
   const [formErrors, setFormErrors] = useState({});
@@ -38,12 +38,12 @@ export default function Register() {
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.userName) errors.userName = "Username is required";
+    if (!formData.username) errors.username = "Username is required";
     if (!formData.email) errors.email = "Email is required";
     if (!formData.password) errors.password = "Password is required";
     if (formData.password !== formData.passwordConfirm)
       errors.passwordConfirm = "Passwords do not match";
-    if (!formData.phoneNumber) errors.phoneNumber = "Phone number is required";
+    if (!formData.phone) errors.phone = "Phone number is required";
     if (!formData.pin) errors.pin = "PIN is required";
     if (inputCaptcha !== captcha) errors.captcha = "Captcha does not match";
     setFormErrors(errors);
@@ -54,15 +54,16 @@ export default function Register() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        await apiUsers.register(formData);
+        const response = await apiUsers.register(formData);
+        console.log("response", response);
         setFormErrors({});
         setIsModalOpen(true);
         setFormData({
-          userName: "",
+          username: "",
           password: "",
           passwordConfirm: "",
           email: "",
-          phoneNumber: "",
+          phone: "",
           pin: "",
         });
       } catch (error) {
@@ -140,11 +141,11 @@ export default function Register() {
               <input
                 type="text"
                 className={`w-full py-2 px-3 border ${
-                  formErrors.userName ? "border-red-600" : "border-slate-300"
+                  formErrors.username ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan username anda"
-                name="userName"
-                value={formData.userName}
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
               />
 
@@ -194,11 +195,11 @@ export default function Register() {
               <input
                 type="text"
                 className={`w-full py-2 px-3 border ${
-                  formErrors.phoneNumber ? "border-red-600" : "border-slate-300"
+                  formErrors.phone ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan nomor telepon anda"
-                name="phoneNumber"
-                value={formData.phoneNumber}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
               />
               <input

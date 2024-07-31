@@ -15,8 +15,9 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    userName: "",
+    identifier: "",
     password: "",
+    rememberMe: false,
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -35,7 +36,7 @@ export default function Login() {
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.userName) errors.userName = "Username is required";
+    if (!formData.identifier) errors.identifier = "Username is required";
     if (!formData.password) errors.password = "Password is required";
     if (inputCaptcha !== captcha) errors.captcha = "Captcha does not match";
     setFormErrors(errors);
@@ -56,11 +57,11 @@ export default function Login() {
         console.log("response", response);
         setFormErrors({});
         setFormData({
-          userName: "",
+          identifier: "",
           password: "",
         });
 
-        const token = response;
+        const token = response.token;
         Cookies.set("refreshToken", token);
 
         // Add a delay before navigating to the dashboard
@@ -110,12 +111,12 @@ export default function Login() {
                 type="text"
                 className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="No handphone, email atau username"
-                name="userName"
-                value={formData.userName}
+                name="identifier"
+                value={formData.identifier}
                 onChange={handleChange}
               />
-              {formErrors.userName && (
-                <p className="text-red-500 text-xs">{formErrors.userName}</p>
+              {formErrors.identifier && (
+                <p className="text-red-500 text-xs">{formErrors.identifier}</p>
               )}
               <input
                 type="password"

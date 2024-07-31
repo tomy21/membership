@@ -11,21 +11,27 @@ function ListComponent({ list, title, search, selected, setSelected }) {
   const [query, setQuery] = useState("");
 
   const filteredPeople = list.filter((person) =>
-    person.name.toLowerCase().includes(query.toLowerCase())
+    person.Name.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {
     setSelected("");
   }, [setSelected]);
 
+  const handleSelect = (person) => {
+    setSelected(person.Code);
+  };
+
+  const selectedPerson = list.find((person) => person.Code === selected);
+
   return (
-    <div className="px-3 flex flex-col justify-start items-start w-full mt-2">
-      <Listbox value={selected} onChange={setSelected}>
+    <div className="flex flex-col justify-start items-start w-full">
+      <Listbox value={selected} onChange={handleSelect}>
         <div className="relative mt-2 w-full">
           <ListboxButton className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
             <span className="flex items-center">
               <span className="ml-3 block truncate">
-                {selected && selected.name ? selected.name : `${title}`}
+                {selectedPerson ? selectedPerson.Name : `${title}`}
               </span>
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -50,13 +56,13 @@ function ListComponent({ list, title, search, selected, setSelected }) {
               {filteredPeople.length > 0 ? (
                 filteredPeople.map((person) => (
                   <ListboxOption
-                    key={person.id}
+                    key={person.Id}
                     value={person}
                     className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white max-h-52 overflow-y-auto"
                   >
                     <div className="flex items-center">
                       <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
-                        {person.name}
+                        {person.Name}
                       </span>
                     </div>
                   </ListboxOption>

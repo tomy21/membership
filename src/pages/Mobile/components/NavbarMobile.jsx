@@ -2,7 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { logoutUsers } from "../../../api/apiUsers";
+import { getUserById, logoutUsers } from "../../../api/apiUsers";
 import Loading from "./Loading";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -29,21 +29,39 @@ const notifications = [
 export default function NavbarMobile() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [idUser, setIdUser] = useState(null);
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
 
   useEffect(() => {
     const fetchToken = async () => {
-      setTimeout(() => {
-        const token = Cookies.get("refreshToken");
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          setUser(decodedToken);
-        }
-      }, 500); // Delay 500 milliseconds
+      const token = Cookies.get("refreshToken");
+      if (!token) {
+        navigate("/");
+      }
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken);
+        setIdUser(decodedToken.Id);
+      }
     };
     fetchToken();
-  }, []);
-  // console.log(user);
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setTimeout(async () => {
+        if (idUser) {
+          const response = await getUserById.userById(idUser);
+          setName(response.data.UserName);
+          setEmail(response.data.Email);
+        }
+      }, 500);
+    };
+
+    fetchUser();
+  }, [idUser]);
+
   const handleLogout = async () => {
     setLoading(true);
     try {
@@ -81,7 +99,7 @@ export default function NavbarMobile() {
                   className="h-12 w-12 rounded-full"
                 /> */}
                 <div className="w-10 h-10 rounded-full bg-white flex justify-center items-center">
-                  {getInitial(user?.sub)}
+                  {getInitial(name)}
                 </div>
               </MenuButton>
             </div>
@@ -103,8 +121,8 @@ export default function NavbarMobile() {
             </MenuItems>
           </Menu>
           <div className="flex flex-col items-start justify-start">
-            <p className="text-sm font-semibold">{user?.sub || "-"}</p>
-            <p className="text-xs">{user?.email || "-"}</p>
+            <p className="text-sm font-semibold">{name || "-"}</p>
+            <p className="text-xs">{email || "-"}</p>
           </div>
         </div>
 

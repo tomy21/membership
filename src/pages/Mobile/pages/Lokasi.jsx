@@ -136,8 +136,8 @@ function Lokasi() {
   return (
     <>
       <div className="container">
-        <NavbarMobile />
-        <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
+        {/* <NavbarMobile /> */}
+        <div className="flex flex-col items-start justify-start min-h-full w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
             <FaArrowLeftLong
               className="pl-3 w-10"
@@ -155,7 +155,7 @@ function Lokasi() {
               onChange={handleSearch}
             />
           </div>
-          <div className="flex flex-col space-y-2 items-start justify-start w-full px-2 py-2 max-h-[70vh] overflow-y-auto">
+          <div className="flex flex-col space-y-2 items-start justify-start w-full px-2 py-2 max-h-[75vh] overflow-y-auto">
             {lokasi.map((items, index) => (
               <div
                 key={index}
