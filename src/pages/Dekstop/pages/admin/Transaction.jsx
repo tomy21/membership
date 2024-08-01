@@ -7,6 +7,8 @@ import {
 } from "react-icons/io";
 import { IoCloudDownloadOutline } from "react-icons/io5";
 import TableTransaction from "./components/TableTransaction";
+import Modal from "./components/modalOrders";
+import OrderConfirmationModal from "./components/invoiceOrders";
 
 const dataTransaksi = [
   {
@@ -113,6 +115,29 @@ const Transaction = () => {
   const [data, setData] = useState(dataTransaksi);
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
+  
+  //Modal Add Orders
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOrderConfirmationOpen, setIsOrderConfirmationOpen] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+
+  const openModal = () => {
+      setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+      setIsModalOpen(false);
+ };
+
+  const openOrderConfirmation = (details) => {
+      setOrderDetails(details);
+      setIsOrderConfirmationOpen(true);
+  };
+
+  const closeOrderConfirmation = () => {
+      setIsOrderConfirmationOpen(false);
+      setOrderDetails(null);
+  };
 
   const filteredData = data.filter((item) =>
     item.orderId.toLowerCase().includes(filter.toLowerCase())
@@ -125,8 +150,9 @@ const Transaction = () => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
-    setCurrentPage(1); // Reset to the first page when filter changes
+    setCurrentPage(1); 
   };
+  
 
   return (
     <>
@@ -146,10 +172,27 @@ const Transaction = () => {
               onChange={handleFilterChange}
               className="border p-2 rounded-md text-xs w-52"
             />
-            <div className="flex flex-row space-x-2">
-              <div className="flex flex-row space-x-2 justify-end items-center text-blue-500 px-3 cursor-pointer hover:text-blue-800">
+            <div className="flex flex-row">
+              <div  onClick={openModal} className="flex flex-row space-x-2 justify-end items-center text-blue-500 px-3 cursor-pointer hover:text-blue-800">
                 <IoMdAddCircleOutline />
                 <p className="text-xs">Add Order</p>
+                {isModalOpen && (
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onSubmit={(orderDetails) => {
+                        closeModal();
+                        openOrderConfirmation(orderDetails);
+                    }}
+                />
+            )}
+            {isOrderConfirmationOpen && (
+                <OrderConfirmationModal
+                    isOpen={isOrderConfirmationOpen}
+                    onClose={closeOrderConfirmation}
+                    orderDetails={orderDetails}
+                />
+            )}
               </div>
               <div className="flex flex-row space-x-2 justify-end items-center text-emerald-500 border-l border-gray-300 cursor-pointer px-3 hover:text-emerald-800">
                 <IoCloudDownloadOutline />
