@@ -68,68 +68,59 @@ export default function Dashboard() {
       const token = Cookies.get("refreshToken");
       if (!token) {
         navigate("/");
+        return;
       }
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        setIdUser(decodedToken.Id);
-      }
+
+      const decodedToken = jwtDecode(token);
+      setIdUser(decodedToken.Id);
     };
     fetchToken();
   }, [navigate]);
 
   useEffect(() => {
+    if (!idUser) return;
+
     const fetchUser = async () => {
-      if (idUser) {
-        try {
-          const response = await getUserById.userById(idUser);
-          // console.log("User Data:", response.data);
-          setBalance(formatCurrency(response.points));
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-        }
+      try {
+        const response = await getUserById.userById(idUser);
+        setBalance(formatCurrency(response.points));
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
       }
     };
 
     const fetchHistory = async () => {
-      if (idUser) {
-        try {
-          const history = await historyMembers.getHistory(idUser);
-          setListRiwayat(history.data);
-        } catch (error) {
-          if (error.response && error.response.status === 404) {
-            console.error("Failed to fetch history:", error);
-          } else {
-            setListRiwayat([]); // Set default empty list if not found
-          }
-        } finally {
-          setIsLoading(false);
+      try {
+        const history = await historyMembers.getHistory(idUser);
+        setListRiwayat(history.data);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error("Failed to fetch history:", error);
+        } else {
+          setListRiwayat([]); // Set default empty list if not found
         }
       }
     };
 
     const fetchProductMember = async () => {
-      if (idUser) {
-        try {
-          const productMember = await getMemberByUserId.getByUserId(idUser);
-          console.log("Product Member Data:", productMember);
-          setMemberProduct(productMember.data);
-        } catch (error) {
-          if (error.response && error.response.status !== 404) {
-            console.error("Failed to fetch product member data:", error);
-          } else {
-            setMemberProduct([]); // Set default empty list if not found
-          }
-        } finally {
-          setIsLoading(false);
+      try {
+        const productMember = await getMemberByUserId.getByUserId(idUser);
+        setMemberProduct(productMember.data);
+      } catch (error) {
+        if (error.response && error.response.status !== 404) {
+          console.error("Failed to fetch product member data:", error);
+        } else {
+          setMemberProduct([]); // Set default empty list if not found
         }
       }
     };
 
-    if (idUser) {
-      fetchUser();
-      fetchHistory();
-      fetchProductMember();
-    }
+    setIsLoading(true);
+    Promise.all([fetchUser(), fetchHistory(), fetchProductMember()]).finally(
+      () => {
+        setIsLoading(false);
+      }
+    );
   }, [idUser]);
 
   const formatCurrency = (amount) => {
@@ -149,8 +140,7 @@ export default function Dashboard() {
       return num.toFixed(0);
     }
   };
-
-  console.log(memberProduct);
+  console.log("datanya", memberProduct);
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">

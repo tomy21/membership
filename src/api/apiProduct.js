@@ -95,7 +95,7 @@ export const getMemberByUserId = {
       const response = await apiClient.get(
         `/v01/member/api/userProduct/byUser?userId=${idUser}`
       );
-      console.log("dataDiapi", response);
+      // console.log("dataDiapi", response);
       return response.data;
     } catch (error) {
       throw error.response.data;

@@ -1,5 +1,4 @@
 import { apiClient } from "./apiClient";
-import Cookies from "js-cookie";
 
 export const apiUsers = {
   register: async (userData) => {
@@ -21,7 +20,7 @@ export const getUserById = {
       const response = await apiClient.get(
         `/v01/member/api/auth/user/${idUser}`
       );
-      console.log(response.data);
+      // console.log("dataPoints", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -51,7 +50,7 @@ export const loginUsers = {
         "/v01/member/api/auth/login",
         userData
       );
-      console.log("response", response);
+      // console.log("response", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
