@@ -101,6 +101,7 @@ export default function Dashboard() {
 
       try {
         const userResponse = await getUserById.userById(idUser);
+        console.log(userResponse);
         setBalance(formatCurrency(userResponse.points));
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -176,7 +177,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex flex-row space-x-6 justify-center items-center my-5 px-3">
+        <div className="flex flex-row space-x-6 justify-center items-center my-5 px-2">
           {items.map((item, index) => (
             <div key={index} className="flex flex-col items-center">
               <Link to={item.path}>
