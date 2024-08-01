@@ -49,10 +49,13 @@ export default function Dashboard() {
   const [balance, setBalance] = useState(0);
   const [listRiwayat, setListRiwayat] = useState([]);
   const [memberProduct, setMemberProduct] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
 
-  const openModal = () => {
+  const openModal = (product) => {
+    setSelectedProduct(product);
     setIsOpen(true);
+    console.log("iniopen", product);
   };
 
   const closeModal = () => {
@@ -280,7 +283,7 @@ export default function Dashboard() {
             <div className="border-b border-slate-400 w-full h-1 mb-8"></div>
 
             <div className="flex flex-col justify-center items-center w-full space-y-10">
-              <QRCode value={"Ini contoh aja"} size={150} />
+              <QRCode value={selectedProduct.CardId} size={150} />
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded w-full"
                 onClick={closeModal}
