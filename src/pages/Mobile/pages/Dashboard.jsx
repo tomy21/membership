@@ -228,10 +228,15 @@ export default function Dashboard() {
               : listRiwayat.map((items, index) => (
                   <div
                     key={index}
-                    className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                    className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-2"
                   >
-                    <div className="flex flex-row justify-center items-center space-x-3 py=2">
+                    <div className="flex flex-row justify-center items-center space-x-3 py-2">
                       {items.Activity === "topup" ? (
+                        <MdOutlineAccountBalanceWallet
+                          size={30}
+                          className="text-sky-500"
+                        />
+                      ) : items.Activity === "membership" ? (
                         <MdOutlineAccountBalanceWallet
                           size={30}
                           className="text-sky-500"
@@ -252,7 +257,7 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex flex-col justify-start items-start w-14">
+                    <div className="flex flex-col justify-start items-start w-16">
                       <h1 className="text-xs font-medium">
                         {format(new Date(items.CreatedAt), "dd MMM yy")}
                       </h1>

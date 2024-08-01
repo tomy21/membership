@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import NavbarMobile from "../components/NavbarMobile";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
 import { format } from "date-fns";
@@ -93,7 +92,6 @@ export default function Topup() {
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
-        <NavbarMobile />
         <div className="flex space-x-20 justify-start items-center w-full py-3 bg-amber-300">
           <FaArrowLeftLong className="pl-3 w-10" onClick={handleBack} />
           <h1 className="text-lg font-bold px-3">Top up Point</h1>
