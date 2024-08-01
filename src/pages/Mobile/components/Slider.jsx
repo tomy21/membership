@@ -6,7 +6,7 @@ import CardComponent from "./CardComponent";
 
 export default function SliderComponent({ openModal, memberProducts }) {
   const settings = {
-    dots: false,
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -19,7 +19,7 @@ export default function SliderComponent({ openModal, memberProducts }) {
   if (memberProducts.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center">
-        <img src={"/card-member.png"} className="w-36" alt="" />
+        <img src={"/card-member.png"} className="w-36" alt="No Member" />
         <p className="text-base font-normal -mt-5 text-slate-400">
           Kamu belum ada member
         </p>
@@ -27,13 +27,21 @@ export default function SliderComponent({ openModal, memberProducts }) {
     );
   }
 
-  return (
-    <>
-      <Slider {...settings}>
+  if (memberProducts.length === 1) {
+    return (
+      <div>
         {memberProducts.map((product, index) => (
           <CardComponent key={index} product={product} openModal={openModal} />
         ))}
-      </Slider>
-    </>
+      </div>
+    );
+  }
+
+  return (
+    <Slider {...settings}>
+      {memberProducts.map((product, index) => (
+        <CardComponent key={index} product={product} openModal={openModal} />
+      ))}
+    </Slider>
   );
 }

@@ -63,66 +63,6 @@ export default function Dashboard() {
     navigate("/topup");
   };
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token) {
-        navigate("/");
-        return;
-      }
-
-      const decodedToken = jwtDecode(token);
-      setIdUser(decodedToken.Id);
-    };
-    fetchToken();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!idUser) return;
-
-    const fetchUser = async () => {
-      try {
-        const response = await getUserById.userById(idUser);
-        setBalance(formatCurrency(response.points));
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-
-    const fetchHistory = async () => {
-      try {
-        const history = await historyMembers.getHistory(idUser);
-        setListRiwayat(history.data);
-      } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.error("Failed to fetch history:", error);
-        } else {
-          setListRiwayat([]); // Set default empty list if not found
-        }
-      }
-    };
-
-    const fetchProductMember = async () => {
-      try {
-        const productMember = await getMemberByUserId.getByUserId(idUser);
-        setMemberProduct(productMember.data);
-      } catch (error) {
-        if (error.response && error.response.status !== 404) {
-          console.error("Failed to fetch product member data:", error);
-        } else {
-          setMemberProduct([]); // Set default empty list if not found
-        }
-      }
-    };
-
-    setIsLoading(true);
-    Promise.all([fetchUser(), fetchHistory(), fetchProductMember()]).finally(
-      () => {
-        setIsLoading(false);
-      }
-    );
-  }, [idUser]);
-
   const formatCurrency = (amount) => {
     return amount.toLocaleString("id-ID", {
       style: "currency",
@@ -140,7 +80,63 @@ export default function Dashboard() {
       return num.toFixed(0);
     }
   };
-  console.log("datanya", memberProduct);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = Cookies.get("refreshToken");
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
+      const decodedToken = jwtDecode(token);
+      setIdUser(decodedToken.Id);
+    };
+    fetchToken();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!idUser) return;
+
+      try {
+        const userResponse = await getUserById.userById(idUser);
+        setBalance(formatCurrency(userResponse.points));
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+
+      try {
+        const historyResponse = await historyMembers.getHistory(idUser);
+        setListRiwayat(historyResponse.data);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error("Failed to fetch history:", error);
+        } else {
+          setListRiwayat([]); // Set default empty list if not found
+        }
+      }
+
+      try {
+        const productMemberResponse = await getMemberByUserId.getByUserId(
+          idUser
+        );
+        setMemberProduct(productMemberResponse.data);
+        console.log("Fetched member products:", productMemberResponse.data);
+      } catch (error) {
+        if (error.response && error.response.status !== 404) {
+          console.error("Failed to fetch product member data:", error);
+        } else {
+          setMemberProduct([]); // Set default empty list if not found
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [idUser]);
+
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
@@ -149,11 +145,11 @@ export default function Dashboard() {
         <div className={`w-full bg-amber-300 h-52`}>
           <SliderComponent
             openModal={openModal}
-            memberProducts={memberProduct}
+            memberProducts={memberProduct ?? "-"}
           />
         </div>
 
-        <div className="relative -mt-10 w-full max-w-md px-6">
+        <div className="relative -mt-10 w-full max-w-md px-3">
           <div className="bg-white shadow-lg rounded-xl p-4 flex items-center justify-between">
             {/* Points Section */}
             <div className="flex items-center space-x-2">
@@ -173,14 +169,14 @@ export default function Dashboard() {
             {/* Top Up Button */}
             <button
               className="bg-gray-200 text-gray-700 p-2 font-medium rounded-lg flex items-center space-x-1"
-              onClick={() => handleTopUp()}
+              onClick={handleTopUp}
             >
               <span>Top up</span>
             </button>
           </div>
         </div>
 
-        <div className="flex flex-row space-x-6 justify-center items-center my-5 px-2">
+        <div className="flex flex-row space-x-6 justify-center items-center my-5 px-3">
           {items.map((item, index) => (
             <div key={index} className="flex flex-col items-center">
               <Link to={item.path}>
@@ -233,7 +229,7 @@ export default function Dashboard() {
                     key={index}
                     className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
                   >
-                    <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                    <div className="flex flex-row justify-center items-center space-x-3 py=2">
                       {items.Activity === "topup" ? (
                         <MdOutlineAccountBalanceWallet
                           size={30}
