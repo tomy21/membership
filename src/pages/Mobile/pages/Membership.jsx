@@ -5,7 +5,11 @@ import ListComponent from "../components/ListComponent";
 import { HiPhoto } from "react-icons/hi2";
 import Cookies from "js-cookie";
 import { apiLocations } from "../../../api/apiLocations";
-import { getProductById, getProductByLocation } from "../../../api/apiProduct";
+import {
+  getProductById,
+  getProductByLocation,
+  verifikasiPlate,
+} from "../../../api/apiProduct";
 
 export default function Membership() {
   const [location, setLocation] = useState([]);
@@ -18,8 +22,10 @@ export default function Membership() {
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [productId, setProductId] = useState(0);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
+  const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,18 +79,30 @@ export default function Membership() {
 
     fetchMemberById();
   }, [selectedVehicleType]);
-  // console.log(selectedVehicleType);
+
   const handleProceed = () => {
-    navigate("/payment_member", {
-      state: {
-        productId: productId,
-        location: selectedLocationName,
-        vehicleType: selectedVehicleType,
-        tariff: tariff,
-        platNomor: platNomor, // Add plat nomor to state
-        file: file,
-      },
-    });
+    const newErrors = {};
+    if (!selectedLocation) newErrors.selectedLocation = "Lokasi harus dipilih";
+    if (!selectedVehicleType)
+      newErrors.selectedVehicleType = "Tipe kendaraan harus dipilih";
+    if (!platNomor) newErrors.platNomor = "Plat nomor harus diisi";
+    if (!file) newErrors.file = "Foto STNK harus diunggah";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+    } else {
+      setErrors({});
+      navigate("/payment_member", {
+        state: {
+          productId: productId,
+          location: selectedLocationName,
+          vehicleType: selectedVehicleType,
+          tariff: tariff,
+          platNomor: platNomor,
+          file: file,
+        },
+      });
+    }
   };
 
   const handleFileChange = (event) => {
@@ -96,15 +114,43 @@ export default function Membership() {
     }
   };
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (platNomor) {
+        handleVerification();
+      }
+    }, 500); // Verifikasi setelah 500ms tidak ada input
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [platNomor]);
+
+  const handleVerification = async () => {
+    try {
+      const response = await verifikasiPlate.verifikasi(platNomor);
+      console.log("FE", response);
+      if (response && response.message === "Plat nomor sudah terdaftar") {
+        setMessage(response.message);
+      }
+      if (response && response.message === "Plat nomor belum terdaftar") {
+        setMessage("");
+      }
+    } catch (error) {
+      setMessage("Terjadi kesalahan. Silakan coba lagi.");
+    }
+  };
+
+  const handleChange = (e) => {
+    const formattedValue = e.target.value.replace(/\s+/g, "").toUpperCase();
+    setPlatNomor(formattedValue);
+  };
+
   const handleBack = () => {
     navigate(-1);
   };
 
-  // console.log(location.Quota);
   return (
     <>
       <div className="container overflow-auto">
-        {/* <NavbarMobile /> */}
         <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
             <FaArrowLeftLong
@@ -130,6 +176,9 @@ export default function Membership() {
               selected={selectedLocation}
               setSelected={setSelectedLocation}
             />
+            {errors.selectedLocation && (
+              <p className="text-red-500">{errors.selectedLocation}</p>
+            )}
           </div>
 
           <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
@@ -141,6 +190,9 @@ export default function Membership() {
               selected={selectedVehicleType}
               setSelected={setSelectedVehicleType}
             />
+            {errors.selectedVehicleType && (
+              <p className="text-red-500">{errors.selectedVehicleType}</p>
+            )}
           </div>
 
           <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
@@ -181,6 +233,10 @@ export default function Membership() {
             <label htmlFor="platnomor" className="mt-2 text-gray-400">
               Plat Nomor Kendaraan
             </label>
+            {message && <p className="text-sm text-red-500 mt-2 ">{message}</p>}
+            {errors.platNomor && (
+              <p className="text-red-500">{errors.platNomor}</p>
+            )}
             <input
               type="text"
               name="platnomor"
@@ -188,7 +244,7 @@ export default function Membership() {
               className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               placeholder="ex : B123ABC"
               value={platNomor}
-              onChange={(e) => setPlatNomor(e.target.value)}
+              onChange={handleChange}
             />
           </div>
 
@@ -226,6 +282,7 @@ export default function Membership() {
                 <p className="text-xs leading-5 text-gray-600">
                   PNG, JPG up to 10MB
                 </p>
+                {errors.file && <p className="text-red-500">{errors.file}</p>}
               </div>
             </div>
           </div>

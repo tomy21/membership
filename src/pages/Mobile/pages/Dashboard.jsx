@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import { getUserById, historyMembers } from "../../../api/apiUsers";
 import Skeleton from "react-loading-skeleton";
 import { getMemberByUserId } from "../../../api/apiProduct";
+import { isMobile } from "react-device-detect";
 
 const items = [
   {
@@ -126,7 +127,7 @@ export default function Dashboard() {
           idUser
         );
         setMemberProduct(productMemberResponse.data);
-        console.log("Fetched member products:", productMemberResponse.data);
+        console.log("Fetched member products:", productMemberResponse);
       } catch (error) {
         if (error.response && error.response.status !== 404) {
           console.error("Failed to fetch product member data:", error);
@@ -141,6 +142,22 @@ export default function Dashboard() {
     fetchData();
   }, [idUser]);
 
+  // Disable back navigation on mobile
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (isMobile) {
+        event.preventDefault();
+        event.stopPropagation();
+        navigate(1);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate]);
+
+  console.log(memberProduct);
+
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
@@ -149,7 +166,7 @@ export default function Dashboard() {
         <div className={`w-full bg-amber-300 h-52`}>
           <SliderComponent
             openModal={openModal}
-            memberProducts={memberProduct ?? "-"}
+            memberProducts={memberProduct}
           />
         </div>
 
@@ -250,9 +267,30 @@ export default function Dashboard() {
                         <MdArrowDropDown size={30} className="text-red-500" />
                       )}
                       <div className="flex flex-col justify-start items-start">
-                        <p className="text-xs font-semibold">
-                          {items.Activity.toUpperCase()}
-                        </p>
+                        <div className="flex flex-row justify-start items-center space-x-2">
+                          <p className={`text-xs font-semibold `}>
+                            {items.Activity.toUpperCase()}
+                          </p>
+                          <p
+                            className={`text-xs font-semibold ${
+                              items.Status === "Paid"
+                                ? "text-green-600"
+                                : items.Status === "Pending"
+                                ? "text-yellow-600"
+                                : items.Status === "Cancel"
+                                ? "text-red-600"
+                                : "-"
+                            }`}
+                          >
+                            {items.Status === "Paid"
+                              ? items.Status.toUpperCase()
+                              : items.Status === "Pending"
+                              ? items.Status.toUpperCase()
+                              : items.Status === "Cancel"
+                              ? items.Status.toUpperCase()
+                              : "-"}
+                          </p>
+                        </div>
                         <p className="text-xs text-slate-400 font-semibold">
                           {items.Activity === "topup"
                             ? formatCurrency(items.Price)

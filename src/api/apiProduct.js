@@ -44,6 +44,7 @@ export const getProductByLocation = {
       const response = await apiClient.get(
         `/v01/member/api/product/byLocation?LocationCode=${code}`
       );
+      console.log("dataLocation", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -108,6 +109,19 @@ export const getMemberById = {
       const response = await apiClient.get(
         `/v01/member/api/userProduct/${idMember}`
       );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+export const verifikasiPlate = {
+  verifikasi: async (platNo) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/userProduct/verifikasi?platNo=${platNo}`
+      );
+      console.log("response Plate", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
