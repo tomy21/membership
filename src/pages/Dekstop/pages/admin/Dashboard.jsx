@@ -8,7 +8,8 @@ function Dashboard() {
   return (
     <>
       <NavbarClient client={false} />
-      <div className="container m-auto max-h-screen w-full ">
+      <div className="container m-auto p-4 min-h-[100vh] justify-center items-center">
+      <div className="container m-auto max-h-screen">
         <h1 className="text-xl font-semibold mt-3 text-start">Dashboard</h1>
         <div className="flex flex-row justify-start items-start h-full mt-5 space-x-2">
           <div className="flex flex-col justify-start items-start w-[65%] h-full px-2 py-3">
@@ -106,6 +107,7 @@ function Dashboard() {
             <Information />
           </div>
         </div>
+      </div>
       </div>
     </>
   );

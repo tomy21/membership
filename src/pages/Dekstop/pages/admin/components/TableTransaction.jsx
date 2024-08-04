@@ -9,6 +9,10 @@ import {
 import { IoMdCall, IoMdMail, IoMdTime } from "react-icons/io";
 import { MdOutlineBookmarkBorder } from "react-icons/md";
 import "react-toastify/dist/ReactToastify.css";
+import RejectModal from "./rejectModal";
+import ApproveModal from "./ApproveModal";
+import UploadImageModal from "./uploadModal";
+import RejectBulkModal from "./rejectBulkModal";
 
 const formatNumber = (amount) => {
   if (amount >= 1000000000) {
@@ -21,6 +25,11 @@ const formatNumber = (amount) => {
 };
 function TableTransaction({ dataTransaksi }) {
   const [selectAll, setSelectAll] = useState(false);
+  const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRejectModalOpens, setRejectModalOpens] = useState(false);
+
   const [checkedItems, setCheckedItems] = useState(
     dataTransaksi.reduce((acc, items) => {
       acc[items.id] = false;
@@ -52,6 +61,59 @@ function TableTransaction({ dataTransaksi }) {
   const countCheckedItems = () => {
     return Object.values(checkedItems).filter((value) => value).length;
   };
+
+    const handleOpenRejectModal = () => {
+        setRejectModalOpen(true);
+    };
+
+    const handleCloseRejectModal = () => {
+        setRejectModalOpen(false);
+    };
+
+    const handleConfirmReject = () => {
+        console.log('Action rejected');
+        // Implement your rejection logic here
+    };
+
+
+    
+    const openApproveModal = () => {
+       setIsApproveModalOpen(true);
+    };
+
+    const closeApproveModal = () => {
+       setIsApproveModalOpen(false);
+    };
+
+    const handleApprove = () => {
+     // Add logic to handle the approval action
+       console.log('Approved');
+       closeApproveModal();
+    };
+
+    const handleImageUpload = (image) => {
+      // Implement your upload logic here
+      return new Promise((resolve) => {
+          console.log('Image uploaded:', image);
+          setTimeout(() => resolve(), 2000); // Simulate upload delay
+      });
+  };
+
+   
+   
+
+    const openRejectModals = () => {
+        setRejectModalOpen(true);
+    };
+
+    const closeRejectModals = () => {
+        setRejectModalOpen(false);
+    };
+
+    const handleRejectConfirm = () => {
+        // Handle the bulk reject logic here
+        console.log('Bulk reject confirmed');
+    };
 
   return (
     <>
@@ -132,13 +194,42 @@ function TableTransaction({ dataTransaksi }) {
                 </td>
                 <td className="text-center px-2 py-2">
                   <div className="flex flex-row justify-center items-center space-x-1">
-                    <button className="rounded-xl bg-red-100 text-red-600 px-2 py-1">
-                      Reject
+                  <button
+                        onClick={handleOpenRejectModal}
+                        className="bg-red-500 text-white px-4 py-2 rounded"
+                    >
+                        Reject
                     </button>
+                    <RejectModal
+                        isOpen={isRejectModalOpen}
+                        onClose={handleCloseRejectModal}
+                        onConfirm={handleConfirmReject}
+                    />
+                    <div className="border-l border-gray-400 h-8"></div> 
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-yellow-500 text-white px-4 py-2 rounded"
+                      >
+                        Upload Payment
+                    </button>
+                        <UploadImageModal
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            onImageUpload={handleImageUpload}
+                        />
                     <div className="border-l border-gray-400 h-8"></div>
-                    <button className="rounded-xl bg-emerald-100 text-emerald-600 px-2 py-1">
-                      Approve
+                    <button
+                      onClick={openApproveModal}
+                      className="bg-emerald-500 text-white px-4 py-2 rounded"
+                      >
+                        Approve
                     </button>
+                        {/* ApproveModal */}
+                        <ApproveModal
+                            isOpen={isApproveModalOpen}
+                            onClose={closeApproveModal}
+                            onConfirm={handleApprove}
+                        />
                   </div>
                 </td>
               </tr>
@@ -157,7 +248,12 @@ function TableTransaction({ dataTransaksi }) {
               <div className="flex flex-row justify-start items-center space-x-2">
                 <FaCheck size={15} className="text-green-500" />
                 <div className="h-5 border-r border-slate-300"></div>
-                <FaRegTrashCan size={15} className="text-red-500" />
+                <FaRegTrashCan   onClick={openRejectModals} size={15} className="text-red-500 mr-2 cursor-pointer" />
+                <RejectBulkModal
+                    isOpen={isRejectModalOpen}
+                    onClose={closeRejectModals}
+                    onConfirm={handleRejectConfirm}
+                />
               </div>
             </div>
           </div>
