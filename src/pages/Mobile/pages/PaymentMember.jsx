@@ -162,9 +162,9 @@ function PaymentMember() {
           <h1 className="text-4xl font-medium">
             <span className="font-semibold">IDR</span>{" "}
             {location.state.tariff
-              ? `${parseInt(
-                  parseInt(location.state.tariff) + 5000
-                ).toLocaleString("id-ID")}`
+              ? `${parseInt(parseInt(location.state.tariff)).toLocaleString(
+                  "id-ID"
+                )}`
               : "-"}
           </h1>
 
@@ -181,7 +181,7 @@ function PaymentMember() {
             <div className="text-base text-gray-400">Biaya member</div>
             <p className="font-semibold">
               <span className="font-semibold">IDR</span>{" "}
-              {parseInt(location.state.tariff).toLocaleString("id-ID")}
+              {parseInt(location.state.tariff - 5000).toLocaleString("id-ID")}
             </p>
           </div>
 

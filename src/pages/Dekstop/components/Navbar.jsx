@@ -5,6 +5,7 @@ import {
   PopoverPanel,
 } from "@headlessui/react";
 import React from "react";
+import { MdNotes } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 const callsToAction = [
@@ -14,40 +15,19 @@ const callsToAction = [
 function Navbar() {
   return (
     <>
-      <header className="bg-white border-b border-gray-200 shadow-md">
-        <div className="container m-auto ">
-          <nav
-            aria-label="Global"
-            className="mx-auto flex max-w-7xl items-center justify-between p-3"
-          >
-            <div className="flex lg:flex-1">
-              <Link to="#" className="-m-1.5 p-1.5">
-                <span className="sr-only">SKY Membership</span>
-                <img alt="" src={"/logo.png"} className="h-12 w-auto" />
-              </Link>
-            </div>
-            <PopoverGroup className="flex gap-x-12">
-              <Link
-                to="#"
-                className="text-sm font-medium leading-6 text-gray-900"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="#"
-                className="text-sm font-medium leading-6 text-gray-900"
-              >
-                Member
-              </Link>
-              <Link
-                to="#"
-                className="text-sm font-medium leading-6 text-gray-900"
-              >
-                ListMember
-              </Link>
-            </PopoverGroup>
-          </nav>
-        </div>
+      <header className="bg-white border-b border-gray-200 -mt-2 rounded-md shadow-md mb-3 w-full">
+        <nav
+          aria-label="Global"
+          className="mx-auto flex max-w-7xl items-center justify-between p-3 h-14"
+        >
+          <div className="flex lg:flex-1">
+            <MdNotes size={30} />
+          </div>
+          <div className="flex flex-col justify-end items-end">
+            <h1 className="text-xs font-semibold">Tomy Agung</h1>
+            <p className="text-xs font-light">Universitas </p>
+          </div>
+        </nav>
       </header>
     </>
   );

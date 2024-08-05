@@ -105,8 +105,7 @@ export default function Dashboard() {
 
       try {
         const userResponse = await getUserById.userById(idUser);
-        console.log(userResponse);
-        setBalance(formatCurrency(userResponse.points));
+        setBalance(userResponse.points);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
@@ -127,7 +126,6 @@ export default function Dashboard() {
           idUser
         );
         setMemberProduct(productMemberResponse.data);
-        console.log("Fetched member products:", productMemberResponse);
       } catch (error) {
         if (error.response && error.response.status !== 404) {
           console.error("Failed to fetch product member data:", error);
@@ -156,8 +154,6 @@ export default function Dashboard() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
 
-  console.log(memberProduct);
-
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
@@ -182,7 +178,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-xl font-normal">
-                  {formatPoints(balance)}{" "}
+                  {formatPoints(balance)}
                   <span className="text-sm">Points</span>
                 </p>
               </div>

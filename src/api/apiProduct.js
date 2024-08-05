@@ -167,3 +167,29 @@ export const deleteProductMember = {
     }
   },
 };
+
+export const getProductBundleAll = {
+  getAll: async () => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/memberProductBundles"
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+export const addProductBundleAll = {
+  storeProduct: async (formProduct) => {
+    try {
+      const response = await apiClient.post(
+        "/v01/member/api/memberProductBundles",
+        formProduct
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
