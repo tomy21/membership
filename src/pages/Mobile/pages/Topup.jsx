@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
-import { getAllProvider } from "../../../api/apiProvider";
+import { getAllProvider, getProviderById } from "../../../api/apiProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -39,7 +39,7 @@ export default function Topup() {
 
   useEffect(() => {
     const fetchProvider = async () => {
-      const response = await getAllProvider.getProvider();
+      const response = await getProviderById.getById(1);
       setProviders(response.data);
     };
 

@@ -6,9 +6,11 @@ import { HiPhoto } from "react-icons/hi2";
 import Cookies from "js-cookie";
 import { apiLocations } from "../../../api/apiLocations";
 import {
+  getBundleById,
   getBundleByType,
   getProductById,
   getProductByLocation,
+  getQuota,
   verifikasiPlate,
 } from "../../../api/apiProduct";
 
@@ -27,6 +29,8 @@ export default function Membership() {
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
+  const [productBundle, setProductBundle] = useState("");
+  const [selectBundleProduct, setSelectBundleProduct] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,6 +69,18 @@ export default function Membership() {
       })) || []
     ),
   ];
+  const bundleName = [
+    ...new Set(
+      productBundle &&
+        productBundle.map((item) =>
+          JSON.stringify({
+            Code: item.id,
+            Name: item.Name,
+            Tariff: item.Price,
+          })
+        )
+    ),
+  ].map((item) => JSON.parse(item));
 
   useEffect(() => {
     const fetchMemberById = async () => {
@@ -72,17 +88,27 @@ export default function Membership() {
         const vehicleName = selectedVehicleType === 1 ? "Mobil" : "Motor";
         const response = await getProductById.getById(selectedVehicleType);
         const responseBundle = await getBundleByType.getByType(vehicleName);
-        console.log(responseBundle);
+        setProductBundle(responseBundle.data);
         setProductId(response.data.product.Id);
         setSelectedLocationName(response.data.product.LocationName);
-        setTariff(response.data.product.Price);
         setMaxQuota(response.data.product.MaxQuote);
-        setCurrentQuota(response.data.product.CurrentQuote);
+
+        if (selectBundleProduct) {
+          const responseBundle = await getBundleById.getById(
+            selectBundleProduct
+          );
+          setTariff(responseBundle.data.Price);
+        }
+
+        if (productId) {
+          const responseQuota = await getQuota.getById(productId);
+          setCurrentQuota(responseQuota.data.CurrentQuota);
+        }
       }
     };
 
     fetchMemberById();
-  }, [selectedVehicleType]);
+  }, [selectedVehicleType, productId, selectBundleProduct]);
 
   const handleProceed = () => {
     const newErrors = {};
@@ -96,8 +122,23 @@ export default function Membership() {
       setErrors(newErrors);
     } else {
       setErrors({});
+      const state = [
+        {
+          periodId: selectBundleProduct,
+          productId: productId,
+          location: selectedLocationName,
+          vehicleType: selectedVehicleType,
+          tariff: tariff,
+          platNomor: platNomor,
+          file: file,
+        },
+      ];
+
+      console.log(state);
       navigate("/payment_member", {
         state: {
+          type: "Member",
+          periodId: selectBundleProduct,
           productId: productId,
           location: selectedLocationName,
           vehicleType: selectedVehicleType,
@@ -202,28 +243,14 @@ export default function Membership() {
           <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
             <label className="text-gray-400">Product Member</label>
             <ListComponent
-              list={vehicleTypes}
+              list={bundleName}
               title={"Pilih Paket Member"}
               search={"Cari Paket Member"}
-              selected={selectedVehicleType}
-              setSelected={setSelectedVehicleType}
+              selected={selectBundleProduct}
+              setSelected={setSelectBundleProduct}
             />
-            {errors.selectedVehicleType && (
-              <p className="text-red-500">{errors.selectedVehicleType}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-            <label className="text-gray-400">Month</label>
-            <ListComponent
-              list={vehicleTypes}
-              title={"Pilih Bulan"}
-              search={"Cari Bulan"}
-              selected={selectedVehicleType}
-              setSelected={setSelectedVehicleType}
-            />
-            {errors.selectedVehicleType && (
-              <p className="text-red-500">{errors.selectedVehicleType}</p>
+            {errors.selectBundleProduct && (
+              <p className="text-red-500">{errors.selectBundleProduct}</p>
             )}
           </div>
 
@@ -244,9 +271,7 @@ export default function Membership() {
                 placeholder="0.00"
                 className="block w-full rounded-md border-0 py-3 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 value={
-                  tariff
-                    ? `${parseInt(tariff - 5000).toLocaleString("id-ID")}`
-                    : "-"
+                  tariff ? `${parseInt(tariff).toLocaleString("id-ID")}` : "-"
                 }
                 disabled
               />
@@ -260,7 +285,7 @@ export default function Membership() {
               name="kuotaMember"
               id="kuotaMember"
               className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              value={`${currentQuota} /${maxQuota}`}
+              value={`${currentQuota ?? 0} /${maxQuota}`}
               disabled
             />
 

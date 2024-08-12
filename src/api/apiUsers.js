@@ -71,11 +71,15 @@ export const logoutUsers = {
 
 // History
 export const historyMembers = {
-  getHistory: async (idUsers) => {
+  getHistory: async (idUsers, page, limit) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/memberHistory/users?userId=${idUsers}`
+        `/v01/member/api/memberHistory/users`,
+        {
+          params: { userId: idUsers, page, limit },
+        }
       );
+      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

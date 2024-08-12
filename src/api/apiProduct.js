@@ -91,10 +91,17 @@ export const getAllUserMembers = {
   },
 };
 export const getMemberByUserId = {
-  getByUserId: async (idUser) => {
+  getByUserId: async (idUser, page, limit) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/userProduct/byUser?userId=${idUser}`
+        `/v01/member/api/userProduct/byUser`,
+        {
+          params: {
+            userId: idUser,
+            page,
+            limit,
+          },
+        }
       );
       // console.log("dataDiapi", response);
       return response.data;
@@ -186,6 +193,30 @@ export const getBundleByType = {
     try {
       const response = await apiClient.get(
         `/v01/member/api/products/type/${typeVehicle}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+export const getBundleById = {
+  getById: async (idProduct) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/memberProductBundles/${idProduct}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+export const getQuota = {
+  getById: async (idProduct) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/quota/${idProduct}`
       );
       return response.data;
     } catch (error) {

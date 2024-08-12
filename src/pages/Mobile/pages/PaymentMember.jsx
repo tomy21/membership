@@ -5,10 +5,11 @@ import { endOfMonth, format } from "date-fns";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
-import { getAllProvider } from "../../../api/apiProvider";
+import { getAllProvider, getProviderById } from "../../../api/apiProvider";
 import { Listbox } from "@headlessui/react";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 function PaymentMember() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -40,7 +41,7 @@ function PaymentMember() {
   console.log(selectedProvider);
   useEffect(() => {
     const fetchProvider = async () => {
-      const response = await getAllProvider.getProvider();
+      const response = await getProviderById.getById(0);
       setProviders(response.data);
     };
 
@@ -60,7 +61,7 @@ function PaymentMember() {
       end: format(end, "dd MMM yyyy"),
     };
   };
-
+  console.log(location);
   const verifikasi = () => {
     setIsModalVisible(false);
     navigate("/verifikasi", {
@@ -70,6 +71,7 @@ function PaymentMember() {
         providerId: selectedProvider.Id,
         productId: location.state.productId,
         plateNumber: location.state.platNomor,
+        periodId: location.state.periodId,
         data: {
           location,
         },
@@ -80,9 +82,9 @@ function PaymentMember() {
     setIsModalVisible(false);
   };
 
-  //   const handleBack = () => {
-  //     navigate("/dashboard");
-  //   };
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const currentPeriod = getMonthlyPeriod(new Date());
   return (
@@ -91,7 +93,10 @@ function PaymentMember() {
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
-        <NavbarMobile />
+        <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
+          <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
+          <h1 className="text-lg font-semibold px-2">Details Transaksi</h1>
+        </div>
         <div className="container px-3">
           <div className="flex flex-col items-start justify-start mt-2 w-full border border-gray-400 rounded-lg">
             <div className="px-3 flex flex-col justify-start items-start w-full">
@@ -162,9 +167,9 @@ function PaymentMember() {
           <h1 className="text-4xl font-medium">
             <span className="font-semibold">IDR</span>{" "}
             {location.state.tariff
-              ? `${parseInt(parseInt(location.state.tariff)).toLocaleString(
-                  "id-ID"
-                )}`
+              ? `${parseInt(
+                  parseInt(location.state.tariff) + 5000
+                ).toLocaleString("id-ID")}`
               : "-"}
           </h1>
 
@@ -181,7 +186,7 @@ function PaymentMember() {
             <div className="text-base text-gray-400">Biaya member</div>
             <p className="font-semibold">
               <span className="font-semibold">IDR</span>{" "}
-              {parseInt(location.state.tariff - 5000).toLocaleString("id-ID")}
+              {parseInt(location.state.tariff).toLocaleString("id-ID")}
             </p>
           </div>
 
@@ -195,7 +200,9 @@ function PaymentMember() {
 
           <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
             <div className="text-base text-gray-400">Tanggal</div>
-            <p className="font-semibold">{format(new Date(), "dd MMMM Y")}</p>
+            <p className="font-semibold">
+              {format(new Date(), "dd MMMM YYYY")}
+            </p>
           </div>
 
           <div className="flex flex-col justify-center items-center space-y-1">

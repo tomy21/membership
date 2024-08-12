@@ -7,11 +7,14 @@ import { apiBayarindTopUp, apiBayarindVa } from "../../../api/apiBayarind";
 import Loading from "../components/Loading";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ErrorModal from "./ErrorModal";
 
 function PinInput() {
   const [pin, setPin] = useState(Array(6).fill(""));
   const [idUser, setIdUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const inputRefs = useRef([]);
   const location = useLocation();
@@ -28,6 +31,7 @@ function PinInput() {
         const dataForm = {
           providerId: location.state?.providerId ?? "",
           productId: location.state?.productId ?? "",
+          periodId: location.state?.periodId ?? "",
           plateNumber: location.state?.data?.location?.state?.platNomor ?? "",
           expiredByMinute: 30,
           amount: Math.floor(
@@ -44,6 +48,7 @@ function PinInput() {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
+              periodId: location.state.periodId,
               bankProvider: location.state.providerName,
               expairedDate:
                 responseBayarind.data.virtualAccountData.expiredDate,
@@ -56,6 +61,10 @@ function PinInput() {
             };
 
             navigate("/payment_process", { state: data });
+          } else if (responseBayarind.data.responseCode === "400") {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModal(true);
           }
         } else if (location.state.type === "topup") {
           const dataFormTopUp = {
@@ -83,6 +92,10 @@ function PinInput() {
             };
 
             navigate("/payment_process", { state: data });
+          } else if (responseBayarind.data.responseCode === "400") {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModal(true);
           }
         }
       } else {
@@ -160,6 +173,10 @@ function PinInput() {
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -167,6 +184,11 @@ function PinInput() {
   return (
     <div className="flex flex-col items-center justify-center">
       <ToastContainer />
+      <ErrorModal
+        showModal={showModal}
+        handleClose={handleCloseModal}
+        message={errorMessage}
+      />
       <div className="text-center mb-4 text-lg font-semibold mt-5">
         Masukkan 6 digit PIN Kamu
       </div>
@@ -185,6 +207,7 @@ function PinInput() {
               ref={(el) => (inputRefs.current[index] = el)}
               value={pin[index]}
               inputMode="numeric"
+              autoComplete="input-pin"
             />
           ))}
       </div>
