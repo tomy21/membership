@@ -56,7 +56,6 @@ export default function Dashboard() {
   const openModal = (product) => {
     setSelectedProduct(product);
     setIsOpen(true);
-    console.log("iniopen", product);
   };
 
   const closeModal = () => {
@@ -77,9 +76,9 @@ export default function Dashboard() {
   const formatPoints = (value) => {
     const num = parseFloat(value);
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "m";
+      return (num / 1000000).toFixed(1) + " jt";
     } else if (num >= 1000) {
-      return (num / 1000).toFixed(0) + "k";
+      return (num / 1000).toFixed(0) + " k";
     } else {
       return num.toFixed(0);
     }
@@ -179,7 +178,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-xl font-normal">
                   {formatPoints(balance)}
-                  <span className="text-sm">Points</span>
+                  <span className="text-sm"> Points</span>
                 </p>
               </div>
             </div>
@@ -269,7 +268,7 @@ export default function Dashboard() {
                           </p>
                           <p
                             className={`text-xs font-semibold ${
-                              items.Status === "Paid"
+                              items.Status === "Success"
                                 ? "text-green-600"
                                 : items.Status === "Pending"
                                 ? "text-yellow-600"
@@ -278,7 +277,7 @@ export default function Dashboard() {
                                 : "-"
                             }`}
                           >
-                            {items.Status === "Paid"
+                            {items.Status === "Success"
                               ? items.Status.toUpperCase()
                               : items.Status === "Pending"
                               ? items.Status.toUpperCase()
