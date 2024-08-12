@@ -118,6 +118,30 @@ export default function Register() {
     }
   }, [isModalOpen, navigate]);
 
+  const getProgressBarColor = () => {
+    switch (passwordStrength) {
+      case "Strong":
+        return "bg-green-500";
+      case "Medium":
+        return "bg-yellow-500";
+      case "Weak":
+      default:
+        return "bg-red-500";
+    }
+  };
+
+  const getProgressBarWidth = () => {
+    switch (passwordStrength) {
+      case "Strong":
+        return "w-full";
+      case "Medium":
+        return "w-2/3";
+      case "Weak":
+      default:
+        return "w-1/3";
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -154,7 +178,7 @@ export default function Register() {
               />
 
               <input
-                type="email"
+                type="text"
                 className={`w-full py-2 px-3 border ${
                   formErrors.email ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
@@ -173,17 +197,12 @@ export default function Register() {
                 value={formData.password}
                 onChange={handleChange}
               />
-              <span
-                className={`text-xs ${
-                  passwordStrength === "Strong"
-                    ? "text-green-500"
-                    : passwordStrength === "Medium"
-                    ? "text-yellow-500"
-                    : "text-red-500"
-                }`}
-              >
-                Password strength: {passwordStrength}
-              </span>
+              <div className="w-full bg-gray-200 h-2 rounded mt-2">
+                <div
+                  className={`h-2 rounded ${getProgressBarColor()} ${getProgressBarWidth()}`}
+                ></div>
+              </div>
+
               <input
                 type="password"
                 className={`w-full py-2 px-3 border ${
