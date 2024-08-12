@@ -1,7 +1,7 @@
 import React from "react";
 import TransactionTable from "./Table/TransactionTable";
 
-export default function Transaction() {
+export default function TransactionTenants() {
   return (
     <>
       <div className="text-lg mb-5">Transaction</div>

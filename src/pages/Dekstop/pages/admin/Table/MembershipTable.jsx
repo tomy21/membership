@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { format } from "date-fns";
 import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
 import { BsPenFill, BsTrashFill } from "react-icons/bs";
-import { getProductBundleAll } from "../../../../../api/apiProduct.js";
-import { format } from "date-fns";
-import AddModal from "./modal/add.jsx";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { getAllMembers } from "../../../../../api/apiUsers";
 
-export default function ProductTable() {
+export default function MembershipTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dataProduct, setDataProduct] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,12 +35,11 @@ export default function ProductTable() {
 
   const fetchData = useCallback(
     async (page = currentPage, limit = itemsPerPage) => {
-      const response = await getProductBundleAll.getAll(page, limit);
-      console.log(response);
-      setDataProduct(response.data.bundles);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(response.data.currentPage);
-      setTotalItems(response.data.total); // Set totalItems from response
+      const response = await getAllMembers.getData(page, limit);
+      setDataProduct(response.data);
+      setTotalPages(response.totalPages);
+      setCurrentPage(response.currentPage);
+      setTotalItems(response.total);
     },
     [itemsPerPage, currentPage]
   );
@@ -53,12 +51,11 @@ export default function ProductTable() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  console.log(currentPage);
+
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page when changing items per page
   };
-
   return (
     <>
       <ToastContainer />
@@ -108,16 +105,13 @@ export default function ProductTable() {
                   <input type="checkbox" name="" id="" />
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Product Name
+                  Name
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Period Member
+                  Contact
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Type Vehicle
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Price
+                  Points
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Status
@@ -137,20 +131,25 @@ export default function ProductTable() {
                     <div className="flex items-center">
                       <div className="">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {item.name}
+                          {item.UserName}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {format(new Date(item.startDate), "dd MMM yyyy")} s.d{" "}
-                    {format(new Date(item.endDate), "dd MMM yyyy")}
+                    <div className="flex flex-col justify-start items-start">
+                      <p className="text-gray-900 whitespace-no-wrap">
+                        {item.Email}
+                      </p>
+                      <p className="text-gray-900 whitespace-no-wrap">
+                        {item.PhoneNumber}
+                      </p>
+                    </div>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.Type}
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    IDR {parseInt(item.price).toLocaleString("id-ID")}
+                    {item.MemberUserDetails && item.MemberUserDetails.length > 0
+                      ? item.MemberUserDetails[0].Points
+                      : "N/A"}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     {item.isDeleted === false && (
@@ -162,7 +161,7 @@ export default function ProductTable() {
                       <span className="text-red-500 font-bold">Un Active</span>
                     )}
                   </td>
-                  <td className="py-3 px-2 border-b border-gray-200 bg-white text-xs text-center">
+                  <td className="py-3 border-b border-gray-200 bg-white text-xs text-center">
                     <div className="flex flex-row justify-center items-center gap-x-3">
                       <BsTrashFill className="text-red-500 text-sm cursor-pointer" />
                       <div className="border-l border-slate-400 h-4"></div>
@@ -180,9 +179,7 @@ export default function ProductTable() {
           </div>
           <div className="flex items-center">
             <div className="flex flex-row justify-center items-center gap-x-3 mr-3">
-              <span className="ml-2 text-sm text-slate-400">
-                Lines per page
-              </span>
+              <span className="ml-2 text-sm text-slate-400">Per page</span>
               <select
                 value={itemsPerPage}
                 onChange={handleItemsPerPageChange}
@@ -224,13 +221,13 @@ export default function ProductTable() {
           </div>
         </div>
       </div>
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <AddModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onSuccess={handleSuccess}
         />
-      )}
+      )} */}
     </>
   );
 }

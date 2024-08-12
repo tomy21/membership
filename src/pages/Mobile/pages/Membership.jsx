@@ -6,6 +6,7 @@ import { HiPhoto } from "react-icons/hi2";
 import Cookies from "js-cookie";
 import { apiLocations } from "../../../api/apiLocations";
 import {
+  getBundleByType,
   getProductById,
   getProductByLocation,
   verifikasiPlate,
@@ -68,7 +69,10 @@ export default function Membership() {
   useEffect(() => {
     const fetchMemberById = async () => {
       if (selectedVehicleType) {
+        const vehicleName = selectedVehicleType === 1 ? "Mobil" : "Motor";
         const response = await getProductById.getById(selectedVehicleType);
+        const responseBundle = await getBundleByType.getByType(vehicleName);
+        console.log(responseBundle);
         setProductId(response.data.product.Id);
         setSelectedLocationName(response.data.product.LocationName);
         setTariff(response.data.product.Price);
@@ -187,6 +191,34 @@ export default function Membership() {
               list={vehicleTypes}
               title={"Pilih Type Kendaraan"}
               search={"Cari Type Kendaraan"}
+              selected={selectedVehicleType}
+              setSelected={setSelectedVehicleType}
+            />
+            {errors.selectedVehicleType && (
+              <p className="text-red-500">{errors.selectedVehicleType}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
+            <label className="text-gray-400">Product Member</label>
+            <ListComponent
+              list={vehicleTypes}
+              title={"Pilih Paket Member"}
+              search={"Cari Paket Member"}
+              selected={selectedVehicleType}
+              setSelected={setSelectedVehicleType}
+            />
+            {errors.selectedVehicleType && (
+              <p className="text-red-500">{errors.selectedVehicleType}</p>
+            )}
+          </div>
+
+          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
+            <label className="text-gray-400">Month</label>
+            <ListComponent
+              list={vehicleTypes}
+              title={"Pilih Bulan"}
+              search={"Cari Bulan"}
               selected={selectedVehicleType}
               setSelected={setSelectedVehicleType}
             />

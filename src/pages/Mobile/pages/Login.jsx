@@ -27,10 +27,11 @@ export default function Login() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -48,27 +49,28 @@ export default function Login() {
   }, []);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form from refreshing the page
+    e.preventDefault();
 
     if (validateForm()) {
       setLoading(true);
       try {
         const response = await loginUsers.login(formData);
-        console.log("response", response);
         setFormErrors({});
         setFormData({
           identifier: "",
           password: "",
+          rememberMe: false,
         });
 
         const token = response.token;
         Cookies.set("refreshToken", token);
 
-        // Add a delay before navigating to the dashboard
+        console.log("response", response);
+        console.log("response", token);
         setTimeout(() => {
           navigate("/dashboard");
           toast.success("Login successful!");
-        }, 500); // 500 milliseconds delay
+        }, 500);
 
         setLoading(false);
       } catch (error) {
@@ -110,10 +112,11 @@ export default function Login() {
               <input
                 type="text"
                 className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
-                placeholder="No handphone, email atau username"
+                placeholder="Email atau username"
                 name="identifier"
                 value={formData.identifier}
                 onChange={handleChange}
+                autoComplete="username"
               />
               {formErrors.identifier && (
                 <p className="text-red-500 text-xs">{formErrors.identifier}</p>
@@ -125,6 +128,7 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                autoComplete="current-password"
               />
               {formErrors.password && (
                 <p className="text-red-500 text-xs">{formErrors.password}</p>
@@ -156,7 +160,13 @@ export default function Login() {
 
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-row space-x-2 justify-center items-center">
-                  <input type="checkbox" name="remember" id="" />
+                  <input
+                    type="checkbox"
+                    name="rememberMe"
+                    id="rememberMe"
+                    value={formData.rememberMe}
+                    onChange={handleChange}
+                  />
                   <p className="text-xs">Ingat saya</p>
                 </div>
                 <p className="text-cyan-600 font-semibold text-xs">

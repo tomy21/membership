@@ -63,12 +63,12 @@ function PinInput() {
             amount: dataForm.amount,
             expiredByMinute: dataForm.expiredByMinute,
           };
-          console.log(dataFormTopUp);
 
           const responseBayarind = await apiBayarindTopUp.createVaTopup(
             dataFormTopUp
           );
 
+          console.log(responseBayarind);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               bankProvider: location.state.providerName,

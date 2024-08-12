@@ -30,9 +30,13 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Menghapus semua spasi dari input
+    const sanitizedValue = value.replace(/\s+/g, "");
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: sanitizedValue,
     }));
   };
 

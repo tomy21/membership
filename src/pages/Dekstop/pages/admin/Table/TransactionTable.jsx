@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
-import { BsPenFill, BsTrashFill } from "react-icons/bs";
-import { getProductBundleAll } from "../../../../../api/apiProduct.js";
-import { format } from "date-fns";
-import AddModal from "./modal/add.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getAllTenants } from "../../../../../api/apiTenant";
+import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
+import { format } from "date-fns";
+import { BsPenFill, BsTrashFill } from "react-icons/bs";
+import { getMemberPayments } from "../../../../../api/apiTrxPayment";
 
-export default function ProductTable() {
+export default function TransactionTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dataProduct, setDataProduct] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,12 +36,12 @@ export default function ProductTable() {
 
   const fetchData = useCallback(
     async (page = currentPage, limit = itemsPerPage) => {
-      const response = await getProductBundleAll.getAll(page, limit);
+      const response = await getMemberPayments.getPayment(page, limit);
       console.log(response);
-      setDataProduct(response.data.bundles);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(response.data.currentPage);
-      setTotalItems(response.data.total); // Set totalItems from response
+      setDataProduct(response.data);
+      setTotalPages(response.totalPages);
+      setCurrentPage(response.currentPage);
+      setTotalItems(response.total);
     },
     [itemsPerPage, currentPage]
   );
@@ -53,12 +53,11 @@ export default function ProductTable() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  console.log(currentPage);
+
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page when changing items per page
   };
-
   return (
     <>
       <ToastContainer />
@@ -68,7 +67,7 @@ export default function ProductTable() {
             <input
               type="text"
               className="w-full py-2 pr-10 pl-4 text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 text-sm"
-              placeholder="Search product"
+              placeholder="Search tenant"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -91,7 +90,7 @@ export default function ProductTable() {
               className="px-3 py-2 rounded-lg text-blue-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-blue-100"
               onClick={handleOpenModal}
             >
-              <p>Add Product</p>
+              <p>Add Tenant</p>
               <MdOutlineAddCircle />
             </button>
             <button className="px-3 py-2 rounded-lg text-green-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
@@ -105,24 +104,24 @@ export default function ProductTable() {
             <thead>
               <tr>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  <input type="checkbox" name="" id="" />
+                  No
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Product Name
+                  Transaction Id
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Period Member
+                  Issuer Name
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Type Vehicle
+                  Amount
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Price
+                  Type Payment
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   #
                 </th>
               </tr>
@@ -131,38 +130,38 @@ export default function ProductTable() {
               {dataProduct.map((item, index) => (
                 <tr key={item.id} className="text-start">
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <input type="checkbox" name="" id="" />
+                    {index + 1}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     <div className="flex items-center">
                       <div className="">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {item.name}
+                          {item.TrxId}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {format(new Date(item.startDate), "dd MMM yyyy")} s.d{" "}
-                    {format(new Date(item.endDate), "dd MMM yyyy")}
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {item.Email}
+                    </p>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.Type}
+                    {item.Address}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    IDR {parseInt(item.price).toLocaleString("id-ID")}
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.isDeleted === false && (
-                      <button className="text-green-400 hover:bg-green-200 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2">
+                    {item.Status === "active" && (
+                      <button className="text-green-400 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2">
                         Active
                       </button>
                     )}
-                    {item.isDeleted === true && (
-                      <span className="text-red-500 font-bold">Un Active</span>
+                    {item.Status === "not active" && (
+                      <span className="text-red-400 border border-red-500 font-bold py-1 px-3 rounded-xl mr-2">
+                        Inactive
+                      </span>
                     )}
                   </td>
-                  <td className="py-3 px-2 border-b border-gray-200 bg-white text-xs text-center">
+                  <td className="py-3 border-b border-gray-200 bg-white text-xs text-center">
                     <div className="flex flex-row justify-center items-center gap-x-3">
                       <BsTrashFill className="text-red-500 text-sm cursor-pointer" />
                       <div className="border-l border-slate-400 h-4"></div>
@@ -224,13 +223,13 @@ export default function ProductTable() {
           </div>
         </div>
       </div>
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <AddModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onSuccess={handleSuccess}
         />
-      )}
+      )} */}
     </>
   );
 }

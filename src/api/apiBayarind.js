@@ -57,7 +57,6 @@ export const apiBayarindTopUp = {
         expiredByMinute: data.expiredByMinute,
         amount: data.amount.toString(),
       };
-      console.log(dataSubmit);
       const response = await apiSkyBayarind.post(
         "/api/v1.0/transfer-va/topup",
         dataSubmit,

@@ -82,3 +82,21 @@ export const historyMembers = {
     }
   },
 };
+
+// get All UsersMember
+export const getAllMembers = {
+  getData: async (page, limit) => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/auth/user`, {
+        params: {
+          page,
+          limit,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

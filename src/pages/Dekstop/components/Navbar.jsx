@@ -25,7 +25,7 @@ function Navbar() {
           </div>
           <div className="flex flex-col justify-end items-end">
             <h1 className="text-xs font-semibold">Tomy Agung</h1>
-            <p className="text-xs font-light">Universitas </p>
+            <p className="text-xs font-light">Universitas Pelita Harapan</p>
           </div>
         </nav>
       </header>

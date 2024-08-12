@@ -180,6 +180,20 @@ export const getProductBundleAll = {
     }
   },
 };
+
+export const getBundleByType = {
+  getByType: async (typeVehicle) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/products/type/${typeVehicle}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
 export const addProductBundleAll = {
   storeProduct: async (formProduct) => {
     try {

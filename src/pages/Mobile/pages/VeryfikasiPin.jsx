@@ -1,5 +1,4 @@
 import React from "react";
-import NavbarMobile from "../components/NavbarMobile";
 import PinInput from "../components/PinInput";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +12,6 @@ export default function VeryfikasiPin() {
   return (
     <>
       <div className="min-h-screen bg-white flex flex-col items-center">
-        <NavbarMobile />
         <div className="w-full max-w-md px-4">
           <PinInput />
 
