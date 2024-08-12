@@ -35,8 +35,6 @@ export default function Topup() {
     }
   }, [selectedType, providers]);
 
-  console.log(selectedType);
-
   useEffect(() => {
     const fetchProvider = async () => {
       const response = await getProviderById.getById(1);

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import NavbarMobile from "../components/NavbarMobile";
 import { endOfMonth, format } from "date-fns";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
-import { getAllProvider, getProviderById } from "../../../api/apiProvider";
-import { Listbox } from "@headlessui/react";
+import { getProviderById } from "../../../api/apiProvider";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
 import { FaArrowLeftLong } from "react-icons/fa6";
@@ -61,7 +58,7 @@ function PaymentMember() {
       end: format(end, "dd MMM yyyy"),
     };
   };
-  console.log(location);
+
   const verifikasi = () => {
     setIsModalVisible(false);
     navigate("/verifikasi", {

@@ -60,7 +60,6 @@ function Riwayat() {
         showMore ? [...prevData, ...response.data] : response.data
       );
 
-      console.log("response riwayat", response.data);
       setTotalPages(response.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);

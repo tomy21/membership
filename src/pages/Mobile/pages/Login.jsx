@@ -64,9 +64,6 @@ export default function Login() {
 
         const token = response.token;
         Cookies.set("refreshToken", token);
-
-        console.log("response", response);
-        console.log("response", token);
         setTimeout(() => {
           navigate("/dashboard");
           toast.success("Login successful!");

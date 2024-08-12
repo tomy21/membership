@@ -39,7 +39,6 @@ export const apiBayarindVa = {
           },
         }
       );
-      console.log("apiBayarind", response);
       return response;
     } catch (error) {
       throw error.response;
@@ -51,8 +50,6 @@ export const apiBayarindTopUp = {
   createVaTopup: async (data) => {
     try {
       const token = getToken();
-      // const decodedToken = jwtDecode(token);
-      console.log(data);
       const dataSubmit = {
         providerId: data.providerId,
         expiredByMinute: data.expiredByMinute,
@@ -68,7 +65,6 @@ export const apiBayarindTopUp = {
           },
         }
       );
-      console.log("apiBayarind", response);
       return response;
     } catch (error) {
       if (error.response) {

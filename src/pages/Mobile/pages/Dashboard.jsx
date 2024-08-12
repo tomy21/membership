@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  MdArrowDropDown,
-  MdArrowDropUp,
-  MdOutlineAccountBalanceWallet,
-} from "react-icons/md";
+import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 
 import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";

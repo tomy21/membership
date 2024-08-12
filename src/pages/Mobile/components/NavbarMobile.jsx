@@ -36,13 +36,11 @@ export default function NavbarMobile() {
   useEffect(() => {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
-      console.log(document.cookie);
       if (!token) {
         navigate("/");
       }
       if (token) {
         const decodedToken = jwtDecode(token);
-        console.log(decodedToken);
         setIdUser(decodedToken.Id);
       }
     };

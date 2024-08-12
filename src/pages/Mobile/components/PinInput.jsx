@@ -42,7 +42,6 @@ function PinInput() {
             ? location.state.data.location.state.file
             : [],
         };
-        console.log("TopUp", location.state.type);
 
         if (location.state.type === "member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
@@ -77,7 +76,6 @@ function PinInput() {
             dataFormTopUp
           );
 
-          console.log(responseBayarind);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               bankProvider: location.state.providerName,
@@ -102,7 +100,6 @@ function PinInput() {
         toast.error("Silahkan coba kembali");
       }
     } catch (err) {
-      console.error("Error verifying PIN:", err);
       toast.error("Terjadi kesalahan, silahkan coba lagi");
     } finally {
       setLoading(false);

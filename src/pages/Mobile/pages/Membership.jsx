@@ -122,19 +122,7 @@ export default function Membership() {
       setErrors(newErrors);
     } else {
       setErrors({});
-      const state = [
-        {
-          periodId: selectBundleProduct,
-          productId: productId,
-          location: selectedLocationName,
-          vehicleType: selectedVehicleType,
-          tariff: tariff,
-          platNomor: platNomor,
-          file: file,
-        },
-      ];
 
-      console.log(state);
       navigate("/payment_member", {
         state: {
           type: "Member",

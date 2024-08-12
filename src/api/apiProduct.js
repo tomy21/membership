@@ -128,7 +128,6 @@ export const verifikasiPlate = {
       const response = await apiClient.get(
         `/v01/member/api/userProduct/verifikasi?platNo=${platNo}`
       );
-      console.log("response Plate", response);
       return response.data;
     } catch (error) {
       throw error.response.data;

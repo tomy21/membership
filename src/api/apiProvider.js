@@ -22,7 +22,6 @@ export const getProviderById = {
           },
         }
       );
-      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

@@ -1,12 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "react-modal";
-// import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
 
 function PinVerificationModal({ isOpen, onClose, success, data, onContinue }) {
-  // const navigate = useNavigate();
-
   return (
     <Modal
       isOpen={isOpen}

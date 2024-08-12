@@ -58,8 +58,7 @@ export default function Register() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await apiUsers.register(formData);
-        console.log("response", response);
+        await apiUsers.register(formData);
         setFormErrors({});
         setIsModalOpen(true);
         setFormData({

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import NavbarMobile from "../components/NavbarMobile";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
