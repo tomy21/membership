@@ -10,7 +10,7 @@ const getToken = () => {
 export const apiBayarindVa = {
   createVa: async (data) => {
     try {
-      const totalAmount = data.amount + 5000;
+      const totalAmount = data.amount;
       const formData = new FormData();
       formData.append("providerId", data.providerId);
       formData.append("productId", data.productId);
@@ -25,9 +25,6 @@ export const apiBayarindVa = {
       });
 
       const token = getToken();
-      const decodedToken = jwtDecode(token);
-      console.log(decodedToken);
-      console.log("apiBayarind", formData);
 
       const response = await apiSkyBayarind.post(
         "/api/v1.0/transfer-va/create-va",
