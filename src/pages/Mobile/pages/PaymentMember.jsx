@@ -35,7 +35,6 @@ function PaymentMember() {
       alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
-  console.log(selectedProvider);
   useEffect(() => {
     const fetchProvider = async () => {
       const response = await getProviderById.getById(0);

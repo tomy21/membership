@@ -31,6 +31,7 @@ export default function Membership() {
   const [errors, setErrors] = useState({});
   const [productBundle, setProductBundle] = useState("");
   const [selectBundleProduct, setSelectBundleProduct] = useState("");
+  const [periodeId, setPeriodId] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function Membership() {
         const vehicleName = selectedVehicleType === 1 ? "Mobil" : "Motor";
         const response = await getProductById.getById(selectedVehicleType);
         const responseBundle = await getBundleByType.getByType(vehicleName);
+
         setProductBundle(responseBundle.data);
         setProductId(response.data.product.Id);
         setSelectedLocationName(response.data.product.LocationName);
@@ -97,12 +99,9 @@ export default function Membership() {
           const responseBundle = await getBundleById.getById(
             selectBundleProduct
           );
+          setPeriodId(responseBundle.data.TrxMemberQuote[0].Id);
+          setCurrentQuota(responseBundle.data.TrxMemberQuote[0].CurrentQuota);
           setTariff(responseBundle.data.Price);
-        }
-
-        if (productId) {
-          const responseQuota = await getQuota.getById(productId);
-          setCurrentQuota(responseQuota.data.CurrentQuota);
         }
       }
     };
@@ -126,7 +125,7 @@ export default function Membership() {
       navigate("/payment_member", {
         state: {
           type: "Member",
-          periodId: selectBundleProduct,
+          periodId: periodeId,
           productId: productId,
           location: selectedLocationName,
           vehicleType: selectedVehicleType,
@@ -137,6 +136,44 @@ export default function Membership() {
       });
     }
   };
+
+  const handleFileUpload = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  useEffect(() => {
+    if (file) {
+      const fetchPlateNumber = async () => {
+        const formData = new FormData();
+        formData.append("upload", file);
+        formData.append("regions", "us-ca"); // Sesuaikan dengan negara kamu
+        const apiToken = process.env.REACT_APP_API_TOKEN;
+        try {
+          const response = await fetch(
+            "https://api.platerecognizer.com/v1/plate-reader/",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Token ${apiToken}`,
+              },
+              body: formData,
+            }
+          );
+
+          const result = await response.json();
+          if (result.results && result.results.length > 0) {
+            setPlatNomor(result.results[0].plate.toUpperCase());
+          } else {
+            console.log("Plate number not detected");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
+      fetchPlateNumber();
+    }
+  }, [file]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -160,7 +197,6 @@ export default function Membership() {
   const handleVerification = async () => {
     try {
       const response = await verifikasiPlate.verifikasi(platNomor);
-      console.log("FE", response);
       if (response && response.message === "Plat nomor sudah terdaftar") {
         setMessage(response.message);
       }
@@ -284,15 +320,26 @@ export default function Membership() {
             {errors.platNomor && (
               <p className="text-red-500">{errors.platNomor}</p>
             )}
-            <input
-              type="text"
-              name="platnomor"
-              id="platnomor"
-              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="ex : B123ABC"
-              value={platNomor}
-              onChange={handleChange}
-            />
+            <div>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                className="block w-full mt-3 py-3 pl-5 pr-20 text-gray-900 border border-slate-300 rounded-md"
+                onChange={handleFileUpload}
+                accept=".jpg, .png, .jpeg"
+              />
+              <input
+                type="text"
+                name="platnomor"
+                id="platnomor"
+                className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                placeholder="ex : B123ABC"
+                value={platNomor}
+                onChange={handleChange}
+                disabled
+              />
+            </div>
           </div>
 
           <div className="col-span-full px-3 w-full">

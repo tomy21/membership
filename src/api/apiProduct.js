@@ -94,16 +94,14 @@ export const getMemberByUserId = {
   getByUserId: async (idUser, page, limit) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/userProduct/byUser`,
+        `/v01/member/api/userProduct/byUser?userId=${idUser}`,
         {
           params: {
-            userId: idUser,
             page,
             limit,
           },
         }
       );
-      // console.log("dataDiapi", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
