@@ -64,6 +64,10 @@ function PinInput() {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
             setShowModal(true);
+          } else {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModal(true);
           }
         } else if (location.state.type === "topup") {
           const dataFormTopUp = {
