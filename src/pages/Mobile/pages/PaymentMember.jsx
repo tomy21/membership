@@ -198,7 +198,7 @@ function PaymentMember() {
           <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
             <div className="text-base text-gray-400">Tanggal</div>
             <p className="font-semibold">
-              {format(new Date(), "dd MMMM YYYY")}
+              {format(new Date(), "dd MMMM yyyy")}
             </p>
           </div>
 
