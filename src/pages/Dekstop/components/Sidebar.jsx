@@ -26,11 +26,11 @@ const Sidebar = () => {
     <div className="fixed top-0 left-0 h-full w-60 bg-white text-black">
       <div className="flex flex-col space-x-3 items-center justify-center h-20 px-4 py-4 border-b border-gray-300">
         <img src={"/logo.png"} className="w-12" alt="" />
-        {/* <h1 className="text-lg">Membership</h1> */}
+        <h1 className="text-lg">Membership</h1>
       </div>
       <nav className="px-4 py-4 overflow-auto text-sm max-h-[85vh]">
         <ul>
-          {/* <h1 className="text-start mb-2">Main</h1>
+          <h1 className="text-start mb-2">Main</h1>
           <li className="mb-1">
             <Link
               to="/dashboard"
@@ -51,7 +51,7 @@ const Sidebar = () => {
             >
               <MdAssignment className="mr-2" /> Reports
             </Link>
-          </li> */}
+          </li>
 
           <h1 className="mb-2 text-start">Tenants</h1>
           <li className="mb-1">
@@ -103,7 +103,7 @@ const Sidebar = () => {
             </Link>
           </li>
 
-          {/* <h1 className="mb-2 text-start">Manage</h1>
+          <h1 className="mb-2 text-start">Manage</h1>
           <li className="mb-1">
             <Link
               to="/dashboard/transaction"
@@ -145,7 +145,7 @@ const Sidebar = () => {
             >
               <MdOutlineGroups className="mr-2" /> Membership
             </Link>
-          </li> */}
+          </li>
 
           <h1 className="mb-2 text-start">User Management</h1>
           <li className="mb-1">

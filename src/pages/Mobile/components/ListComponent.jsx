@@ -9,7 +9,7 @@ import { HiChevronUpDown } from "react-icons/hi2";
 
 function ListComponent({ list, title, search, selected, setSelected }) {
   const [query, setQuery] = useState("");
-
+  console.log(list);
   const filteredPeople = list.filter((person) =>
     person.Name.toLowerCase().includes(query.toLowerCase())
   );

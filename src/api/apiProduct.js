@@ -15,9 +15,15 @@ export const storeProduct = {
 };
 
 export const getProductAll = {
-  getAll: async () => {
+  getAll: async (page, limit) => {
     try {
-      const response = await apiClient.get("/v01/member/api/product");
+      const response = await apiClient.get("/v01/member/api/product", {
+        params: {
+          page,
+          limit,
+        },
+      });
+      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

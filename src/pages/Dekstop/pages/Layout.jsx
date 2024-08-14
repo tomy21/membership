@@ -8,7 +8,7 @@ export default function Layout() {
     <>
       <div className="flex h-screen bg-white">
         <Sidebar />
-        <div className="flex flex-col flex-1 p-4 ml-60 w-full max-h-screen overflow-auto justify-start items-start">
+        <div className="flex flex-col flex-1 p-4 ml-60 w-full max-h-screen overflow-auto justify-start items-start bg-gray-100">
           <Navbar />
           <Outlet />
         </div>

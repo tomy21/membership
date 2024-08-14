@@ -10,9 +10,14 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const apiLocations = {
-  getLocation: async () => {
+  getLocation: async (page, limit) => {
     try {
-      const response = await apiClient.get("/api/getAllLocation");
+      const response = await apiClient.get("/api/getByLocationAll", {
+        params: {
+          page,
+          limit,
+        },
+      });
       return response.data;
     } catch (error) {
       throw error.response.data;

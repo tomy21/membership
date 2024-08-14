@@ -40,7 +40,7 @@ export default function Membership() {
       if (token) {
         try {
           const response = await apiLocations.getLocation();
-          setLocation(response);
+          setLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch location data:", error);
         }
@@ -50,6 +50,7 @@ export default function Membership() {
     fetchLocation();
   }, []);
 
+  console.log(selectedVehicleType);
   useEffect(() => {
     const fetchProduct = async () => {
       if (selectedLocation) {
@@ -70,6 +71,7 @@ export default function Membership() {
       })) || []
     ),
   ];
+  // console.log(productBundle);
   const bundleName = [
     ...new Set(
       productBundle &&
@@ -83,6 +85,7 @@ export default function Membership() {
     ),
   ].map((item) => JSON.parse(item));
 
+  console.log(selectBundleProduct);
   useEffect(() => {
     const fetchMemberById = async () => {
       if (selectedVehicleType) {
@@ -99,8 +102,9 @@ export default function Membership() {
           const responseBundle = await getBundleById.getById(
             selectBundleProduct
           );
-          setPeriodId(responseBundle.data.TrxMemberQuote[0].Id);
-          setCurrentQuota(responseBundle.data.TrxMemberQuote[0].CurrentQuota);
+          console.log("responseBundle", responseBundle);
+          setPeriodId(responseBundle.data.TrxMemberQuote[0]?.id);
+          setCurrentQuota(responseBundle.data.TrxMemberQuote[0]?.CurrentQuota);
           setTariff(responseBundle.data.Price);
         }
       }

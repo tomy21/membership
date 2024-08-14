@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
 import { BsPenFill, BsTrashFill } from "react-icons/bs";
-import { getProductBundleAll } from "../../../../../api/apiProduct.js";
+import {
+  getProductAll,
+  getProductBundleAll,
+} from "../../../../../api/apiProduct.js";
 import { format } from "date-fns";
 import AddModal from "./modal/add.jsx";
 import { ToastContainer, toast } from "react-toastify";
@@ -36,12 +39,12 @@ export default function ProductTable() {
 
   const fetchData = useCallback(
     async (page = currentPage, limit = itemsPerPage) => {
-      const response = await getProductBundleAll.getAll(page, limit);
-      console.log(response);
-      setDataProduct(response.data.bundles);
+      const response = await getProductAll.getAll(page, limit);
+      console.log("data Response", response);
+      setDataProduct(response.data.products);
       setTotalPages(response.data.totalPages);
       setCurrentPage(response.data.currentPage);
-      setTotalItems(response.data.total); // Set totalItems from response
+      setTotalItems(response.data.total);
     },
     [itemsPerPage, currentPage]
   );
@@ -105,19 +108,16 @@ export default function ProductTable() {
             <thead>
               <tr>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  <input type="checkbox" name="" id="" />
+                  No
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Product Name
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Period Member
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Type Vehicle
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Price
+                  Location
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                   Status
@@ -131,34 +131,30 @@ export default function ProductTable() {
               {dataProduct.map((item, index) => (
                 <tr key={item.id} className="text-start">
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <input type="checkbox" name="" id="" />
+                    {index + 1}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     <div className="flex items-center">
                       <div className="">
                         <p className="text-gray-900 whitespace-no-wrap">
-                          {item.name}
+                          {item.ProductName}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {format(new Date(item.startDate), "dd MMM yyyy")} s.d{" "}
-                    {format(new Date(item.endDate), "dd MMM yyyy")}
+                    {item.VehicleType}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.Type}
+                    {item.LocationName}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    IDR {parseInt(item.price).toLocaleString("id-ID")}
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.isDeleted === false && (
+                    {item.IsActive === 1 && (
                       <button className="text-green-400 hover:bg-green-200 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2">
                         Active
                       </button>
                     )}
-                    {item.isDeleted === true && (
+                    {item.IsActive === 0 && (
                       <span className="text-red-500 font-bold">Un Active</span>
                     )}
                   </td>
