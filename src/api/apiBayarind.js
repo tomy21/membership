@@ -14,7 +14,7 @@ export const apiBayarindVa = {
       const formData = new FormData();
       formData.append("providerId", data.providerId);
       formData.append("productId", data.productId);
-      formData.append("periodId", 20);
+      formData.append("periodId", data.periodId);
       formData.append("plateNumber", data.plateNumber);
       formData.append("expiredByMinute", data.expiredByMinute);
       formData.append("amount", totalAmount);

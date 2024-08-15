@@ -66,6 +66,7 @@ export default function NavbarMobile() {
     try {
       await logoutUsers.logout();
       // Assuming a successful logout, redirect to login page
+      Cookies.remove("refreshToken");
       navigate("/");
       setLoading(false);
     } catch (error) {

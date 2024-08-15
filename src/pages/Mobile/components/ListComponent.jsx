@@ -9,11 +9,12 @@ import { HiChevronUpDown } from "react-icons/hi2";
 
 function ListComponent({ list, title, search, selected, setSelected }) {
   const [query, setQuery] = useState("");
-  console.log(list);
   const filteredPeople = list.filter((person) =>
     person.Name.toLowerCase().includes(query.toLowerCase())
   );
 
+  console.log(filteredPeople);
+  console.log("typeId", selected);
   useEffect(() => {
     setSelected("");
   }, [setSelected]);
@@ -54,9 +55,9 @@ function ListComponent({ list, title, search, selected, setSelected }) {
             </div>
             <div className="max-h-40 overflow-auto">
               {filteredPeople.length > 0 ? (
-                filteredPeople.map((person) => (
+                filteredPeople.map((person, index) => (
                   <ListboxOption
-                    key={person.Id}
+                    key={index}
                     value={person}
                     className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white max-h-52 overflow-y-auto"
                   >
