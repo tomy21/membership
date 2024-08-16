@@ -42,7 +42,7 @@ function PinInput() {
             ? location.state.data.location.state.file
             : [],
         };
-
+        console.log(dataForm);
         if (location.state.type === "member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
           if (responseBayarind.data.responseCode === "2002700") {
@@ -58,7 +58,6 @@ function PinInput() {
               accountName:
                 responseBayarind.data.virtualAccountData.virtualAccountName,
             };
-
             navigate("/payment_process", { state: data });
           } else if (responseBayarind.data.responseCode === "400") {
             setErrorMessage(responseBayarind.data.responseMessage);

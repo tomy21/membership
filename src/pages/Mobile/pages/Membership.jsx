@@ -10,7 +10,6 @@ import {
   getBundleByType,
   getProductById,
   getProductByLocation,
-  getQuota,
   verifikasiPlate,
 } from "../../../api/apiProduct";
 
@@ -22,18 +21,18 @@ export default function Membership() {
   const [currentQuota, setCurrentQuota] = useState(0);
   const [dataLocation, setDataLocation] = useState([]);
   const [platNomor, setPlatNomor] = useState("");
-  const [selectedLocationName, setSelectedLocationName] = useState("");
   const [productId, setProductId] = useState(0);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
-  const [productBundle, setProductBundle] = useState("");
+  const [productBundle, setProductBundle] = useState([]);
   const [selectBundleProduct, setSelectBundleProduct] = useState("");
   const [periodeId, setPeriodId] = useState(0);
   const navigate = useNavigate();
 
+  // Fetch Locations
   useEffect(() => {
     const fetchLocation = async () => {
       const token = Cookies.get("refreshToken");
@@ -46,73 +45,76 @@ export default function Membership() {
         }
       }
     };
-
     fetchLocation();
   }, []);
 
-  console.log(selectedVehicleType);
+  // Fetch Product by Location
   useEffect(() => {
     const fetchProduct = async () => {
       if (selectedLocation) {
-        const response = await getProductByLocation.getByCode(selectedLocation);
-        setDataLocation(response.data);
+        try {
+          const response = await getProductByLocation.getByCode(
+            selectedLocation.Code
+          );
+          setDataLocation(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
       }
     };
-
     fetchProduct();
   }, [selectedLocation]);
 
+  // Vehicle Types List
   const vehicleTypes = [
     ...new Set(
       dataLocation.map((item) => ({
         Code: item.Id,
         Name: item.VehicleType,
-        Tariff: item.Price,
-      })) || []
+      }))
     ),
   ];
-  // console.log(productBundle);
-  const bundleName = [
-    ...new Set(
-      productBundle &&
-        productBundle.map((item) =>
-          JSON.stringify({
-            Code: item.id,
-            Name: item.Name,
-            Tariff: item.Price,
-          })
-        )
-    ),
-  ].map((item) => JSON.parse(item));
 
-  console.log(selectBundleProduct);
+  // Fetch Member by Vehicle Type
   useEffect(() => {
     const fetchMemberById = async () => {
-      if (selectedVehicleType) {
-        const vehicleName = selectedVehicleType === 1 ? "Mobil" : "Motor";
-        const response = await getProductById.getById(selectedVehicleType);
-        const responseBundle = await getBundleByType.getByType(vehicleName);
-
-        setProductBundle(responseBundle.data);
-        setProductId(response.data.product.Id);
-        setSelectedLocationName(response.data.product.LocationName);
-        setMaxQuota(response.data.product.MaxQuote);
-
-        if (selectBundleProduct) {
-          const responseBundle = await getBundleById.getById(
-            selectBundleProduct
+      if (selectedVehicleType.Code) {
+        try {
+          const response = await getProductById.getById(
+            selectedVehicleType.Code
           );
-          console.log("responseBundle", responseBundle);
-          setPeriodId(responseBundle.data.TrxMemberQuote[0]?.id);
-          setCurrentQuota(responseBundle.data.TrxMemberQuote[0]?.CurrentQuota);
-          setTariff(responseBundle.data.Price);
+          const responseBundle = await getBundleByType.getByType(
+            selectedVehicleType.Name
+          );
+
+          setProductBundle(responseBundle.data);
+          setProductId(response.data.product.Id);
+          setMaxQuota(response.data.product.MaxQuote);
+
+          if (selectBundleProduct) {
+            const responseBundle = await getBundleById.getById(
+              selectBundleProduct.Code
+            );
+            setPeriodId(selectBundleProduct.Code);
+            setCurrentQuota(responseBundle.data.TrxMemberQuote?.CurrentQuota);
+            setTariff(responseBundle.data.Price);
+          }
+        } catch (error) {
+          console.error("Failed to fetch member data:", error);
         }
       }
     };
-
     fetchMemberById();
-  }, [selectedVehicleType, productId, selectBundleProduct]);
+  }, [selectedVehicleType, selectBundleProduct]);
 
+  // Bundle Name List
+  const bundleName = productBundle.map((item) => ({
+    Code: item.id,
+    Name: item.Name,
+    Tariff: item.Price,
+  }));
+
+  // Handle Proceed to Next Step
   const handleProceed = () => {
     const newErrors = {};
     if (!selectedLocation) newErrors.selectedLocation = "Lokasi harus dipilih";
@@ -125,14 +127,13 @@ export default function Membership() {
       setErrors(newErrors);
     } else {
       setErrors({});
-
       navigate("/payment_member", {
         state: {
           type: "Member",
           periodId: periodeId,
           productId: productId,
-          location: selectedLocationName,
-          vehicleType: selectedVehicleType,
+          location: selectedLocation.Name,
+          vehicleType: selectedVehicleType.Name,
           tariff: tariff,
           platNomor: platNomor,
           file: file,
@@ -141,16 +142,27 @@ export default function Membership() {
     }
   };
 
+  // File Upload Handler
   const handleFileUpload = (e) => {
     setFile(e.target.files[0]);
   };
 
+  // File Change Handler with Preview
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setPreview(fileUrl);
+      setFile(file);
+    }
+  };
+
+  // Fetch Plate Number from Image
   useEffect(() => {
     if (file) {
       const fetchPlateNumber = async () => {
         const formData = new FormData();
         formData.append("upload", file);
-        formData.append("regions", "us-ca"); // Sesuaikan dengan negara kamu
         const apiToken = process.env.REACT_APP_API_TOKEN;
         try {
           const response = await fetch(
@@ -174,20 +186,11 @@ export default function Membership() {
           console.error("Error:", error);
         }
       };
-
       fetchPlateNumber();
     }
   }, [file]);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-      setPreview(fileUrl);
-      setFile(file);
-    }
-  };
-
+  // Handle Plate Number Verification
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (platNomor) {
@@ -197,26 +200,27 @@ export default function Membership() {
 
     return () => clearTimeout(delayDebounceFn);
   }, [platNomor]);
-
+  console.log(periodeId);
   const handleVerification = async () => {
     try {
       const response = await verifikasiPlate.verifikasi(platNomor);
-      if (response && response.message === "Plat nomor sudah terdaftar") {
-        setMessage(response.message);
-      }
-      if (response && response.message === "Plat nomor belum terdaftar") {
-        setMessage("");
-      }
+      setMessage(
+        response.message === "Plat nomor sudah terdaftar"
+          ? response.message
+          : ""
+      );
     } catch (error) {
       setMessage("Terjadi kesalahan. Silakan coba lagi.");
     }
   };
 
+  // Handle Input Changes
   const handleChange = (e) => {
     const formattedValue = e.target.value.replace(/\s+/g, "").toUpperCase();
     setPlatNomor(formattedValue);
   };
 
+  // Handle Back Button
   const handleBack = () => {
     navigate(-1);
   };
@@ -227,8 +231,8 @@ export default function Membership() {
         <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
           <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
             <FaArrowLeftLong
-              className="pl-3 w-10"
-              onClick={() => handleBack()}
+              className="pl-3 w-10 cursor-pointer"
+              onClick={handleBack}
             />
             <h1 className="text-lg font-semibold px-3">Membership</h1>
           </div>
@@ -341,7 +345,6 @@ export default function Membership() {
                 placeholder="ex : B123ABC"
                 value={platNomor}
                 onChange={handleChange}
-                disabled
               />
             </div>
           </div>

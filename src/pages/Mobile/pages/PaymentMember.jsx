@@ -7,6 +7,7 @@ import { getProviderById } from "../../../api/apiProvider";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import ErrorModal from "../components/ErrorModal";
 
 function PaymentMember() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,6 +15,7 @@ function PaymentMember() {
   const [selectedType, setSelectedType] = useState("");
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,7 +34,8 @@ function PaymentMember() {
     if (selectedProvider) {
       setIsModalVisible(true);
     } else {
-      alert("Pilih metode pembayaran terlebih dahulu.");
+      setShowModal(true);
+      // alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
   useEffect(() => {
@@ -82,10 +85,18 @@ function PaymentMember() {
     navigate(-1);
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
   const currentPeriod = getMonthlyPeriod(new Date());
   return (
     <>
       <div>
+        <ErrorModal
+          showModal={showModal}
+          handleClose={handleCloseModal}
+          message={"Pilih methode pembayaran"}
+        />
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
