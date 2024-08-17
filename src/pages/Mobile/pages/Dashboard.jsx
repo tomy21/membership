@@ -35,7 +35,7 @@ const items = [
   {
     src: "/assets/clock.png",
     alt: "History",
-    label: "Riwayat",
+    label: "History",
     path: "/riwayat",
   },
 ];

@@ -77,3 +77,25 @@ export const apiBayarindTopUp = {
     }
   },
 };
+
+export const apiBarindCekstatus = {
+  cekStatus: async (Id) => {
+    try {
+      const token = getToken();
+
+      const response = await apiSkyBayarind.get(
+        `/api/v1.0/transfer-va/status/${Id}`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

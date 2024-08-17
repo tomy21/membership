@@ -14,6 +14,7 @@ import MobileRiwayat from "./pages/Mobile/pages/Riwayat";
 import MobilePayment from "./pages/Mobile/pages/PaymentProcess";
 import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
+import MobilCekStatusPayment from "./pages/Mobile/pages/CekStatusPayment";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
 import Transaction from "./pages/Dekstop/pages/admin/Transaction";
 import Layout from "./pages/Dekstop/pages/Layout";
@@ -49,6 +50,10 @@ function App() {
               <Route
                 path="/payment_member"
                 element={<MobilePaymentMember />}
+              ></Route>
+              <Route
+                path="/cekStatus"
+                element={<MobilCekStatusPayment />}
               ></Route>
               <Route path="/lokasi" element={<MobileLokasi />}></Route>
               <Route path="/voucher" element={<MobileVoucher />}></Route>

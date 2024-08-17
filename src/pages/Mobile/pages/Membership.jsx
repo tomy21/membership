@@ -30,6 +30,10 @@ export default function Membership() {
   const [productBundle, setProductBundle] = useState([]);
   const [selectBundleProduct, setSelectBundleProduct] = useState("");
   const [periodeId, setPeriodId] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [editEnabled, setEditEnabled] = useState(false); // State untuk mengontrol tombol edit
+  const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol popup edit
+  const [timeoutId, setTimeoutId] = useState(null); // State untuk timeout
   const navigate = useNavigate();
 
   // Fetch Locations
@@ -161,6 +165,7 @@ export default function Membership() {
   useEffect(() => {
     if (file) {
       const fetchPlateNumber = async () => {
+        setLoading(true);
         const formData = new FormData();
         formData.append("upload", file);
         const apiToken = process.env.REACT_APP_API_TOKEN;
@@ -181,46 +186,41 @@ export default function Membership() {
             setPlatNomor(result.results[0].plate.toUpperCase());
           } else {
             console.log("Plate number not detected");
+            setEditEnabled(true); // Jika tidak terdeteksi, izinkan edit
           }
         } catch (error) {
           console.error("Error:", error);
+          setEditEnabled(true); // Jika terjadi error, izinkan edit
+        } finally {
+          setLoading(false);
         }
       };
       fetchPlateNumber();
+
+      // Timeout untuk edit
+      const timeout = setTimeout(() => {
+        setEditEnabled(true);
+      }, 3000); // Tunggu 3 detik sebelum mengizinkan edit
+
+      setTimeoutId(timeout);
     }
   }, [file]);
 
-  // Handle Plate Number Verification
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (platNomor) {
-        handleVerification();
-      }
-    }, 500); // Verifikasi setelah 500ms tidak ada input
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [platNomor]);
-  console.log(periodeId);
-  const handleVerification = async () => {
-    try {
-      const response = await verifikasiPlate.verifikasi(platNomor);
-      setMessage(
-        response.message === "Plat nomor sudah terdaftar"
-          ? response.message
-          : ""
-      );
-    } catch (error) {
-      setMessage("Terjadi kesalahan. Silakan coba lagi.");
+  const handleChange = (e) => {
+    if (editEnabled) {
+      const formattedValue = e.target.value.replace(/\s+/g, "").toUpperCase();
+      setPlatNomor(formattedValue);
     }
   };
 
-  // Handle Input Changes
-  const handleChange = (e) => {
-    const formattedValue = e.target.value.replace(/\s+/g, "").toUpperCase();
-    setPlatNomor(formattedValue);
+  const handleEdit = () => {
+    setShowPopup(true);
   };
 
-  // Handle Back Button
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -328,7 +328,7 @@ export default function Membership() {
             {errors.platNomor && (
               <p className="text-red-500">{errors.platNomor}</p>
             )}
-            <div>
+            <div className="relative">
               <input
                 type="file"
                 name="file"
@@ -345,7 +345,22 @@ export default function Membership() {
                 placeholder="ex : B123ABC"
                 value={platNomor}
                 onChange={handleChange}
+                disabled={!editEnabled}
+                readOnly
               />
+              {loading && (
+                <div className="absolute right-0 top-20 mt-3 mr-5 flex items-center">
+                  <div className="loader"></div>
+                </div>
+              )}
+              {!loading && editEnabled && (
+                <button
+                  className="absolute right-0 top-20 mt-3 mr-5 text-blue-500"
+                  onClick={handleEdit}
+                >
+                  Edit
+                </button>
+              )}
             </div>
           </div>
 
@@ -398,6 +413,36 @@ export default function Membership() {
           </div>
         </div>
       </div>
+
+      {/* Popup Edit */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Edit Plat Nomor</h2>
+            <input
+              type="text"
+              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="ex : B123ABC"
+              value={platNomor}
+              onChange={handleChange}
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-blue-500 text-white py-2 px-4 rounded-lg mr-2"
+                onClick={closePopup}
+              >
+                Simpan
+              </button>
+              <button
+                className="bg-gray-300 text-black py-2 px-4 rounded-lg"
+                onClick={closePopup}
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

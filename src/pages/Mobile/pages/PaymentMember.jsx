@@ -112,9 +112,7 @@ function PaymentMember() {
                 <p className="text-gray-400">
                   {location.state ? location.state.platNomor : "-"}
                 </p>
-                <p className="text-gray-400">
-                  {location.state.vehicleType === 1 ? "Mobil" : "Motor"}
-                </p>
+                <p className="text-gray-400">{location.state.vehicleType}</p>
                 <p className="text-gray-400">
                   {location.state ? location.state.location : "-"}
                 </p>

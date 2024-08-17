@@ -42,21 +42,18 @@ function PinInput() {
             ? location.state.data.location.state.file
             : [],
         };
-        console.log(dataForm);
+
         if (location.state.type === "member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
               bankProvider: location.state.providerName,
-              expairedDate:
-                responseBayarind.data.virtualAccountData.expiredDate,
               virtualAccountNomor:
                 responseBayarind.data.virtualAccountData.virtualAccountNo,
               amount:
                 responseBayarind.data.virtualAccountData.totalAmount.value,
-              accountName:
-                responseBayarind.data.virtualAccountData.virtualAccountName,
+              response: responseBayarind.data,
             };
             navigate("/payment_process", { state: data });
           } else if (responseBayarind.data.responseCode === "400") {
@@ -82,14 +79,7 @@ function PinInput() {
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               bankProvider: location.state.providerName,
-              expairedDate:
-                responseBayarind.data.virtualAccountData.expiredDate,
-              virtualAccountNomor:
-                responseBayarind.data.virtualAccountData.virtualAccountNo,
-              amount:
-                responseBayarind.data.virtualAccountData.totalAmount.value,
-              accountName:
-                responseBayarind.data.virtualAccountData.virtualAccountName,
+              response: responseBayarind.data,
             };
 
             navigate("/payment_process", { state: data });
@@ -111,16 +101,20 @@ function PinInput() {
 
   const handleInput = (e, index) => {
     const value = e.target.value;
-    if (value.length === 1 && index < inputRefs.current.length - 1) {
-      inputRefs.current[index + 1].focus();
-    }
-    const newPin = [...pin];
-    newPin[index] = value;
-    setPin(newPin);
 
-    // Check if PIN is complete
-    if (index === inputRefs.current.length - 1 && value.length === 1) {
-      verifyPin(newPin.join(""));
+    // Filter untuk memastikan hanya angka yang bisa diinput
+    if (/^\d$/.test(value)) {
+      if (value.length === 1 && index < inputRefs.current.length - 1) {
+        inputRefs.current[index + 1].focus();
+      }
+      const newPin = [...pin];
+      newPin[index] = value;
+      setPin(newPin);
+
+      // Check if PIN is complete
+      if (index === inputRefs.current.length - 1 && value.length === 1) {
+        verifyPin(newPin.join(""));
+      }
     }
   };
 
@@ -198,7 +192,7 @@ function PinInput() {
           .map((_, index) => (
             <input
               key={index}
-              type="password"
+              type="password" // Menggunakan type tel untuk fokus pada input numerik
               maxLength="1"
               className="w-10 h-10 border border-gray-300 rounded-full text-center text-xl"
               autoFocus={index === 0}
@@ -206,8 +200,10 @@ function PinInput() {
               onKeyDown={(e) => handleKeyDown(e, index)}
               ref={(el) => (inputRefs.current[index] = el)}
               value={pin[index]}
-              inputMode="numeric"
-              autoComplete="input-pin"
+              inputMode="none" // Tidak memunculkan keypad mobile bawaan
+              autoComplete="off" // Nonaktifkan autoComplete
+              readOnly // Mencegah input langsung
+              style={{ caretColor: "transparent" }} // Menyembunyikan kursor
             />
           ))}
       </div>

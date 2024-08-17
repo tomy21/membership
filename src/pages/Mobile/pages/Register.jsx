@@ -34,10 +34,52 @@ export default function Register() {
     // Menghapus semua spasi dari input
     const sanitizedValue = value.replace(/\s+/g, "");
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: sanitizedValue,
-    }));
+    if (name === "phone") {
+      let formattedPhone = sanitizedValue;
+
+      // Remove leading zeros
+      if (formattedPhone.startsWith("0")) {
+        formattedPhone = formattedPhone.replace(/^0+/, "");
+      }
+
+      // Ensure phone starts with +62
+      if (!formattedPhone.startsWith("+62")) {
+        formattedPhone = "+62" + formattedPhone;
+      }
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: formattedPhone,
+      }));
+
+      // Check for errors
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        phone: !/^\+628[0-9]{8,13}$/.test(formattedPhone)
+          ? "Nomor telepon tidak valid"
+          : "",
+      }));
+    } else if (name === "pin") {
+      const formattedPin = sanitizedValue.replace(/[^0-9]/g, "");
+
+      if (formattedPin.length <= 6) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: formattedPin,
+        }));
+      }
+
+      // Check for errors
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        pin: formattedPin.length !== 6 ? "PIN harus terdiri dari 6 angka" : "",
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: sanitizedValue,
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -167,7 +209,7 @@ export default function Register() {
             >
               <input
                 type="text"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.username ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan username anda"
@@ -178,7 +220,7 @@ export default function Register() {
 
               <input
                 type="text"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.email ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan email anda"
@@ -188,7 +230,7 @@ export default function Register() {
               />
               <input
                 type="password"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.password ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan password anda"
@@ -204,7 +246,7 @@ export default function Register() {
 
               <input
                 type="password"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.passwordConfirm
                     ? "border-red-600"
                     : "border-slate-300"
@@ -216,7 +258,7 @@ export default function Register() {
               />
               <input
                 type="text"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.phone ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan nomor telepon anda"
@@ -226,7 +268,7 @@ export default function Register() {
               />
               <input
                 type="password"
-                className={`w-full py-2 px-3 border ${
+                className={`w-full p-3 border ${
                   formErrors.pin ? "border-red-600" : "border-slate-300"
                 } bg-slate-100 rounded-lg`}
                 placeholder="Masukan pin anda"
@@ -254,7 +296,7 @@ export default function Register() {
 
               <input
                 type="text"
-                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Captcha"
                 value={inputCaptcha}
                 onChange={(e) => setInputCaptcha(e.target.value)}

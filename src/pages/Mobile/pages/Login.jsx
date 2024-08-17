@@ -108,7 +108,7 @@ export default function Login() {
             >
               <input
                 type="text"
-                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Email atau username"
                 name="identifier"
                 value={formData.identifier}
@@ -120,7 +120,7 @@ export default function Login() {
               )}
               <input
                 type="password"
-                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Password"
                 name="password"
                 value={formData.password}
@@ -146,7 +146,7 @@ export default function Login() {
 
               <input
                 type="text"
-                className="w-full py-2 px-3 border border-slate-300 bg-slate-100 rounded-lg"
+                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Captcha"
                 value={inputCaptcha}
                 onChange={(e) => setInputCaptcha(e.target.value)}

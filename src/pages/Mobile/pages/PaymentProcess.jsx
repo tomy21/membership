@@ -4,6 +4,7 @@ import Accordion from "../components/Accordion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
+import { getIdTrx } from "../../../api/apiTrxPayment";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -56,9 +57,37 @@ const copyToClipboard = (text) => {
 export default function PaymentProcess() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const formatAmount = formatNumber(Math.floor(location.state.amount));
-  const formattedDate = formatDate(location.state.expairedDate);
+  const formatAmount = formatNumber(
+    Math.floor(location.state.response.virtualAccountData.totalAmount.value)
+  );
+  const formattedDate = formatDate(
+    location.state.response.virtualAccountData.expiredDate
+  );
   const navigate = useNavigate();
+
+  const handleCekStatus = async () => {
+    const responseCek = await getIdTrx.getIdStatus(
+      location.state.response.virtualAccountData.trxId
+    );
+
+    if (responseCek.statusCode === 200) {
+      navigate("/cekStatus", {
+        state: {
+          responseCek: responseCek.data[0].Id,
+          TrxId: location.state.response.virtualAccountData.trxId,
+          accountName:
+            location.state.response.virtualAccountData.virtualAccountName,
+          virtualAccountNomor:
+            location.state.response.virtualAccountData.virtualAccountNo,
+          totalAmount:
+            location.state.response.virtualAccountData.totalAmount.value,
+          currency:
+            location.state.response.virtualAccountData.totalAmount.currency,
+          bankName: location.state.bankProvider,
+        },
+      });
+    }
+  };
 
   const handleBack = async () => {
     navigate("/dashboard");
@@ -85,11 +114,13 @@ export default function PaymentProcess() {
           </h1>
           <div className="flex justify-between items-center w-full">
             <h1 className="text-base font-bold text-black">
-              {location.state.virtualAccountNomor}
+              {location.state.response.virtualAccountData.virtualAccountNo}
             </h1>
             <button
               onClick={() =>
-                copyToClipboard(location.state.virtualAccountNomor)
+                copyToClipboard(
+                  location.state.response.virtualAccountData.virtualAccountNo
+                )
               }
               className="border border-blue-500 rounded-md px-2 py-1 text-blue-500 text-center text-sm"
             >
@@ -97,7 +128,8 @@ export default function PaymentProcess() {
             </button>
           </div>
           <h1 className="text-sm font-normal text-gray-700">
-            Bank {location.state.bankProvider} a/n {location.state.accountName}
+            Bank {location.state.bankProvider} a/n{" "}
+            {location.state.response.virtualAccountData.virtualAccountName}
           </h1>
         </div>
 
@@ -106,10 +138,20 @@ export default function PaymentProcess() {
 
           <div className="flex justify-between items-center w-full">
             <h1 className="text-2xl font-normal text-black">
-              <span className="text-bold">Rp</span> {formatAmount}
+              <span className="text-bold">
+                {
+                  location.state.response.virtualAccountData.totalAmount
+                    .currency
+                }
+              </span>{" "}
+              {formatAmount}
             </h1>
             <button
-              onClick={() => copyToClipboard(location.state.amount)}
+              onClick={() =>
+                copyToClipboard(
+                  location.state.response.virtualAccountData.totalAmount
+                )
+              }
               className="border border-blue-500 rounded-md px-2 py-1 text-blue-500 text-center text-sm"
             >
               Salin
@@ -123,7 +165,10 @@ export default function PaymentProcess() {
 
         <Accordion />
 
-        <button className="w-full border border-blue-500 rounded-md py-3 text-blue-500 mt-10">
+        <button
+          onClick={handleCekStatus}
+          className="w-full border border-blue-500 rounded-md py-3 text-blue-500 mt-10"
+        >
           Cek Status Pembayaran
         </button>
         <button

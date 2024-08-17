@@ -15,3 +15,16 @@ export const getMemberPayments = {
     }
   },
 };
+
+export const getIdTrx = {
+  getIdStatus: async (trxId) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/paymentStatus/${trxId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
