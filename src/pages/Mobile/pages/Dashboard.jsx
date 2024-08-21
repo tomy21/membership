@@ -64,17 +64,6 @@ export default function Dashboard() {
     navigate("/topup");
   };
 
-  const formatPoints = (value) => {
-    const num = parseFloat(value);
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + " jt";
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(0) + " k";
-    } else {
-      return num.toFixed(0);
-    }
-  };
-
   useEffect(() => {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
@@ -144,6 +133,10 @@ export default function Dashboard() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
 
+  const handleDetailLocation = (id) => {
+    navigate(`/detailMember/${id}`, { state: { selectedProduct } });
+  };
+
   return (
     <>
       <div className="container min-w-screen min-h-screen m-auto">
@@ -167,9 +160,9 @@ export default function Dashboard() {
                 />
               </div>
               <div>
-                <p className="text-xl font-normal">
-                  {formatPoints(balance)}
+                <p className="text-xl font-normal flex flex-col justify-start items-start">
                   <span className="text-sm"> Points</span>
+                  {balance.toLocaleString("id-ID")}
                 </p>
               </div>
             </div>
@@ -289,12 +282,23 @@ export default function Dashboard() {
 
             <div className="flex flex-col justify-center items-center w-full space-y-10">
               <QRCode value={selectedProduct.CardId} size={150} />
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded w-full"
-                onClick={closeModal}
-              >
-                Close
-              </button>
+              <div className="flex flex-col justify-center items-center space-y-2 w-full">
+                {/* <div className="bg-sky-100 p-3 rounded text-xs">
+                  Member di UPH akan habis
+                </div> */}
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded w-full"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+                <button
+                  className="bg-sky-500 text-white px-4 py-2 rounded w-full"
+                  onClick={() => handleDetailLocation(selectedProduct.Id)}
+                >
+                  Detail Lokasi
+                </button>
+              </div>
             </div>
           </div>
         </div>

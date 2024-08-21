@@ -99,10 +99,12 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+      setLoading(true);
       try {
         await apiUsers.register(formData);
         setFormErrors({});
         setIsModalOpen(true);
+        setLoading(false);
         setFormData({
           username: "",
           password: "",
@@ -112,6 +114,7 @@ export default function Register() {
           pin: "",
         });
       } catch (error) {
+        setLoading(false);
         toast.error(error.message);
       }
     }

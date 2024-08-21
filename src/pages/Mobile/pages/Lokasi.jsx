@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { apiLocations } from "../../../api/apiLocations";
 
 const lokasi = [
   {
@@ -116,7 +117,19 @@ const lokasi = [
 
 function Lokasi() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(1);
+  const [locationData, setLocationData] = useState([]);
   const [filteredLokasi, setFilteredLokasi] = useState(lokasi);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await apiLocations.getLocation(page, limit);
+      setLocationData(response.data);
+    };
+
+    fetchData();
+  }, [page, limit]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -155,7 +168,7 @@ function Lokasi() {
             />
           </div>
           <div className="flex flex-col space-y-2 items-start justify-start w-full px-2 py-2 max-h-[75vh] overflow-y-auto">
-            {lokasi.map((items, index) => (
+            {locationData.map((items, index) => (
               <div
                 key={index}
                 className="flex flex-row items-center shadow-md space-x-2 px-2 py-2 w-full border border-gray-300 rounded-lg bg-white"
@@ -167,13 +180,15 @@ function Lokasi() {
                 />
                 <div className="flex flex-col justify-start items-start text-xs w-full">
                   <h1 className="font-semibold text-sm text-start truncate w-full">
-                    {items.name}
+                    {items.Name}
                   </h1>
-                  <h1 className="text-sm text-gray-400">
-                    Sisa kuota : {items.Quota - items.Used}
-                  </h1>
+                  <h1 className="text-sm text-gray-400">Sisa kuota :</h1>
+                  <div className="flex flex-row space-x-5 text-gray-500 justify-start w-full items-center">
+                    <p>Mobil : {items.totalQuotaMobil}</p>
+                    <p>Motor : {items.totalQuotaMotor}</p>
+                  </div>
                   <div className="w-full border-b border-gray-200 my-2"></div>
-                  <address className="text-start">{items.address}</address>
+                  <address className="text-start">{items.Address}</address>
                 </div>
               </div>
             ))}

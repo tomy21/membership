@@ -28,3 +28,23 @@ export const getIdTrx = {
     }
   },
 };
+
+export const viewTransaction = {
+  getTransaction: async (cardNo, page, limit) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/member-master-data",
+        {
+          params: {
+            cardNo,
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

@@ -15,6 +15,7 @@ import MobilePayment from "./pages/Mobile/pages/PaymentProcess";
 import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
 import MobilCekStatusPayment from "./pages/Mobile/pages/CekStatusPayment";
+import DetailLokasiMember from "./pages/Mobile/pages/DetailLokasiMember";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
 import Transaction from "./pages/Dekstop/pages/admin/Transaction";
 import Layout from "./pages/Dekstop/pages/Layout";
@@ -50,6 +51,10 @@ function App() {
               <Route
                 path="/payment_member"
                 element={<MobilePaymentMember />}
+              ></Route>
+              <Route
+                path="/detailMember/:id"
+                element={<DetailLokasiMember />}
               ></Route>
               <Route
                 path="/cekStatus"

@@ -37,7 +37,7 @@ export default function Topup() {
 
   useEffect(() => {
     const fetchProvider = async () => {
-      const response = await getProviderById.getById(1);
+      const response = await getProviderById.getById(0);
       setProviders(response.data);
     };
 

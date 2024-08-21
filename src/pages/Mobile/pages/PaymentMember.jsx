@@ -77,6 +77,8 @@ function PaymentMember() {
       },
     });
   };
+
+  console.log(location);
   const closeModal = () => {
     setIsModalVisible(false);
   };
