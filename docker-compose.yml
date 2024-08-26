@@ -17,8 +17,8 @@ services:
     networks:
       - membership_network
   
-# volumes:
-#   node_modules:
+volumes:
+  node_modules:
 
 networks:
   membership_network:
