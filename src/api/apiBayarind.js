@@ -106,13 +106,7 @@ export const apiBayarindExtend = {
       const token = getToken();
 
       const response = await apiSkyBayarind.put(
-        `/api/v1.0/transfer-va/extendmember`,
-        {
-          userProductId: userProductId,
-          productId: productId,
-          periodeId: periodeId,
-          partnerId: partnerId,
-        },
+        `/api/v1.0/transfer-va/extendmember?userProductId=${userProductId}&productId=${productId}&periodeId=${periodeId}&partnerId=${partnerId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -70,7 +70,7 @@ function PaymentMember() {
     navigate("/verifikasi", {
       state: {
         type: location.state.type,
-        // userProductId: location.state.userProductId,
+        userProductId: location.state.userProductId,
         providerName: selectedProvider.ProviderName,
         providerId: selectedProvider.Id,
         productId: location.state.productId,
