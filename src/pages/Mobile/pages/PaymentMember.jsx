@@ -50,10 +50,14 @@ function PaymentMember() {
   const handleProceedCancel = () => {
     navigate("/dashboard");
   };
-
+  console.log("loging", location);
   const getMonthlyPeriod = (date) => {
-    const start = new Date();
-    const end = endOfMonth(date);
+    const start = location.state.startDate
+      ? new Date(location.state.startDate)
+      : new Date();
+    const end = location.state.endDate
+      ? new Date(location.state.endDate)
+      : endOfMonth(date);
 
     return {
       start: format(start, "dd MMM yyyy"),
@@ -65,7 +69,8 @@ function PaymentMember() {
     setIsModalVisible(false);
     navigate("/verifikasi", {
       state: {
-        type: "member",
+        type: location.state.type,
+        // userProductId: location.state.userProductId,
         providerName: selectedProvider.ProviderName,
         providerId: selectedProvider.Id,
         productId: location.state.productId,

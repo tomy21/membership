@@ -31,6 +31,7 @@ export default function Membership() {
   const [selectBundleProduct, setSelectBundleProduct] = useState("");
   const [periodeId, setPeriodId] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingPlate, setLoadingPlate] = useState(false);
   const [editEnabled, setEditEnabled] = useState(false); // State untuk mengontrol tombol edit
   const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol popup edit
   const [timeoutId, setTimeoutId] = useState(null); // State untuk timeout
@@ -165,7 +166,7 @@ export default function Membership() {
   useEffect(() => {
     if (file) {
       const fetchPlateNumber = async () => {
-        setLoading(true);
+        setLoadingPlate(true);
         const formData = new FormData();
         formData.append("upload", file);
         const apiToken = process.env.REACT_APP_API_TOKEN;
@@ -192,7 +193,7 @@ export default function Membership() {
           console.error("Error:", error);
           setEditEnabled(true); // Jika terjadi error, izinkan edit
         } finally {
-          setLoading(false);
+          setLoadingPlate(false);
         }
       };
       fetchPlateNumber();
@@ -348,12 +349,12 @@ export default function Membership() {
                 disabled={!editEnabled}
                 readOnly
               />
-              {loading && (
+              {loadingPlate && (
                 <div className="absolute right-0 top-20 mt-3 mr-5 flex items-center">
                   <div className="loader"></div>
                 </div>
               )}
-              {!loading && editEnabled && (
+              {!loadingPlate && editEnabled && (
                 <button
                   className="absolute right-0 top-20 mt-3 mr-5 text-blue-500"
                   onClick={handleEdit}

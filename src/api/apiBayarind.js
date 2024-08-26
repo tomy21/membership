@@ -99,3 +99,31 @@ export const apiBarindCekstatus = {
     }
   },
 };
+
+export const apiBayarindExtend = {
+  extend: async (userProductId, productId, periodeId, partnerId) => {
+    try {
+      const token = getToken();
+
+      const response = await apiSkyBayarind.put(
+        `/api/v1.0/transfer-va/extendmember`,
+        {
+          userProductId: userProductId,
+          productId: productId,
+          periodeId: periodeId,
+          partnerId: partnerId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+      return response;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
