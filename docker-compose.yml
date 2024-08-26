@@ -15,11 +15,11 @@ services:
       - "7090:4002"
     # command: npm install cookie-parser && npm start
     networks:
-      - bridge
+      - membership_network
   
 # volumes:
 #   node_modules:
 
-# networks:
-#   membership_network:
-#     driver: bridge
+networks:
+  membership_network:
+    driver: bridge
