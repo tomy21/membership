@@ -27,6 +27,7 @@ import TransactionTenants from "./pages/Dekstop/pages/client/TransactionTenants"
 import ListMembership from "./pages/Dekstop/pages/client/ListMembership";
 import History from "./pages/Dekstop/pages/client/History";
 import ListMahasiswa from "./pages/Dekstop/pages/client/ListMahasiswa";
+import ErrorPage404 from "./pages/Mobile/pages/ErrorPage404";
 
 function App() {
   return (
@@ -71,8 +72,8 @@ function App() {
             </>
           ) : (
             <>
-              <Route path="/" element={<DekstopLogin />}></Route>
-              <Route path="/dashboard/*" element={<Layout />}>
+              <Route path="/" element={<ErrorPage404 />}></Route>
+              {/* <Route path="/dashboard/*" element={<Layout />}>
                 <Route path="" element={<Dashboard />} />
                 <Route path="product" element={<Product />} />
                 <Route path="client" element={<Tenants />} />
@@ -88,7 +89,7 @@ function App() {
                   path="tenants/listmahasiswa"
                   element={<ListMahasiswa />}
                 />
-              </Route>
+              </Route> */}
             </>
           )}
         </Routes>

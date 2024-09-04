@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
-import { getAllProvider, getProviderById } from "../../../api/apiProvider";
+import { getProviderById } from "../../../api/apiProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,6 +17,7 @@ export default function Topup() {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedType, setSelectedType] = useState("");
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State untuk checkbox
   const navigate = useNavigate();
 
   const handleAmountChange = (e) => {
@@ -45,6 +46,11 @@ export default function Topup() {
   }, []);
 
   const handleProceed = () => {
+    if (!isTermsAccepted) {
+      toast.error("Anda harus menyetujui syarat dan ketentuan.");
+      return;
+    }
+
     if (selectedProvider) {
       if (selectedProvider && amount >= 10000) {
         setIsModalVisible(true);
@@ -143,8 +149,25 @@ export default function Topup() {
             )}
           </div>
 
+          {/* Checkbox untuk Syarat dan Ketentuan */}
+          <div className="mt-5">
+            <label className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={isTermsAccepted}
+                onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+              />
+              <span className="text-gray-700 text-sm">
+                Saya menyetujui syarat dan ketentuan.
+              </span>
+            </label>
+          </div>
+
           <button
-            className="flex items-center justify-center w-full bg-blue-500 text-white py-3 rounded-lg shadow-md cursor-pointer mt-10"
+            className={`flex items-center justify-center w-full py-3 rounded-lg shadow-md cursor-pointer mt-10 ${
+              isTermsAccepted ? "bg-blue-500 text-white" : "bg-gray-400"
+            }`}
             onClick={handleProceed}
           >
             <span>Lanjutkan</span>

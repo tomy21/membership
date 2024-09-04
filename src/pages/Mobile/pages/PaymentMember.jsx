@@ -16,6 +16,7 @@ function PaymentMember() {
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State untuk checkbox
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,6 +32,11 @@ function PaymentMember() {
   }, [selectedType, providers]);
 
   const handleProceed = () => {
+    if (!isTermsAccepted) {
+      setShowModal(true);
+      return;
+    }
+
     if (selectedProvider) {
       setIsModalVisible(true);
     } else {
@@ -38,6 +44,7 @@ function PaymentMember() {
       // alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
+
   useEffect(() => {
     const fetchProvider = async () => {
       const response = await getProviderById.getById(0);
@@ -50,7 +57,7 @@ function PaymentMember() {
   const handleProceedCancel = () => {
     navigate("/dashboard");
   };
-  console.log("loging", location);
+
   const getMonthlyPeriod = (date) => {
     const start = location.state.startDate
       ? new Date(location.state.startDate)
@@ -83,7 +90,6 @@ function PaymentMember() {
     });
   };
 
-  console.log(location);
   const closeModal = () => {
     setIsModalVisible(false);
   };
@@ -95,14 +101,20 @@ function PaymentMember() {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
   const currentPeriod = getMonthlyPeriod(new Date());
+
   return (
     <>
       <div>
         <ErrorModal
           showModal={showModal}
           handleClose={handleCloseModal}
-          message={"Pilih methode pembayaran"}
+          message={
+            !isTermsAccepted
+              ? "Anda harus menyetujui syarat dan ketentuan."
+              : "Pilih metode pembayaran terlebih dahulu."
+          }
         />
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
@@ -152,8 +164,26 @@ function PaymentMember() {
               filteredProviders={filteredProviders}
             />
           )}
+
+          {/* Checkbox untuk Syarat dan Ketentuan */}
+          <div className="mt-5">
+            <label className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600"
+                checked={isTermsAccepted}
+                onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+              />
+              <span className="text-gray-700">
+                Saya menyetujui syarat dan ketentuan.
+              </span>
+            </label>
+          </div>
+
           <button
-            className="flex items-center justify-center w-full bg-blue-500 text-white py-3 rounded-lg shadow-md cursor-pointer mt-10"
+            className={`flex items-center justify-center w-full py-3 rounded-lg shadow-md cursor-pointer mt-10 ${
+              isTermsAccepted ? "bg-blue-500 text-white" : "bg-gray-400"
+            }`}
             onClick={handleProceed}
           >
             <span>Lanjutkan</span>

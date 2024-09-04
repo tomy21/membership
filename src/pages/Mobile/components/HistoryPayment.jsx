@@ -13,7 +13,7 @@ export default function HistoryPayment({ listRiwayat }) {
       currency: "IDR",
     });
   };
-  console.log(listRiwayat);
+
   return (
     <>
       {listRiwayat.map((items, index) => (
@@ -30,13 +30,15 @@ export default function HistoryPayment({ listRiwayat }) {
           </div>
 
           <div className="flex justify-between items-center w-full mb-3 border-b py-3 px-3">
-            <div className="flex flex-col justify-start items-start">
+            <div className="flex flex-col justify-start items-start w-1/2">
               <label htmlFor="plat_nomor" className="text-xs text-slate-400">
                 Plat Nomor
               </label>
-              <h1 className="text-sm font-semibold">tambahkan plat</h1>
+              <h1 className="text-sm font-semibold">
+                {items.PlateNumber ?? "-"}
+              </h1>
             </div>
-            <div className="flex flex-col justify-start items-start w-40">
+            <div className="flex flex-col justify-start items-start w-1/2">
               <label htmlFor="plat_nomor" className="text-xs text-slate-400">
                 {items.Activity === "topup" ? "Price" : "Lokasi"}
               </label>
@@ -69,63 +71,6 @@ export default function HistoryPayment({ listRiwayat }) {
                 : "-"}
             </p>
           </div>
-
-          {/* <div className="flex flex-row justify-center items-center space-x-3 py-2">
-            {items.Activity === "topup" ? (
-              <MdOutlineAccountBalanceWallet
-                size={30}
-                className="text-sky-500"
-              />
-            ) : items.Activity === "membership" ? (
-              <MdOutlineAccountBalanceWallet
-                size={30}
-                className="text-sky-500"
-              />
-            ) : items.Activity === "in" ? (
-              <MdArrowDropUp size={30} className="text-emerald-500" />
-            ) : (
-              <MdArrowDropDown size={30} className="text-red-500" />
-            )}
-            <div className="flex flex-col justify-start items-start">
-              <div className="flex flex-row justify-start items-center space-x-2">
-                <p className={`text-xs font-semibold `}>
-                  {items.Activity.toUpperCase()}
-                </p>
-                <p
-                  className={`text-xs font-semibold ${
-                    items.Status === "Success"
-                      ? "text-green-600"
-                      : items.Status === "Pending"
-                      ? "text-yellow-600"
-                      : items.Status === "Cancel"
-                      ? "text-red-600"
-                      : "-"
-                  }`}
-                >
-                  {items.Status === "Success"
-                    ? items.Status.toUpperCase()
-                    : items.Status === "Pending"
-                    ? items.Status.toUpperCase()
-                    : items.Status === "Cancel"
-                    ? items.Status.toUpperCase()
-                    : "-"}
-                </p>
-              </div>
-              <p className="text-xs text-slate-400 font-semibold">
-                {items.Activity === "topup"
-                  ? formatCurrency(items.Price)
-                  : items.LocationName}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col justify-start items-start w-16">
-            <h1 className="text-xs font-medium">
-              {format(new Date(items.CreatedAt), "dd MMM yy")}
-            </h1>
-            <h1 className="text-xs font-medium">
-              {format(new Date(items.CreatedAt), "HH:mm:ss")}
-            </h1>
-          </div> */}
         </div>
       ))}
     </>

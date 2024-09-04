@@ -7,16 +7,26 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
+  console.log(filteredProviders);
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>
         <div className="relative mt-2">
-          <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
-            <span className="block truncate">
-              {selectedProvider
-                ? selectedProvider.ProviderName
-                : "Pilih Provider"}
-            </span>
+          <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 flex flex-row justify-start items-center gap-x-3">
+            {selectedProvider ? (
+              <>
+                <img
+                  src={`/assets/payment/${selectedProvider.LogoUrl}`}
+                  className="w-10"
+                  alt={selectedProvider.ProviderName}
+                />
+                <span className="block truncate">
+                  {selectedProvider.ProviderName}
+                </span>
+              </>
+            ) : (
+              <span className="block truncate">Pilih Provider</span>
+            )}
             <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
               <ChevronUpDownIcon
                 aria-hidden="true"
@@ -30,13 +40,18 @@ const ProviderSelector = ({
                 key={provider.Id}
                 value={provider}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-2 pl-3 pr-9 ${
+                  `relative cursor-default select-none py-2 pl-3 pr-9 flex flex-row justify-start items-center gap-x-4 ${
                     active ? "bg-indigo-600 text-white" : "text-gray-900"
                   }`
                 }
               >
                 {({ selected, active }) => (
                   <>
+                    <img
+                      src={`/assets/payment/${provider.LogoUrl}`}
+                      className="w-10"
+                      alt=""
+                    />
                     <span
                       className={`block truncate ${
                         selected ? "font-semibold" : "font-normal"
