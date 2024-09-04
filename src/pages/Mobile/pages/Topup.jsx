@@ -9,6 +9,7 @@ import ProviderSelector from "../components/ProviderSelector";
 import { getProviderById } from "../../../api/apiProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import TermsAndCondition from "../components/TermAndCondition";
 
 export default function Topup() {
   const [amount, setAmount] = useState(0);
@@ -17,7 +18,8 @@ export default function Topup() {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedType, setSelectedType] = useState("");
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State untuk checkbox
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isTermsVisible, setIsTermsVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleAmountChange = (e) => {
@@ -83,6 +85,15 @@ export default function Topup() {
     });
   };
 
+  const onShowTerms = () => {
+    setIsTermsVisible(true);
+  };
+
+  const handleCloseTerms = () => {
+    setIsTermsVisible(false);
+    setIsTermsAccepted(true);
+  };
+
   const closeModal = () => {
     setIsModalVisible(false);
   };
@@ -96,6 +107,9 @@ export default function Topup() {
       <ToastContainer />
       <div className="container w-full overflow-x-hidden">
         {isModalVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+        )}
+        {isTermsVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
         <div className="flex space-x-20 justify-start items-center w-full py-3 bg-amber-300">
@@ -150,18 +164,16 @@ export default function Topup() {
           </div>
 
           {/* Checkbox untuk Syarat dan Ketentuan */}
-          <div className="mt-5">
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-blue-600"
-                checked={isTermsAccepted}
-                onChange={() => setIsTermsAccepted(!isTermsAccepted)}
-              />
-              <span className="text-gray-700 text-sm">
-                Saya menyetujui syarat dan ketentuan.
-              </span>
-            </label>
+          <div className="mt-5 flex items-center space-x-3">
+            <input
+              type="checkbox"
+              className="form-checkbox h-5 w-5 text-blue-600"
+              checked={isTermsAccepted}
+              onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+            />
+            <span className="text-gray-700 text-sm" onClick={onShowTerms}>
+              Saya menyetujui syarat dan ketentuan.
+            </span>
           </div>
 
           <button
@@ -249,6 +261,15 @@ export default function Topup() {
             </div>
           </div>
         </motion.div>
+      )}
+
+      {isTermsVisible && (
+        <>
+          <TermsAndCondition
+            isVisible={isTermsVisible}
+            onClose={handleCloseTerms}
+          />
+        </>
       )}
     </>
   );

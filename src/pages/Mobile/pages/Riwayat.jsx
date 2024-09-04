@@ -8,6 +8,8 @@ import { saveAs } from "file-saver";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { RxDownload } from "react-icons/rx";
 import { format } from "date-fns";
+import * as XLSX from "xlsx";
+import HistoryPayment from "../components/HistoryPayment";
 
 function Riwayat() {
   const [data, setData] = useState([]);
@@ -72,7 +74,8 @@ function Riwayat() {
   };
 
   const handleExport = () => {
-    const csvData = data.map((row) => ({
+    // Data yang akan diekspor ke Excel
+    const excelData = data.map((row) => ({
       Id: row.Id,
       Activity: row.Activity,
       Price: row.Price,
@@ -80,21 +83,21 @@ function Riwayat() {
       CreatedAt: row.CreatedAt,
     }));
 
-    const csv = [
-      ["Id", "Activity", "Price", "Status", "CreatedAt"],
-      ...csvData.map((item) => [
-        item.Id,
-        item.Activity,
-        item.Price,
-        item.Status,
-        item.CreatedAt,
-      ]),
-    ]
-      .map((e) => e.join(","))
-      .join("\n");
+    // Membuat worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `${tabs[currentTab].replace(" ", "_")}.csv`);
+    // Membuat workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+    // Konversi ke binary dan simpan
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, `${tabs[currentTab].replace(" ", "_")}.xlsx`);
   };
 
   const filteredData = data.filter((item) =>
@@ -146,36 +149,14 @@ function Riwayat() {
             <span>
               <RxDownload />
             </span>
-            Export CSV
+            Export Excel
           </button>
         </div>
         <div className="space-y-4 max-h-[70vh] overflow-auto">
           {loading ? (
             <p>Loading...</p>
           ) : (
-            filteredData.map((item) => (
-              <div
-                key={item.Id}
-                className={`p-4 rounded-md shadow-md flex flex-col justify-start items-start ${
-                  item.Status === "Success"
-                    ? "bg-gradient-to-r from-green-400 to-green-600 text-white"
-                    : item.Status === "Pending"
-                    ? "bg-gradient-to-r from-yellow-300 to-yellow-500 text-gray-800"
-                    : "bg-gradient-to-r from-red-400 to-red-600 text-white"
-                }`}
-              >
-                <div className="flex justify-between items-center w-full">
-                  <span className="font-semibold">
-                    {item.Activity.toUpperCase()}
-                  </span>
-                  <span>{item.Status}</span>
-                </div>
-                <span className="mt-4">
-                  Rp {item.Price.toLocaleString("id-ID")}
-                </span>
-                <span>{format(new Date(item.CreatedAt), "dd MMMM yyyy")}</span>
-              </div>
-            ))
+            <HistoryPayment listRiwayat={filteredData} />
           )}
         </div>
         {currentPage < totalPages && (

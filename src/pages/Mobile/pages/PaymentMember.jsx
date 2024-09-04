@@ -8,6 +8,7 @@ import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import ErrorModal from "../components/ErrorModal";
+import TermsAndCondition from "../components/TermAndCondition";
 
 function PaymentMember() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -16,7 +17,8 @@ function PaymentMember() {
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false); // State untuk checkbox
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isTermsVisible, setIsTermsVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -102,6 +104,15 @@ function PaymentMember() {
     setShowModal(false);
   };
 
+  const onShowTerms = () => {
+    setIsTermsVisible(true);
+  };
+
+  const handleCloseTerms = () => {
+    setIsTermsVisible(false);
+    setIsTermsAccepted(true);
+  };
+
   const currentPeriod = getMonthlyPeriod(new Date());
 
   return (
@@ -117,6 +128,9 @@ function PaymentMember() {
           }
         />
         {isModalVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+        )}
+        {isTermsVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
         <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
@@ -166,18 +180,16 @@ function PaymentMember() {
           )}
 
           {/* Checkbox untuk Syarat dan Ketentuan */}
-          <div className="mt-5">
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                className="form-checkbox h-5 w-5 text-blue-600"
-                checked={isTermsAccepted}
-                onChange={() => setIsTermsAccepted(!isTermsAccepted)}
-              />
-              <span className="text-gray-700">
-                Saya menyetujui syarat dan ketentuan.
-              </span>
-            </label>
+          <div className="mt-5 flex items-center space-x-3">
+            <input
+              type="checkbox"
+              className="form-checkbox h-5 w-5 text-blue-600"
+              checked={isTermsAccepted}
+              onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+            />
+            <span className="text-gray-700 text-sm" onClick={onShowTerms}>
+              Saya menyetujui syarat dan ketentuan.
+            </span>
           </div>
 
           <button
@@ -196,6 +208,7 @@ function PaymentMember() {
           </button>
         </div>
       </div>
+
       {isModalVisible && (
         <motion.div
           initial={{ y: "100%" }}
@@ -271,6 +284,15 @@ function PaymentMember() {
             </div>
           </div>
         </motion.div>
+      )}
+
+      {isTermsVisible && (
+        <>
+          <TermsAndCondition
+            isVisible={isTermsVisible}
+            onClose={handleCloseTerms}
+          />
+        </>
       )}
     </>
   );

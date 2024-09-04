@@ -13,20 +13,19 @@ export default function HistoryPayment({ listRiwayat }) {
       currency: "IDR",
     });
   };
-
   return (
     <>
       {listRiwayat.map((items, index) => (
         <div
           key={index}
-          className="bg-white shadow-md w-full rounded-lg border border-slate-300 text-xs relative h-60"
+          className="bg-white shadow-md w-full rounded-lg border border-slate-300 text-xs relative max-h-60"
         >
           <div className="absolute bg-white rounded-full h-6 w-6 -left-4 top-7 border-r border-slate-300"></div>
           <div className="absolute bg-white rounded-full h-6 w-6 -right-4 top-7 border-l border-slate-300"></div>
 
           <div className="flex justify-between items-center w-full mb-3 border-b border-dashed py-3 px-3">
             <h1>{items.Activity.toUpperCase()}</h1>
-            <h3>{format(new Date(items.CreatedAt), "dd MMM yy")}</h3>
+            <h3>{format(new Date(items.CreatedAt), "dd MMM yyyy hh:mm")}</h3>
           </div>
 
           <div className="flex justify-between items-center w-full mb-3 border-b py-3 px-3">
@@ -35,7 +34,7 @@ export default function HistoryPayment({ listRiwayat }) {
                 Plat Nomor
               </label>
               <h1 className="text-sm font-semibold">
-                {items.PlateNumber ?? "-"}
+                {items.PlateNumber ? items.PlateNumber : "-"}
               </h1>
             </div>
             <div className="flex flex-col justify-start items-start w-1/2">

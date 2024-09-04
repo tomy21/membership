@@ -213,7 +213,7 @@ function PinInput() {
   };
 
   if (loading) {
-    return <Loading style={{ margin: 0 }} />;
+    return <Loading />;
   }
 
   return (
