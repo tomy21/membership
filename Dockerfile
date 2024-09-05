@@ -16,6 +16,8 @@ COPY . .
 # Membangun aplikasi React untuk produksi
 RUN npm run build
 
+RUN npm i -g serve
+
 # Mengekspos port yang akan digunakan
 EXPOSE 4002
 
