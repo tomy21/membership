@@ -37,7 +37,7 @@ export default function NavbarMobile() {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
       console.log(token);
-      if (!token) {
+      if (!token || token === undefined) {
         navigate("/");
       }
       if (token) {
