@@ -15,7 +15,7 @@ services:
       - PORT=4002
     networks:
       - membership_network
-    command: ["npm", "start"]
+    command: ["serve", '-s', "build"]
 
 networks:
   membership_network:
