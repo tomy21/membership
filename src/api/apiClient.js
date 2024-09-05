@@ -10,5 +10,6 @@ export const apiClient = axios.create({
 });
 
 export const apiSkyBayarind = axios.create({
+  withCredentials: true,
   baseURL: process.env.REACT_APP_URL_APIPAYMENT,
 });

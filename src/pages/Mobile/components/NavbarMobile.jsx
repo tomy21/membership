@@ -36,6 +36,7 @@ export default function NavbarMobile() {
   useEffect(() => {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
+      console.log(token);
       if (!token) {
         navigate("/");
       }
@@ -46,7 +47,7 @@ export default function NavbarMobile() {
     };
     fetchToken();
   }, [navigate]);
-  console.log("API URL:", process.env.REACT_APP_URL_APIVALET);
+
   useEffect(() => {
     const fetchUser = async () => {
       setTimeout(async () => {
