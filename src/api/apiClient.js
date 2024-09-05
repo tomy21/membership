@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const apiClient = axios.create({
   // baseURL: "http://localhost:3008",
-  baseURL: "https://dev-valetapi.skyparking.online",
+  baseURL: process.env.REACT_APP_URL_APIVALET,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -10,5 +10,5 @@ export const apiClient = axios.create({
 });
 
 export const apiSkyBayarind = axios.create({
-  baseURL: "https://dev-paymentapi.skyparking.online",
+  baseURL: process.env.REACT_APP_URL_APIPAYMENT,
 });
