@@ -46,7 +46,7 @@ export default function NavbarMobile() {
     };
     fetchToken();
   }, [navigate]);
-
+  console.log("API URL:", process.env.REACT_APP_URL_APIVALET);
   useEffect(() => {
     const fetchUser = async () => {
       setTimeout(async () => {
