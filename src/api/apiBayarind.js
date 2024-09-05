@@ -1,6 +1,5 @@
 import { apiSkyBayarind } from "./apiClient";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 const getToken = () => {
   const token = Cookies.get("refreshToken");

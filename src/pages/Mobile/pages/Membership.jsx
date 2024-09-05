@@ -172,7 +172,7 @@ export default function Membership() {
         const apiToken = process.env.REACT_APP_API_TOKEN;
         try {
           const response = await fetch(
-            "https://api.platerecognizer.com/v1/plate-reader/",
+            process.env.REACT_APP_URL_PLATERECOGNICE,
             {
               method: "POST",
               headers: {
