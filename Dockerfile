@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Mengekspos port yang akan digunakan
-EXPOSE 3000
+EXPOSE 4002
 
 # Menetapkan perintah untuk menjalankan aplikasi di dalam container
-CMD ["npm", "start"]
+CMD ["serve", '-s', "build"]
