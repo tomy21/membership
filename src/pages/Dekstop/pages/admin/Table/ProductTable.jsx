@@ -129,7 +129,7 @@ export default function ProductTable() {
             </thead>
             <tbody>
               {dataProduct.map((item, index) => (
-                <tr key={item.id} className="text-start">
+                <tr key={index} className="text-start">
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     {index + 1}
                   </td>
@@ -146,7 +146,7 @@ export default function ProductTable() {
                     {item.VehicleType}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.LocationName}
+                    {item?.RefLocation?.Name}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     {item.IsActive === 1 && (

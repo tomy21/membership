@@ -27,6 +27,7 @@ function PaymentMember() {
       const filtered = providers.filter(
         (provider) => provider.Type === selectedType
       );
+      console.log(filtered);
       setFilteredProviders(filtered);
     } else {
       setFilteredProviders([]);
@@ -50,7 +51,17 @@ function PaymentMember() {
   useEffect(() => {
     const fetchProvider = async () => {
       const response = await getProviderById.getById(0);
-      setProviders(response.data);
+      // Tambahkan provider manual ke dalam array yang didapat dari API
+      const manualProvider = {
+        Id: 0,
+        ProviderName: "Point SKY Parking",
+        Type: "Point",
+        LogoUrl: "logo.svg",
+      };
+      // Menggabungkan provider dari API dengan provider manual
+      const providersWithManual = [...response.data, manualProvider];
+
+      setProviders(providersWithManual);
     };
 
     fetchProvider();
@@ -153,7 +164,10 @@ function PaymentMember() {
 
               <p className="text-lg pt-2 font-semibold">Periode</p>
               <p className="font-semibol text-gray-400 ">
-                {`${currentPeriod.start} - ${currentPeriod.end}`}
+                {`${format(location.state.startDate, "dd MMM yyyy")} - ${format(
+                  location.state.endDate,
+                  "dd MMM yyyy"
+                )}`}
               </p>
               <p className="text-gray-400 pb-2">
                 {location.state.tariff

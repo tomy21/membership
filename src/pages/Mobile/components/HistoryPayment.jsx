@@ -1,9 +1,4 @@
 import React from "react";
-import {
-  MdArrowDropDown,
-  MdArrowDropUp,
-  MdOutlineAccountBalanceWallet,
-} from "react-icons/md";
 import { format } from "date-fns";
 
 export default function HistoryPayment({ listRiwayat }) {
@@ -25,7 +20,7 @@ export default function HistoryPayment({ listRiwayat }) {
 
           <div className="flex justify-between items-center w-full mb-3 border-b border-dashed py-3 px-3">
             <h1>{items.Activity.toUpperCase()}</h1>
-            <h3>{format(new Date(items.CreatedAt), "dd MMM yyyy hh:mm")}</h3>
+            <h3>{format(new Date(items.CreatedAt), "dd MMM yyyy HH:mm")}</h3>
           </div>
 
           <div className="flex justify-between items-center w-full mb-3 border-b py-3 px-3">

@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { loginUsers } from "../../../api/apiUsers";
 import Cookies from "js-cookie";
+import LupaPassword from "./LupaPassword";
 
 export default function Login() {
   const [captcha, setCaptcha] = useState("");
@@ -64,6 +65,7 @@ export default function Login() {
 
         const token = response.token;
         Cookies.set("refreshToken", token);
+        console.log(token);
         setTimeout(() => {
           navigate("/dashboard");
           toast.success("Login successful!");
@@ -166,9 +168,12 @@ export default function Login() {
                   />
                   <p className="text-xs">Ingat saya</p>
                 </div>
-                <p className="text-cyan-600 font-semibold text-xs">
+                <Link
+                  to={"/lupapassword"}
+                  className="text-cyan-600 font-semibold text-xs"
+                >
                   Lupa password ?
-                </p>
+                </Link>
               </div>
               <button
                 type="submit"

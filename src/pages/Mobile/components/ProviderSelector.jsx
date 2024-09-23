@@ -17,7 +17,7 @@ const ProviderSelector = ({
               <>
                 <img
                   src={`/assets/payment/${selectedProvider.LogoUrl}`}
-                  className="w-10"
+                  className="w-7"
                   alt={selectedProvider.ProviderName}
                 />
                 <span className="block truncate">

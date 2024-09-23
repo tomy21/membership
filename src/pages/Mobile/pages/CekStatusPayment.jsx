@@ -3,11 +3,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { apiBarindCekstatus } from "../../../api/apiBayarind";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import Cookies from "js-cookie";
 
 export default function CekStatusPayment() {
   const location = useLocation();
   const navigate = useNavigate(); // Hook untuk navigasi
   const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = Cookies.get("refreshToken");
+      if (!token || token === undefined) {
+        navigate("/");
+      }
+    };
+    fetchToken();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {

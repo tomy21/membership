@@ -62,9 +62,7 @@ function ListComponent({ list, title, search, selected, setSelected }) {
                   </ListboxOption>
                 ))
               ) : (
-                <div className="py-2 px-3 text-gray-500">
-                  Tidak ada lokasi yang cocok.
-                </div>
+                <div className="py-2 px-3 text-gray-500">Tidak ada data.</div>
               )}
             </div>
           </ListboxOptions>

@@ -7,9 +7,9 @@ import SliderComponent from "../components/Slider";
 import QRCode from "qrcode.react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { getUserById, historyMembers } from "../../../api/apiUsers";
+import { apiUsers, historyMembers } from "../../../api/apiUsers";
 import Skeleton from "react-loading-skeleton";
-import { getMemberByUserId } from "../../../api/apiProduct";
+import { getMemberById, getMemberByUserId } from "../../../api/apiProduct";
 import { isMobile } from "react-device-detect";
 import HistoryPayment from "../components/HistoryPayment";
 
@@ -83,15 +83,30 @@ export default function Dashboard() {
       if (!idUser) return;
 
       try {
-        const userResponse = await getUserById.userById(idUser);
-        setBalance(userResponse.points);
+        setTimeout(async () => {
+          if (idUser) {
+            const response = await apiUsers.getUserId(idUser);
+            setBalance(response.detaildata?.Points);
+          }
+        }, 500);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+
+      try {
+        setTimeout(async () => {
+          if (idUser) {
+            const response = await getMemberById.getById(idUser);
+            console.log("data", response);
+          }
+        }, 500);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
 
       try {
         const historyResponse = await historyMembers.getHistory(idUser);
-        setListRiwayat(historyResponse.data);
+        setListRiwayat(historyResponse?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
           console.error("Failed to fetch history:", error);
@@ -104,7 +119,7 @@ export default function Dashboard() {
         const productMemberResponse = await getMemberByUserId.getByUserId(
           idUser
         );
-        setMemberProduct(productMemberResponse.data);
+        setMemberProduct(productMemberResponse?.data);
       } catch (error) {
         if (error.response && error.response.status !== 404) {
           console.error("Failed to fetch product member data:", error);
@@ -162,7 +177,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-xl font-normal flex flex-col justify-start items-start">
                   <span className="text-sm"> Points</span>
-                  {balance.toLocaleString("id-ID")}
+                  {balance?.toLocaleString("id-ID") ?? 0}
                 </p>
               </div>
             </div>
@@ -262,11 +277,17 @@ export default function Dashboard() {
             </div>
           )}
           {activeTab === "tab2" && (
-            <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
-              <img src={"/parchment.png"} className="w-24 opacity-20" alt="" />
-              <p className="text-sm text-gray-500 mt-5">
-                Belum ada history parking
-              </p>
+            <div>
+              <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+                <img
+                  src={"/parchment.png"}
+                  className="w-24 opacity-20"
+                  alt=""
+                />
+                <p className="text-sm text-gray-500 mt-5">
+                  Belum ada riwayat transaksi
+                </p>
+              </div>
             </div>
           )}
         </div>

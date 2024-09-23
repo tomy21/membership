@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
 import { BsPenFill, BsTrashFill } from "react-icons/bs";
 import { getAllMembers } from "../../../../../api/apiUsers";
+import DetailModal from "./modal/UserDetailProduct";
 
 export default function MembershipTable() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,7 +14,8 @@ export default function MembershipTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [totalItems, setTotalItems] = useState(0); // Add totalItems state
+  const [totalItems, setTotalItems] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -84,13 +86,6 @@ export default function MembershipTable() {
             </div>
           </div>
           <div className="flex flex-row justify-center items-center space-x-2">
-            <button
-              className="px-3 py-2 rounded-lg text-blue-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-blue-100"
-              onClick={handleOpenModal}
-            >
-              <p>Add Product</p>
-              <MdOutlineAddCircle />
-            </button>
             <button className="px-3 py-2 rounded-lg text-green-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
               <p>Export</p>
               <MdCloudDownload />
@@ -147,15 +142,23 @@ export default function MembershipTable() {
                     </div>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.MemberUserDetails && item.MemberUserDetails.length > 0
+                    {item.MemberUserDetails &&
+                    item.MemberUserDetails.length > 0 &&
+                    item.MemberUserDetails[0].Points != null
                       ? item.MemberUserDetails[0].Points
-                      : "N/A"}
+                      : 0}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.isDeleted === false && (
-                      <button className="text-green-400 hover:bg-green-200 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2">
+                    {item.EmailConfirmed === 1 ? (
+                      <span className="text-green-400 hover:bg-green-200 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2 cursor-pointer">
                         Active
-                      </button>
+                      </span>
+                    ) : (
+                      <>
+                        <span className="text-red-400 hover:bg-red-200 border border-red-500 font-bold py-1 px-3 rounded-xl mr-2 cursor-pointer">
+                          Inactive
+                        </span>
+                      </>
                     )}
                     {item.isDeleted === true && (
                       <span className="text-red-500 font-bold">Un Active</span>
@@ -165,7 +168,13 @@ export default function MembershipTable() {
                     <div className="flex flex-row justify-center items-center gap-x-3">
                       <BsTrashFill className="text-red-500 text-sm cursor-pointer" />
                       <div className="border-l border-slate-400 h-4"></div>
-                      <BsPenFill className="text-sky-500 text-sm cursor-pointer" />
+                      <BsPenFill
+                        className="text-sky-500 text-sm cursor-pointer"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          handleOpenModal();
+                        }}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -173,6 +182,7 @@ export default function MembershipTable() {
             </tbody>
           </table>
         </div>
+        {/* Pagging */}
         <div className="flex justify-between items-center mt-4 px-2">
           <div className="flex items-center">
             <span className="text-sm mr-2">Total {totalItems}</span>
@@ -221,13 +231,13 @@ export default function MembershipTable() {
           </div>
         </div>
       </div>
-      {/* {isModalOpen && (
-        <AddModal
+      {isModalOpen && (
+        <DetailModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onSuccess={handleSuccess}
+          item={selectedItem}
         />
-      )} */}
+      )}
     </>
   );
 }

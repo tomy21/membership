@@ -3,6 +3,7 @@ import { Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 const PaymentMethodSelector = ({ selectedType, setSelectedType }) => {
+  console.log(selectedType);
   return (
     <div className="text-sm mb-4 w-full text-start">
       <Listbox value={selectedType} onChange={setSelectedType}>
@@ -19,7 +20,7 @@ const PaymentMethodSelector = ({ selectedType, setSelectedType }) => {
             </span>
           </Listbox.Button>
           <Listbox.Options className="absolute z-10 mt-12 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {["Virtual Account", "E-Wallet"].map((type, index) => (
+            {["Virtual Account", "E-Wallet", "Point"].map((type, index) => (
               <Listbox.Option
                 key={index}
                 value={type}

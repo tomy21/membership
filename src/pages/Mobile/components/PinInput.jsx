@@ -13,6 +13,7 @@ import Loading from "../components/Loading";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorModal from "./ErrorModal";
+import SuccessModal from "./SuccessModal";
 
 function PinInput() {
   const [pin, setPin] = useState(Array(6).fill(""));
@@ -20,6 +21,7 @@ function PinInput() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
   const inputRefs = useRef([]);
   const location = useLocation();
@@ -50,6 +52,7 @@ function PinInput() {
 
         if (location.state.type === "Member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
+          console.log(responseBayarind);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
@@ -60,12 +63,14 @@ function PinInput() {
                 responseBayarind.data.virtualAccountData.totalAmount.value,
               response: responseBayarind.data,
             };
-            // console.log("data", location.state.type);
             navigate("/payment_process", { state: data });
           } else if (responseBayarind.data.responseCode === "400") {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
             setShowModal(true);
+          } else if (responseBayarind.data.responseCode === "200") {
+            setShowModal(true);
+            setSuccessMessage(responseBayarind.data.responseMessage);
           } else {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
@@ -212,6 +217,11 @@ function PinInput() {
     setShowModal(false);
   };
 
+  const handleCloseModalSuccess = () => {
+    setShowModal(false);
+    navigate("/dashboard");
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -223,6 +233,11 @@ function PinInput() {
         <ErrorModal
           showModal={showModal}
           handleClose={handleCloseModal}
+          message={errorMessage}
+        />
+        <SuccessModal
+          showModal={showModal}
+          handleSuccessClose={handleCloseModalSuccess}
           message={errorMessage}
         />
         <div className="text-center mb-4 text-lg font-semibold mt-5">

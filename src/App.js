@@ -16,6 +16,8 @@ import MobileProfile from "./pages/Mobile/pages/Profile";
 import MobileIdentitas from "./pages/Mobile/pages/Identitas";
 import MobilCekStatusPayment from "./pages/Mobile/pages/CekStatusPayment";
 import DetailLokasiMember from "./pages/Mobile/pages/DetailLokasiMember";
+import MobileLupaPassword from "./pages/Mobile/pages/LupaPassword";
+import MobileResetPassword from "./pages/Mobile/pages/NewPassword";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
 import Transaction from "./pages/Dekstop/pages/admin/Transaction";
 import Layout from "./pages/Dekstop/pages/Layout";
@@ -28,6 +30,8 @@ import ListMembership from "./pages/Dekstop/pages/client/ListMembership";
 import History from "./pages/Dekstop/pages/client/History";
 import ListMahasiswa from "./pages/Dekstop/pages/client/ListMahasiswa";
 import ErrorPage404 from "./pages/Mobile/pages/ErrorPage404";
+import Login from "./pages/Dekstop/pages/Login";
+import MasterProduct from "./pages/Dekstop/pages/admin/MasterProduct";
 
 function App() {
   return (
@@ -69,15 +73,24 @@ function App() {
                 path="/input_identitas"
                 element={<MobileIdentitas />}
               ></Route>
+              <Route
+                path="/lupapassword"
+                element={<MobileLupaPassword />}
+              ></Route>
+              <Route
+                path="/reset-password"
+                element={<MobileResetPassword />}
+              ></Route>
             </>
           ) : (
             <>
               <Route path="/" element={<ErrorPage404 />}></Route>
-              {/* <Route path="/dashboard/*" element={<Layout />}>
+              <Route path="/dashboard/*" element={<Layout />}>
                 <Route path="" element={<Dashboard />} />
                 <Route path="product" element={<Product />} />
                 <Route path="client" element={<Tenants />} />
                 <Route path="members" element={<Membership />} />
+                <Route path="master-products" element={<MasterProduct />} />
                 <Route path="transaction" element={<Transaction />} />
                 <Route
                   path="tenants/transaction"
@@ -89,7 +102,7 @@ function App() {
                   path="tenants/listmahasiswa"
                   element={<ListMahasiswa />}
                 />
-              </Route> */}
+              </Route>
             </>
           )}
         </Routes>

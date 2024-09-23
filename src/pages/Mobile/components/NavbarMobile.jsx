@@ -2,7 +2,11 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { getUserById, logoutUsers } from "../../../api/apiUsers";
+import {
+  apiUsers,
+  getUserProductById,
+  logoutUsers,
+} from "../../../api/apiUsers";
 import Loading from "./Loading";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -11,20 +15,20 @@ const userNavigation = [
   { name: "Profil", href: "/profil" },
   { name: "Keluar", href: "/" },
 ];
-const notifications = [
-  {
-    title: "Profil",
-    subtitle: "Lengkapi profil kamu",
-    status: "new",
-    href: "#",
-  },
-  {
-    title: "Daftar Akun",
-    subtitle: "Kamu berhasil membuat akun",
-    status: "read",
-    href: "#",
-  },
-];
+// const notifications = [
+//   {
+//     title: "Profil",
+//     subtitle: "Lengkapi profil kamu",
+//     status: "new",
+//     href: "#",
+//   },
+//   {
+//     title: "Daftar Akun",
+//     subtitle: "Kamu berhasil membuat akun",
+//     status: "read",
+//     href: "#",
+//   },
+// ];
 
 export default function NavbarMobile() {
   const navigate = useNavigate();
@@ -36,7 +40,6 @@ export default function NavbarMobile() {
   useEffect(() => {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
-      console.log(token);
       if (!token || token === undefined) {
         navigate("/");
       }
@@ -52,7 +55,7 @@ export default function NavbarMobile() {
     const fetchUser = async () => {
       setTimeout(async () => {
         if (idUser) {
-          const response = await getUserById.userById(idUser);
+          const response = await apiUsers.getUserId(idUser);
           setName(response.data.UserName);
           setEmail(response.data.Email);
         }
@@ -108,8 +111,8 @@ export default function NavbarMobile() {
               transition
               className="absolute left-0 z-10 -mt-1 w-48 origin-top-left text-start rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
             >
-              {userNavigation.map((item) => (
-                <MenuItem key={item.name}>
+              {userNavigation.map((item, index) => (
+                <MenuItem key={index}>
                   <a
                     href={item.href}
                     onClick={item.name === "Keluar" ? handleLogout : null}
@@ -133,17 +136,17 @@ export default function NavbarMobile() {
               <span className="absolute -inset-1.5" />
               <span className="sr-only">Open user menu</span>
               <IoMdNotifications size={30} />
-              {notifications.some((item) => item.status === "new") && (
+              {/* {notifications.some((item) => item.status === "new") && (
                 <span className="absolute top-0 right-0 inline-block h-2 w-2 rounded-full bg-red-500"></span>
-              )}
+              )} */}
             </MenuButton>
           </div>
           <MenuItems
             transition
             className="absolute right-0 z-10 -mt-1 w-56 origin-top-right text-start rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
-            {notifications.map((item) => (
-              <MenuItem key={item.name}>
+            {/* {notifications.map((item, index) => (
+              <MenuItem key={index}>
                 <a
                   href={item.href}
                   className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
@@ -161,7 +164,7 @@ export default function NavbarMobile() {
                   </p>
                 </a>
               </MenuItem>
-            ))}
+            ))} */}
           </MenuItems>
         </Menu>
       </div>

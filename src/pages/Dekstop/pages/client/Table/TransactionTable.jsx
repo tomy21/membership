@@ -97,8 +97,8 @@ export default function TransactionTable() {
               className="px-3 py-2 rounded-lg text-blue-500 bg-white text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-blue-100"
               onClick={handleOpenModal}
             >
-              <p>Order Member</p>
               <MdOutlineAddCircle />
+              <p>Order Member</p>
             </button>
             <button className="px-3 py-2 rounded-lg text-green-500 bg-white text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
               <p>Export</p>

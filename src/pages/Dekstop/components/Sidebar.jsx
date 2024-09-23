@@ -22,6 +22,7 @@ const Sidebar = () => {
   const toggleMasterMenu = () => {
     setIsMasterOpen(!isMasterOpen);
   };
+
   return (
     <div className="fixed top-0 left-0 h-full w-60 bg-white text-black">
       <div className="flex flex-col space-x-3 items-center justify-center h-20 px-4 py-4 border-b border-gray-300">
@@ -30,7 +31,7 @@ const Sidebar = () => {
       </div>
       <nav className="px-4 py-4 overflow-auto text-sm max-h-[85vh]">
         <ul>
-          <h1 className="text-start mb-2">Main</h1>
+          {/* <h1 className="text-start mb-2">Main</h1>
           <li className="mb-1">
             <Link
               to="/dashboard"
@@ -101,7 +102,7 @@ const Sidebar = () => {
             >
               <GoHistory className="mr-2" /> History
             </Link>
-          </li>
+          </li> */}
 
           <h1 className="mb-2 text-start">Manage</h1>
           <li className="mb-1">
@@ -118,6 +119,18 @@ const Sidebar = () => {
           </li>
           <li className="mb-1">
             <Link
+              to="/dashboard/master-products"
+              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
+                location.pathname === "/dashboard/master-products"
+                  ? "bg-slate-400"
+                  : ""
+              }`}
+            >
+              <MdCardMembership className="mr-2" /> Master Products
+            </Link>
+          </li>
+          <li className="mb-1">
+            <Link
               to="/dashboard/product"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/product" ? "bg-slate-400" : ""
@@ -126,7 +139,7 @@ const Sidebar = () => {
               <MdCardMembership className="mr-2" /> Products
             </Link>
           </li>
-          <li className="mb-2">
+          {/* <li className="mb-2">
             <Link
               to="/dashboard/client"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
@@ -135,7 +148,7 @@ const Sidebar = () => {
             >
               <MdOutlineSupervisedUserCircle className="mr-2" /> Tenants
             </Link>
-          </li>
+          </li> */}
           <li className="mb-2">
             <Link
               to="/dashboard/members"

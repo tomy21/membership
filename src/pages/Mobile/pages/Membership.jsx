@@ -17,7 +17,6 @@ export default function Membership() {
   const [location, setLocation] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [tariff, setTariff] = useState(0);
-  const [maxQuota, setMaxQuota] = useState(0);
   const [currentQuota, setCurrentQuota] = useState(0);
   const [dataLocation, setDataLocation] = useState([]);
   const [platNomor, setPlatNomor] = useState("");
@@ -26,6 +25,7 @@ export default function Membership() {
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [dataFileStnk, setFileSTNK] = useState(null);
   const [errors, setErrors] = useState({});
   const [productBundle, setProductBundle] = useState([]);
   const [selectBundleProduct, setSelectBundleProduct] = useState("");
@@ -34,7 +34,10 @@ export default function Membership() {
   const [loadingPlate, setLoadingPlate] = useState(false);
   const [editEnabled, setEditEnabled] = useState(false); // State untuk mengontrol tombol edit
   const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol popup edit
-  const [timeoutId, setTimeoutId] = useState(null); // State untuk timeout
+  const [timeoutId, setTimeoutId] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
   const navigate = useNavigate();
 
   // Fetch Locations
@@ -49,9 +52,13 @@ export default function Membership() {
           console.error("Failed to fetch location data:", error);
         }
       }
+
+      if (!token || token === undefined) {
+        navigate("/");
+      }
     };
     fetchLocation();
-  }, []);
+  }, [navigate]);
 
   // Fetch Product by Location
   useEffect(() => {
@@ -59,7 +66,7 @@ export default function Membership() {
       if (selectedLocation) {
         try {
           const response = await getProductByLocation.getByCode(
-            selectedLocation.Code
+            selectedLocation.LocationCode
           );
           setDataLocation(response.data);
         } catch (error) {
@@ -94,7 +101,6 @@ export default function Membership() {
 
           setProductBundle(responseBundle.data);
           setProductId(response.data.product.Id);
-          setMaxQuota(response.data.product.MaxQuote);
 
           if (selectBundleProduct) {
             const responseBundle = await getBundleById.getById(
@@ -103,6 +109,8 @@ export default function Membership() {
             setPeriodId(selectBundleProduct.Code);
             setCurrentQuota(responseBundle.data.TrxMemberQuote?.CurrentQuota);
             setTariff(responseBundle.data.Price);
+            setStartDate(responseBundle.data.StartDate);
+            setEndDate(responseBundle.data.EndDate);
           }
         } catch (error) {
           console.error("Failed to fetch member data:", error);
@@ -142,6 +150,8 @@ export default function Membership() {
           tariff: tariff,
           platNomor: platNomor,
           file: file,
+          startDate: startDate,
+          endDate: endDate,
         },
       });
     }
@@ -154,11 +164,13 @@ export default function Membership() {
 
   // File Change Handler with Preview
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
+    setLoading(true);
+    const fileStnk = event.target.files[0];
+    if (fileStnk) {
+      const fileUrl = URL.createObjectURL(fileStnk);
       setPreview(fileUrl);
-      setFile(file);
+      setFileSTNK(fileStnk);
+      setLoading(false);
     }
   };
 
@@ -310,7 +322,7 @@ export default function Membership() {
               />
             </div>
 
-            <label htmlFor="kuotaMember" className="mt-2 text-gray-400">
+            {/* <label htmlFor="kuotaMember" className="mt-2 text-gray-400">
               Kuota Member
             </label>
             <input
@@ -320,7 +332,7 @@ export default function Membership() {
               className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               value={`${currentQuota ?? 0} /${maxQuota}`}
               disabled
-            />
+            /> */}
 
             <label htmlFor="platnomor" className="mt-2 text-gray-400">
               Plat Nomor Kendaraan

@@ -118,7 +118,7 @@ export const getMemberById = {
   getById: async (idMember) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/userProduct/${idMember}`
+        `/v01/member/api/userProduct/byUser?userId=${idMember}`
       );
       return response.data;
     } catch (error) {
@@ -228,12 +228,101 @@ export const getQuota = {
   },
 };
 
-export const addProductBundleAll = {
+export const productBundleAll = {
   storeProduct: async (formProduct) => {
     try {
       const response = await apiClient.post(
         "/v01/member/api/memberProductBundles",
         formProduct
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getAll: async (page, limit) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/memberProductBundles",
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/memberProductBundles/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  updateProduct: async (id, formData) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/member/api/memberProductBundles/${id}`,
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+  deleteProduct: async (id, DeletedBy) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/member/api/memberProductBundles/delete/${id}`,
+        { DeletedBy }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const HistoryPost = {
+  getAll: async (page, limit) => {
+    try {
+      const response = await apiClient.get("/v01/member/api/history-post", {
+        params: {
+          page,
+          limit,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/history-post/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getByCard: async (Card) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/history-post/${Card}`
       );
       return response.data;
     } catch (error) {

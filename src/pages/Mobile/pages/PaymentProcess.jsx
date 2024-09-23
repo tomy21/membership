@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Accordion from "../components/Accordion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { getIdTrx } from "../../../api/apiTrxPayment";
+import Cookies from "js-cookie";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -64,6 +65,16 @@ export default function PaymentProcess() {
     location.state.response.virtualAccountData.expiredDate
   );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = Cookies.get("refreshToken");
+      if (!token || token === undefined) {
+        navigate("/");
+      }
+    };
+    fetchToken();
+  }, [navigate]);
 
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
