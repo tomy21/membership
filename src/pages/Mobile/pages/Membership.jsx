@@ -68,6 +68,7 @@ export default function Membership() {
           const response = await getProductByLocation.getByCode(
             selectedLocation.LocationCode
           );
+          console.log(response);
           setDataLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -82,7 +83,8 @@ export default function Membership() {
     ...new Set(
       dataLocation.map((item) => ({
         Code: item.Id,
-        Name: item.VehicleType,
+        Name: item.ProductName,
+        Vehicle: item.VehicleType,
       }))
     ),
   ];
@@ -95,23 +97,19 @@ export default function Membership() {
           const response = await getProductById.getById(
             selectedVehicleType.Code
           );
-          const responseBundle = await getBundleByType.getByType(
-            selectedVehicleType.Name
+
+          const responseBundle = await getBundleById.getById(
+            selectedVehicleType.Code
           );
 
+          console.log(responseBundle);
           setProductBundle(responseBundle.data);
           setProductId(response.data.product.Id);
-
-          if (selectBundleProduct) {
-            const responseBundle = await getBundleById.getById(
-              selectBundleProduct.Code
-            );
-            setPeriodId(selectBundleProduct.Code);
-            setCurrentQuota(responseBundle.data.TrxMemberQuote?.CurrentQuota);
-            setTariff(responseBundle.data.Price);
-            setStartDate(responseBundle.data.StartDate);
-            setEndDate(responseBundle.data.EndDate);
-          }
+          setPeriodId(1);
+          setCurrentQuota(responseBundle.data.TrxMemberQuote?.CurrentQuota);
+          setTariff(responseBundle.data.Price);
+          setStartDate(responseBundle.data.StartDate);
+          setEndDate(responseBundle.data.EndDate);
         } catch (error) {
           console.error("Failed to fetch member data:", error);
         }
@@ -120,12 +118,7 @@ export default function Membership() {
     fetchMemberById();
   }, [selectedVehicleType, selectBundleProduct]);
 
-  // Bundle Name List
-  const bundleName = productBundle.map((item) => ({
-    Code: item.id,
-    Name: item.Name,
-    Tariff: item.Price,
-  }));
+  //
 
   // Handle Proceed to Next Step
   const handleProceed = () => {
@@ -272,30 +265,16 @@ export default function Membership() {
           </div>
 
           <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-            <label className="text-gray-400">Type Kendaraan</label>
+            <label className="text-gray-400">Product Membership</label>
             <ListComponent
               list={vehicleTypes}
-              title={"Pilih Type Kendaraan"}
-              search={"Cari Type Kendaraan"}
+              title={"Pilih Product Membership"}
+              search={"Cari Product Membership"}
               selected={selectedVehicleType}
               setSelected={setSelectedVehicleType}
             />
             {errors.selectedVehicleType && (
               <p className="text-red-500">{errors.selectedVehicleType}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-            <label className="text-gray-400">Product Member</label>
-            <ListComponent
-              list={bundleName}
-              title={"Pilih Paket Member"}
-              search={"Cari Paket Member"}
-              selected={selectBundleProduct}
-              setSelected={setSelectBundleProduct}
-            />
-            {errors.selectBundleProduct && (
-              <p className="text-red-500">{errors.selectBundleProduct}</p>
             )}
           </div>
 

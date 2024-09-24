@@ -56,7 +56,8 @@ function ListComponent({ list, title, search, selected, setSelected }) {
                   >
                     <div className="flex items-center">
                       <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
-                        {person.Name}
+                        {person.Name}{" "}
+                        {person.Vehicle ? `(${person.Vehicle})` : ""}
                       </span>
                     </div>
                   </ListboxOption>

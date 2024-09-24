@@ -7,6 +7,7 @@ import {
   storeProduct,
 } from "../../../../../../api/apiProduct";
 import { apiLocations } from "../../../../../../api/apiLocations";
+import { format } from "date-fns";
 
 export default function AddModal({ isOpen, onClose, onSuccess }) {
   const [formProduct, setFormProduct] = useState({
@@ -25,6 +26,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
   const [dataProduct, setDataProduct] = useState([]);
   const [dataLocation, setDataLocation] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  // const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -35,7 +37,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
     const fetchProduct = async () => {
       try {
         const responseBundle = await getBundleByType.getByType(
-          formProduct.Type
+          formProduct.VehicleType
         );
         setDataProduct(responseBundle.data);
 
@@ -55,13 +57,13 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
     };
 
     fetchLocation();
-    if (formProduct.Type) {
+    if (formProduct.VehicleType) {
       fetchProduct();
     }
-  }, [formProduct.Type]);
+  }, [formProduct.VehicleType]);
 
   useEffect(() => {
-    if (formProduct.Type) {
+    if (formProduct.VehicleType) {
       setVehicleOptions(
         dataProduct.map((data) => ({
           value: data.id,
@@ -71,7 +73,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
     } else {
       setVehicleOptions([]);
     }
-  }, [dataProduct, formProduct.Type]);
+  }, [dataProduct, formProduct.VehicleType]);
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -121,7 +123,10 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
 
     // Ketika MemberProductBundleId berubah, ambil StartDate dari bundle yang dipilih
     if (name === "MemberProductBundleId") {
-      const selectedBundle = dataProduct.find((bundle) => bundle.id === value);
+      const selectedBundle = dataProduct.find(
+        (bundle) => bundle.id === Number(value)
+      );
+      console.log(selectedBundle);
       if (selectedBundle) {
         setFormProduct((prevForm) => ({
           ...prevForm,
@@ -129,7 +134,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
         }));
       }
     }
-
+    console.log(formProduct.DateActive);
     // Ketika LocationCode berubah, kita simpan data lokasi yang dipilih
     if (name === "LocationCode") {
       const location = dataLocation.find((loc) => loc.LocationCode === value);
@@ -201,7 +206,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                   Vehicle Type
                 </label>
                 <select
-                  name="Type"
+                  name="VehicleType"
                   value={formProduct.VehicleType}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -213,7 +218,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                 </select>
               </div>
 
-              {formProduct.Type && vehicleOptions.length > 0 && (
+              {formProduct.VehicleType && vehicleOptions.length > 0 && (
                 <div>
                   <label className="block mb-2 font-semibold text-sm text-gray-600">
                     Product Bundle
@@ -300,48 +305,11 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                 <input
                   type="text"
                   name="DateActive"
-                  value={formProduct.DateActive}
+                  value={format(formProduct.DateActive, "dd-MM-yyyy hh:mm")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   readOnly
                 />
               </div>
-
-              <div>
-                <label className="text-start block mb-1 font-semibold text-sm text-gray-600">
-                  Location Code
-                </label>
-                <select
-                  name="LocationCode"
-                  value={formProduct.LocationCode}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="" disabled>
-                    Select Location
-                  </option>
-                  {dataLocation.map((data, index) => (
-                    <option key={index} value={data.LocationCode}>
-                      {data.LocationCode}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedLocation && (
-                <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
-                    Location Name
-                  </label>
-                  <input
-                    type="text"
-                    name="LocationName"
-                    value={selectedLocation.Name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    readOnly
-                  />
-                </div>
-              )}
             </div>
 
             <div>
