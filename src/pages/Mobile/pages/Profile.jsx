@@ -3,7 +3,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { getUserProductById } from "../../../api/apiUsers";
+import { apiUsers, getUserProductById } from "../../../api/apiUsers";
 import Loading from "../components/Loading";
 import { IoIosArrowForward } from "react-icons/io";
 import MotionProfile from "../components/MotionProfile";
@@ -58,7 +58,7 @@ function Profile() {
     if (!idUser) return;
 
     try {
-      const userResponse = await getUserProductById.userById(idUser);
+      const userResponse = await apiUsers.getUserId(idUser);
       console.log(userResponse);
       setData(userResponse);
     } catch (error) {
@@ -79,6 +79,7 @@ function Profile() {
   const handleUpdateData = async (updatedValue) => {
     const updatedData = { ...data.detaildata };
     const idDetails = data.detaildata?.id;
+    console.log(idDetails);
     switch (editData.label) {
       case "Nama Lengkap":
         updatedData.FullName = updatedValue;
@@ -172,7 +173,7 @@ function Profile() {
                     Nomor Handphone
                   </label>
                   <h1 className="text-slate-500 text-sm">
-                    +62{data.data?.PhoneNumber ?? "Input nomor handphone"}
+                    {data.data?.PhoneNumber ?? "Input nomor handphone"}
                   </h1>
                 </div>
                 <IoIosArrowForward

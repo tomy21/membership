@@ -23,6 +23,19 @@ export const apiLocations = {
       throw error.response.data;
     }
   },
+  getLocationActive: async (page, limit) => {
+    try {
+      const response = await apiClient.get("/api/getByLocationMembers", {
+        params: {
+          page,
+          limit,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };
 export const apiGetProduct = {
   getProduct: async (locId) => {

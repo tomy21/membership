@@ -10,6 +10,18 @@ export const apiUsers = {
     }
   },
 
+  updateUserById: async (idUser, data) => {
+    try {
+      const response = await apiClient.patch(
+        `/v01/member/api/auth/usersDetail/${idUser}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   register: async (userData) => {
     try {
       const response = await apiClient.post(
@@ -60,6 +72,7 @@ export const getUserProductById = {
         `/v01/member/api/userProduct/byUser`,
         { params: { userId: idUser } }
       );
+      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;
