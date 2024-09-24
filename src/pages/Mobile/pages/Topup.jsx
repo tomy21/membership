@@ -20,6 +20,7 @@ export default function Topup() {
   const [selectedType, setSelectedType] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isTermsVisible, setIsTermsVisible] = useState(false);
+  const [typePayment, setTypePayment] = useState("topup");
   const navigate = useNavigate();
 
   const handleAmountChange = (e) => {
@@ -33,10 +34,11 @@ export default function Topup() {
         (provider) => provider.Type === selectedType
       );
       setFilteredProviders(filtered);
+      setTypePayment(typePayment);
     } else {
       setFilteredProviders([]);
     }
-  }, [selectedType, providers]);
+  }, [selectedType, providers, typePayment]);
 
   useEffect(() => {
     const fetchProvider = async () => {
@@ -153,6 +155,7 @@ export default function Topup() {
             <PaymentMethodSelector
               selectedType={selectedType}
               setSelectedType={setSelectedType}
+              typePayment={typePayment}
             />
             {selectedType && (
               <ProviderSelector

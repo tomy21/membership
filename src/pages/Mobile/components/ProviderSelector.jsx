@@ -7,7 +7,6 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
-  console.log(filteredProviders);
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>

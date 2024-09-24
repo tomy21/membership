@@ -19,6 +19,7 @@ function PaymentMember() {
   const [showModal, setShowModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isTermsVisible, setIsTermsVisible] = useState(false);
+  const [typePayment, setTypePayment] = useState("buyMember");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,8 +28,8 @@ function PaymentMember() {
       const filtered = providers.filter(
         (provider) => provider.Type === selectedType
       );
-      console.log(filtered);
       setFilteredProviders(filtered);
+      setTypePayment("buyMember");
     } else {
       setFilteredProviders([]);
     }
@@ -184,6 +185,7 @@ function PaymentMember() {
           <PaymentMethodSelector
             selectedType={selectedType}
             setSelectedType={setSelectedType}
+            typePayment={typePayment}
           />
           {selectedType && (
             <ProviderSelector
