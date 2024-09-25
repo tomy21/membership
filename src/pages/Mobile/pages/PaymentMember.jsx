@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { endOfMonth, format } from "date-fns";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
-import { getProviderById } from "../../../api/apiProvider";
+import { getAllProvider, getProviderById } from "../../../api/apiProvider";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import ProviderSelector from "../components/ProviderSelector";
 import { FaArrowLeftLong } from "react-icons/fa6";
@@ -51,7 +51,7 @@ function PaymentMember() {
 
   useEffect(() => {
     const fetchProvider = async () => {
-      const response = await getProviderById.getById(0);
+      const response = await getAllProvider.getProvider();
       // Tambahkan provider manual ke dalam array yang didapat dari API
       const manualProvider = {
         Id: 0,
