@@ -15,12 +15,12 @@ const ProviderSelector = ({
             {selectedProvider ? (
               <>
                 <img
-                  src={`/assets/payment/${selectedProvider.LogoUrl}`}
+                  src={`/assets/payment/${selectedProvider?.LogoUrl}`}
                   className="w-7"
-                  alt={selectedProvider.ProviderName}
+                  alt={selectedProvider?.ProviderName}
                 />
                 <span className="block truncate">
-                  {selectedProvider.ProviderName}
+                  {selectedProvider?.ProviderName}
                 </span>
               </>
             ) : (

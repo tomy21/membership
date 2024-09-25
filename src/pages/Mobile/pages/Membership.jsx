@@ -49,7 +49,6 @@ export default function Membership() {
       if (token) {
         try {
           const response = await getProductAll.getAll();
-
           setLocation(response.data.products);
         } catch (error) {
           console.error("Failed to fetch location data:", error);
@@ -115,8 +114,8 @@ export default function Membership() {
           );
 
           setProductBundle(responseBundle?.data);
-          setProductId(selectedVehicleType.IdProduct);
-          setPeriodId(responseQuota.data.Id);
+          setProductId(selectedVehicleType?.IdProduct);
+          setPeriodId(responseQuota.data?.Id);
           setTariff(responseBundle.data.Price);
           setStartDate(responseBundle.data.StartDate);
           setEndDate(responseBundle.data.EndDate);
