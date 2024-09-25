@@ -140,7 +140,6 @@ export default function Dashboard() {
         const productMemberResponse = await getMemberByUserId.getByUserId(
           idUser
         );
-        console.log(productMemberResponse);
         setMemberProduct(productMemberResponse?.data);
       } catch (error) {
         if (error.response && error.response.status !== 404) {
