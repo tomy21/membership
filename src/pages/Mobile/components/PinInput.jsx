@@ -92,6 +92,8 @@ function PinInput() {
             providerId: location.state.providerId,
           };
           const responseBayarind = await apiBayarindExtend.extend(data);
+          console.log(responseBayarind);
+
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
