@@ -20,7 +20,7 @@ export default function HistoryPayment({ listRiwayat }) {
 
           <div className="flex justify-between items-center w-full mb-3 border-b border-dashed py-3 px-3">
             <h1>{items.Activity.toUpperCase()}</h1>
-            <h3>{format(new Date(items.CreatedAt), "dd MMM yyyy HH:mm")}</h3>
+            <h3>{format(new Date(items?.CreatedAt), "dd MMM yyyy HH:mm")}</h3>
           </div>
 
           <div className="flex justify-between items-center w-full mb-3 border-b py-3 px-3">
@@ -29,17 +29,17 @@ export default function HistoryPayment({ listRiwayat }) {
                 Plat Nomor
               </label>
               <h1 className="text-sm font-semibold">
-                {items.PlateNumber ? items.PlateNumber : "-"}
+                {items?.PlateNumber ? items?.PlateNumber : "-"}
               </h1>
             </div>
             <div className="flex flex-col justify-start items-start w-1/2">
               <label htmlFor="plat_nomor" className="text-xs text-slate-400">
-                {items.Activity === "topup" ? "Price" : "Lokasi"}
+                {items?.Activity === "topup" ? "Price" : "Lokasi"}
               </label>
               <h1 className="text-xs font-semibold text-start">
-                {items.Activity === "topup"
-                  ? formatCurrency(items.Price)
-                  : items.LocationName}
+                {items?.Activity === "topup"
+                  ? formatCurrency(items?.Price)
+                  : items?.LocationName}
               </h1>
             </div>
           </div>
@@ -47,18 +47,18 @@ export default function HistoryPayment({ listRiwayat }) {
           <div className="flex justify-between items-center w-full mb-3 px-3 ">
             <p
               className={`text-xs font-semibold border px-3 py-2 rounded-xl ${
-                items.Status === "Success"
+                items?.Status === "Success"
                   ? "text-green-600 bg-green-100"
-                  : items.Status === "Pending"
+                  : items?.Status === "Pending"
                   ? "text-yellow-600 bg-yellow-100"
-                  : items.Status === "Cancel"
+                  : items?.Status === "Cancel"
                   ? "text-yellow-600 bg-yellow-100"
-                  : items.Status === "Berhasil"
+                  : items?.Status === "Berhasil"
                   ? "text-emerald-600 bg-emerald-100"
                   : "-"
               }`}
             >
-              {items.Status === "Berhasil" ? "Success" : "-"}
+              {items?.Status === "Berhasil" ? "Success" : "-"}
             </p>
           </div>
         </div>

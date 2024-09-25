@@ -236,7 +236,7 @@ export default function Dashboard() {
         <div className="">
           {activeTab === "tab1" && (
             <div>
-              {listRiwayat.length === 0 ? (
+              {listRiwayat?.length === 0 ? (
                 <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
                   <img
                     src={"/parchment.png"}
