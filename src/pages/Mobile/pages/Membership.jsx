@@ -103,6 +103,8 @@ export default function Membership() {
     ),
   ];
 
+  console.log(listLocation);
+
   // Fetch Member by Vehicle Type
   useEffect(() => {
     const fetchMemberById = async () => {
