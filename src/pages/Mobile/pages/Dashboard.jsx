@@ -67,14 +67,36 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchToken = async () => {
       const token = Cookies.get("refreshToken");
+
       if (!token) {
-        navigate("/");
+        // Token tidak ada, arahkan ke login
+        navigate("/login");
         return;
       }
 
-      const decodedToken = jwtDecode(token);
-      setIdUser(decodedToken.Id);
+      try {
+        // Decode token untuk mendapatkan informasi seperti waktu kedaluwarsa
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000; // Waktu saat ini dalam detik
+
+        // Periksa apakah token sudah kedaluwarsa
+        if (decodedToken.exp && decodedToken.exp < currentTime) {
+          // Token sudah expired, hapus token dan arahkan ke login
+          Cookies.remove("refreshToken");
+          navigate("/login");
+          return;
+        }
+
+        // Token valid, set ID user atau lakukan tindakan lain
+        setIdUser(decodedToken.Id);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        // Jika terjadi error dalam decoding, hapus token dan arahkan ke login
+        Cookies.remove("refreshToken");
+        navigate("/login");
+      }
     };
+
     fetchToken();
   }, [navigate]);
 
@@ -118,6 +140,7 @@ export default function Dashboard() {
         const productMemberResponse = await getMemberByUserId.getByUserId(
           idUser
         );
+        console.log(productMemberResponse);
         setMemberProduct(productMemberResponse?.data);
       } catch (error) {
         if (error.response && error.response.status !== 404) {

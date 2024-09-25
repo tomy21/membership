@@ -49,7 +49,11 @@ export default function Membership() {
       if (token) {
         try {
           const response = await getProductAll.getAll();
-          setLocation(response.data.products);
+          if (response.data && Array.isArray(response.data.products)) {
+            setLocation(response.data.products);
+          } else {
+            console.error("Invalid response format");
+          }
         } catch (error) {
           console.error("Failed to fetch location data:", error);
         }
@@ -80,30 +84,29 @@ export default function Membership() {
   }, [selectedLocation]);
 
   // Vehicle Types List
-  const vehicleTypes = [
-    ...new Set(
-      dataLocation.map((item) => ({
-        Code: item.id,
-        Name: item.Name,
-        Vehicle: item.Type,
-        Tariff: item.Price,
-        StartDate: item.StartDate,
-        EndDate: item.EndDate,
-      }))
-    ),
-  ];
+  const vehicleTypes = Array.isArray(dataLocation)
+    ? [
+        ...new Set(
+          dataLocation.map((item) => ({
+            Code: item.id,
+            Name: item.Name,
+            Vehicle: item.Type,
+          }))
+        ),
+      ]
+    : [];
 
-  const listLocation = [
-    ...new Set(
-      location.map((item) => ({
-        Code: item.LocationCode,
-        Name: item.LocationName,
-        IdProduct: item.Id,
-      }))
-    ),
-  ];
-
-  console.log(listLocation);
+  const listLocation = Array.isArray(location)
+    ? [
+        ...new Set(
+          location.map((item) => ({
+            Code: item.LocationCode,
+            Name: item.LocationName,
+            IdProduct: item.Id,
+          }))
+        ),
+      ]
+    : [];
 
   // Fetch Member by Vehicle Type
   useEffect(() => {
@@ -119,7 +122,7 @@ export default function Membership() {
           );
           setProductBundle(responseBundle?.data);
           setProductId(responseBundle.data.MemberProductId);
-          setPeriodId(responseQuota.data[0]?.Id);
+          setPeriodId(responseQuota.data[0].Id ?? responseQuota.data.Id);
           setTariff(responseBundle.data.Price);
           setStartDate(responseBundle.data?.StartDate);
           setEndDate(responseBundle.data?.EndDate);
@@ -144,19 +147,20 @@ export default function Membership() {
       setErrors(newErrors);
     } else {
       setErrors({});
+      const data = {
+        type: "Member",
+        periodId: periodeId,
+        productId: productId,
+        location: selectedLocation.Name,
+        vehicleType: selectedVehicleType.Name,
+        tariff: tariff,
+        platNomor: platNomor,
+        file: file,
+        startDate: startDate,
+        endDate: endDate,
+      };
       navigate("/payment_member", {
-        state: {
-          type: "Member",
-          periodId: periodeId,
-          productId: productId,
-          location: selectedLocation.Name,
-          vehicleType: selectedVehicleType.Name,
-          tariff: tariff,
-          platNomor: platNomor,
-          file: file,
-          startDate: startDate,
-          endDate: endDate,
-        },
+        state: data,
       });
     }
   };

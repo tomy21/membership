@@ -114,13 +114,41 @@ export const getMemberByUserId = {
 };
 export const getMemberById = {
   getById: async (idMember) => {
+    // Check if idMember is provided
+    if (!idMember) {
+      return { error: "ID member is required" };
+    }
+
     try {
+      // Make API call
       const response = await apiClient.get(
         `/v01/member/api/userProduct/byUser?userId=${idMember}`
       );
-      return response.data;
+      const data = response.data;
+
+      // Check if data exists
+      if (!data) {
+        return { error: "Data not found for the provided ID" };
+      }
+
+      // Return data if everything is successful
+      return data;
     } catch (error) {
-      throw error.response.data;
+      // Check if the error is a 404 Not Found
+      if (error.response && error.response?.statusCode === 404) {
+        return { error: "User product not found for the provided ID." }; // Handle 404 error
+      }
+
+      // Handle other errors
+      if (error.response) {
+        const apiError =
+          error.response?.data?.message ||
+          "An error occurred while fetching data";
+        return { error: apiError };
+      }
+
+      // Handle general errors
+      return { error: error.message || "An unknown error occurred" };
     }
   },
 };

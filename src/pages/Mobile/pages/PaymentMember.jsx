@@ -23,6 +23,8 @@ function PaymentMember() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log(location);
+
   useEffect(() => {
     if (selectedType) {
       const filtered = providers.filter(

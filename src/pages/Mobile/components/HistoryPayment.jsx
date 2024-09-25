@@ -8,6 +8,8 @@ export default function HistoryPayment({ listRiwayat }) {
       currency: "IDR",
     });
   };
+
+  console.log(listRiwayat);
   return (
     <>
       {listRiwayat.map((items, index) => (
@@ -58,7 +60,7 @@ export default function HistoryPayment({ listRiwayat }) {
                   : "-"
               }`}
             >
-              {items?.Status === "Berhasil" ? "Success" : "-"}
+              {items?.Status}
             </p>
           </div>
         </div>
