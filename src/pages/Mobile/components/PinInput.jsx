@@ -35,7 +35,7 @@ function PinInput() {
         pinVerifikasi: enteredPin,
       });
 
-      if (response.statusCode === 200) {
+      if (response && response.statusCode === 200) {
         const dataForm = {
           providerId: location.state?.providerId ?? "",
           productId: location.state?.productId ?? "",
@@ -53,36 +53,31 @@ function PinInput() {
 
         if (location.state.type === "Member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
-          console.log(responseBayarind);
-          if (responseBayarind.status === 200) {
-            console.log("Berhasil");
-            setShowModal(true);
-            setSuccessMessage(responseBayarind.data.responseMessage);
+          if (responseBayarind && responseBayarind.status === 200) {
+            if (responseBayarind.data.responseCode === "2002700") {
+              const data = {
+                periodId: location.state.periodId,
+                bankProvider: location.state.providerName,
+                virtualAccountNomor:
+                  responseBayarind.data.virtualAccountData.virtualAccountNo,
+                amount:
+                  responseBayarind.data.virtualAccountData.totalAmount.value,
+                response: responseBayarind.data,
+              };
+              navigate("/payment_process", { state: data });
+            } else if (responseBayarind.data.responseCode === "400") {
+              setErrorMessage(responseBayarind.data.responseMessage);
+              setPin(Array(6).fill(""));
+              setShowModal(true);
+            } else {
+              setErrorMessage(responseBayarind.data.responseMessage);
+              setPin(Array(6).fill(""));
+              setShowModal(true);
+            }
           } else {
-            setErrorMessage(responseBayarind.data.responseMessage);
+            setErrorMessage(responseBayarind?.statusText ?? "");
             setPin(Array(6).fill(""));
             setShowModalError(true);
-          }
-
-          if (responseBayarind.data.responseCode === "2002700") {
-            const data = {
-              periodId: location.state.periodId,
-              bankProvider: location.state.providerName,
-              virtualAccountNomor:
-                responseBayarind.data.virtualAccountData.virtualAccountNo,
-              amount:
-                responseBayarind.data.virtualAccountData.totalAmount.value,
-              response: responseBayarind.data,
-            };
-            navigate("/payment_process", { state: data });
-          } else if (responseBayarind.data.responseCode === "400") {
-            setErrorMessage(responseBayarind.data.responseMessage);
-            setPin(Array(6).fill(""));
-            setShowModal(true);
-          } else {
-            setErrorMessage(responseBayarind.data.responseMessage);
-            setPin(Array(6).fill(""));
-            setShowModal(true);
           }
         } else if (location.state.type === "Extend") {
           const data = {
@@ -92,9 +87,12 @@ function PinInput() {
             providerId: location.state.providerId,
           };
           const responseBayarind = await apiBayarindExtend.extend(data);
-          console.log(responseBayarind);
 
-          if (responseBayarind.data.responseCode === "2002700") {
+          if (
+            responseBayarind &&
+            responseBayarind.data &&
+            responseBayarind.data.responseCode === "2002700"
+          ) {
             const data = {
               periodId: location.state.periodId,
               bankProvider: location.state.providerName,
@@ -125,7 +123,11 @@ function PinInput() {
             dataFormTopUp
           );
 
-          if (responseBayarind.data.responseCode === "2002700") {
+          if (
+            responseBayarind &&
+            responseBayarind.data &&
+            responseBayarind.data.responseCode === "2002700"
+          ) {
             const data = {
               bankProvider: location.state.providerName,
               response: responseBayarind.data,
@@ -133,6 +135,10 @@ function PinInput() {
 
             navigate("/payment_process", { state: data });
           } else if (responseBayarind.data.responseCode === "400") {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModal(true);
+          } else {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
             setShowModal(true);

@@ -67,10 +67,9 @@ export default function Membership() {
     const fetchProduct = async () => {
       if (selectedLocation) {
         try {
-          const response = await getProductByLocation.getByCode(
-            selectedLocation.Code
+          const response = await productBundleAll.getByIdProduct(
+            selectedLocation.IdProduct
           );
-
           setDataLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -84,10 +83,12 @@ export default function Membership() {
   const vehicleTypes = [
     ...new Set(
       dataLocation.map((item) => ({
-        Code: item.LocationCode,
-        Name: item.ProductName,
-        Vehicle: item.VehicleType,
-        IdProduct: item.Id,
+        Code: item.id,
+        Name: item.Name,
+        Vehicle: item.Type,
+        Tariff: item.Price,
+        StartDate: item.StartDate,
+        EndDate: item.EndDate,
       }))
     ),
   ];
@@ -97,6 +98,7 @@ export default function Membership() {
       location.map((item) => ({
         Code: item.LocationCode,
         Name: item.LocationName,
+        IdProduct: item.Id,
       }))
     ),
   ];
@@ -106,19 +108,19 @@ export default function Membership() {
     const fetchMemberById = async () => {
       if (selectedVehicleType.Code) {
         try {
-          const responseBundle = await productBundleAll.getByIdProduct(
-            selectedVehicleType.IdProduct
-          );
-          const responseQuota = await productBundleAll.getProductQuote(
-            selectedVehicleType.IdProduct
+          const responseBundle = await productBundleAll.getById(
+            selectedVehicleType.Code
           );
 
+          const responseQuota = await productBundleAll.getProductQuote(
+            selectedVehicleType.Code
+          );
           setProductBundle(responseBundle?.data);
-          setProductId(selectedVehicleType?.IdProduct);
-          setPeriodId(responseQuota.data?.Id);
+          setProductId(responseBundle.data.MemberProductId);
+          setPeriodId(responseQuota.data[0]?.Id);
           setTariff(responseBundle.data.Price);
-          setStartDate(responseBundle.data.StartDate);
-          setEndDate(responseBundle.data.EndDate);
+          setStartDate(responseBundle.data?.StartDate);
+          setEndDate(responseBundle.data?.EndDate);
         } catch (error) {
           console.error("Failed to fetch member data:", error);
         }
