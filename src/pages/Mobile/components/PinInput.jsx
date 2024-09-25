@@ -53,7 +53,7 @@ function PinInput() {
 
         if (location.state.type === "Member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
-
+          console.log(responseBayarind);
           if (responseBayarind.status === 200) {
             console.log("Berhasil");
             setShowModal(true);
