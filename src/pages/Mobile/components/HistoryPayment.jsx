@@ -9,7 +9,6 @@ export default function HistoryPayment({ listRiwayat }) {
     });
   };
 
-  console.log(listRiwayat);
   return (
     <>
       {listRiwayat.map((items, index) => (
