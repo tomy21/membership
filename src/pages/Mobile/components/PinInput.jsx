@@ -75,6 +75,10 @@ function PinInput() {
               response: responseBayarind.data,
             };
             navigate("/payment_process", { state: data });
+          } else if (responseBayarind.data.responseCode === "400") {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModal(true);
           } else {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
