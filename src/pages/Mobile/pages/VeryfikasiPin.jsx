@@ -1,6 +1,7 @@
 import React from "react";
 import PinInput from "../components/PinInput";
 import { useNavigate } from "react-router-dom";
+import { MdArrowBackIosNew } from "react-icons/md";
 
 export default function VeryfikasiPin() {
   const navigate = useNavigate();
@@ -11,16 +12,18 @@ export default function VeryfikasiPin() {
   };
   return (
     <>
-      <div className="min-h-screen bg-white flex flex-col items-center">
-        <div className="w-full max-w-md px-4">
-          <PinInput />
-
+      <div className="min-h-screen bg-white flex flex-col items-center px-5">
+        <div className="flex flex-row justify-start items-center w-full gap-x-20">
           <button
-            className="w-full bg-red-500 text-white py-2 rounded mt-10"
+            className="flex flex-row items-center text-black py-2 rounded mt-5"
             onClick={() => handleBack()}
           >
-            Batal
+            <MdArrowBackIosNew size={30} className="mr-2" />
+            <h1 className="text-base">Kembali</h1>
           </button>
+        </div>
+        <div className="w-full max-w-md px-4">
+          <PinInput />
         </div>
       </div>
     </>

@@ -96,8 +96,7 @@ export default function Dashboard() {
       try {
         setTimeout(async () => {
           if (idUser) {
-            const response = await getMemberById.getById(idUser);
-            console.log("data", response);
+            await getMemberById.getById(idUser);
           }
         }, 500);
       } catch (error) {
@@ -304,9 +303,6 @@ export default function Dashboard() {
             <div className="flex flex-col justify-center items-center w-full space-y-10">
               <QRCode value={selectedProduct.CardId} size={150} />
               <div className="flex flex-col justify-center items-center space-y-2 w-full">
-                {/* <div className="bg-sky-100 p-3 rounded text-xs">
-                  Member di UPH akan habis
-                </div> */}
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded w-full"
                   onClick={closeModal}

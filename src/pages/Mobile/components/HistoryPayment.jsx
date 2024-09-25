@@ -52,17 +52,13 @@ export default function HistoryPayment({ listRiwayat }) {
                   : items.Status === "Pending"
                   ? "text-yellow-600 bg-yellow-100"
                   : items.Status === "Cancel"
-                  ? "text-red-600 bg-red-100"
+                  ? "text-yellow-600 bg-yellow-100"
+                  : items.Status === "Berhasil"
+                  ? "text-emerald-600 bg-emerald-100"
                   : "-"
               }`}
             >
-              {items.Status === "Success"
-                ? items.Status.toUpperCase()
-                : items.Status === "Pending"
-                ? items.Status.toUpperCase()
-                : items.Status === "Cancel"
-                ? items.Status.toUpperCase()
-                : "-"}
+              {items.Status === "Berhasil" ? "Success" : "-"}
             </p>
           </div>
         </div>

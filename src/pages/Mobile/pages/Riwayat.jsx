@@ -20,6 +20,7 @@ function Riwayat() {
   const [loading, setLoading] = useState(true);
   const [showMore, setShowMore] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
+  const [activeTab, setActiveTab] = useState("tab1");
   const navigate = useNavigate();
 
   const tabs = ["Payment History", "Parking History"];
@@ -53,22 +54,24 @@ function Riwayat() {
           response = await historyMembers.getHistory(idUser, page);
           break;
         case 2: // Parking History
-          response = await historyMembers.getHistory(idUser, page);
+          // Jika tidak ada data, response akan tetap berupa array kosong
+          response = { data: [] };
           break;
         default: // Member History
           response = await historyMembers.getHistory(idUser, page);
       }
+
       setData((prevData) =>
         showMore ? [...prevData, ...response.data] : response.data
       );
-
-      setTotalPages(response.totalPages);
+      setTotalPages(response.totalPages || 1); // Mengatur total pages dari response atau default ke 1
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -155,8 +158,15 @@ function Riwayat() {
         <div className="space-y-4 max-h-[70vh] overflow-auto">
           {loading ? (
             <p>Loading...</p>
-          ) : (
+          ) : filteredData.length > 0 ? (
             <HistoryPayment listRiwayat={filteredData} />
+          ) : (
+            <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+              <img src={"/parchment.png"} className="w-24 opacity-20" alt="" />
+              <p className="text-sm text-gray-500 mt-5">
+                Belum ada riwayat transaksi
+              </p>
+            </div>
           )}
         </div>
         {currentPage < totalPages && (

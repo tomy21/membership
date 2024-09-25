@@ -20,6 +20,7 @@ function PinInput() {
   const [idUser, setIdUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalError, setShowModalError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
@@ -52,7 +53,17 @@ function PinInput() {
 
         if (location.state.type === "Member") {
           const responseBayarind = await apiBayarindVa.createVa(dataForm);
-          console.log(responseBayarind);
+
+          if (responseBayarind.status === 200) {
+            console.log("Berhasil");
+            setShowModal(true);
+            setSuccessMessage(responseBayarind.data.responseMessage);
+          } else {
+            setErrorMessage(responseBayarind.data.responseMessage);
+            setPin(Array(6).fill(""));
+            setShowModalError(true);
+          }
+
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
@@ -64,13 +75,6 @@ function PinInput() {
               response: responseBayarind.data,
             };
             navigate("/payment_process", { state: data });
-          } else if (responseBayarind.data.responseCode === "400") {
-            setErrorMessage(responseBayarind.data.responseMessage);
-            setPin(Array(6).fill(""));
-            setShowModal(true);
-          } else if (responseBayarind.data.responseCode === "200") {
-            setShowModal(true);
-            setSuccessMessage(responseBayarind.data.responseMessage);
           } else {
             setErrorMessage(responseBayarind.data.responseMessage);
             setPin(Array(6).fill(""));
@@ -83,14 +87,7 @@ function PinInput() {
             periodId: location.state.periodId,
             providerId: location.state.providerId,
           };
-          console.log("data", data);
-          const responseBayarind = await apiBayarindExtend.extend(
-            location.state.userProductId,
-            location.state.productId,
-            location.state.periodId,
-            location.state.providerId
-          );
-          console.log("data", responseBayarind);
+          const responseBayarind = await apiBayarindExtend.extend(data);
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
@@ -231,40 +228,42 @@ function PinInput() {
       <div className="flex flex-col items-center justify-center w-full">
         <ToastContainer />
         <ErrorModal
-          showModal={showModal}
+          showModal={showModalError}
           handleClose={handleCloseModal}
           message={errorMessage}
         />
         <SuccessModal
           showModal={showModal}
           handleSuccessClose={handleCloseModalSuccess}
-          message={errorMessage}
+          message={successMessage}
         />
         <div className="text-center mb-4 text-lg font-semibold mt-5">
           Masukkan 6 digit PIN Kamu
         </div>
-        <div className="flex justify-center space-x-2 mb-4">
-          {Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <input
-                key={index}
-                type="password" // Menggunakan type tel untuk fokus pada input numerik
-                maxLength="1"
-                className="w-10 h-10 border border-gray-300 rounded-full text-center text-xl"
-                autoFocus={index === 0}
-                onChange={(e) => handleInput(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                ref={(el) => (inputRefs.current[index] = el)}
-                value={pin[index]}
-                inputMode="none" // Tidak memunculkan keypad mobile bawaan
-                autoComplete="off" // Nonaktifkan autoComplete
-                readOnly // Mencegah input langsung
-                style={{ caretColor: "transparent" }} // Menyembunyikan kursor
-              />
-            ))}
-        </div>
-        <button className="mb-6 text-blue-600">Lupa PIN?</button>
+        <form>
+          <div className="flex justify-center space-x-2 mb-4">
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <input
+                  key={index}
+                  type="password" // Menggunakan type tel untuk fokus pada input numerik
+                  maxLength="1"
+                  className="w-10 h-10 border border-gray-300 rounded-full text-center text-xl"
+                  autoFocus={index === 0}
+                  onChange={(e) => handleInput(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  value={pin[index]}
+                  inputMode="none" // Tidak memunculkan keypad mobile bawaan
+                  autoComplete="off" // Nonaktifkan autoComplete
+                  readOnly // Mencegah input langsung
+                  style={{ caretColor: "transparent" }} // Menyembunyikan kursor
+                />
+              ))}
+          </div>
+        </form>
+        {/* <button className="mb-6 text-blue-600">Lupa PIN?</button> */}
         <div className="grid grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num, idx) => (
             <button

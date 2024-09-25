@@ -23,7 +23,6 @@ export const getProductAll = {
           limit,
         },
       });
-      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -50,7 +49,6 @@ export const getProductByLocation = {
       const response = await apiClient.get(
         `/v01/member/api/product/byLocation?LocationCode=${code}`
       );
-      console.log("dataLocation", response);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -262,6 +260,28 @@ export const productBundleAll = {
     try {
       const response = await apiClient.get(
         `/v01/member/api/memberProductBundles/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getByIdProduct: async (idProduct) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/product/getByProductId/${idProduct}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getProductQuote: async (id) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/quota-memberBundle/${id}`
       );
       return response.data;
     } catch (error) {

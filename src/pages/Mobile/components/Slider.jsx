@@ -16,8 +16,6 @@ export default function SliderComponent({ openModal, memberProducts }) {
     arrows: false,
   };
 
-  console.log(memberProducts);
-
   if (memberProducts.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center">

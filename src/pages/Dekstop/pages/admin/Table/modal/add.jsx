@@ -305,7 +305,7 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                 <input
                   type="text"
                   name="DateActive"
-                  value={format(formProduct.DateActive, "dd-MM-yyyy hh:mm")}
+                  value={formProduct.DateActive}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   readOnly
                 />

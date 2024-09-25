@@ -8,8 +8,10 @@ import { apiLocations } from "../../../api/apiLocations";
 import {
   getBundleById,
   getBundleByType,
+  getProductAll,
   getProductById,
   getProductByLocation,
+  productBundleAll,
   verifikasiPlate,
 } from "../../../api/apiProduct";
 
@@ -46,8 +48,9 @@ export default function Membership() {
       const token = Cookies.get("refreshToken");
       if (token) {
         try {
-          const response = await apiLocations.getLocation();
-          setLocation(response.data);
+          const response = await getProductAll.getAll();
+
+          setLocation(response.data.products);
         } catch (error) {
           console.error("Failed to fetch location data:", error);
         }
@@ -66,9 +69,9 @@ export default function Membership() {
       if (selectedLocation) {
         try {
           const response = await getProductByLocation.getByCode(
-            selectedLocation.LocationCode
+            selectedLocation.Code
           );
-          console.log(response);
+
           setDataLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -82,9 +85,19 @@ export default function Membership() {
   const vehicleTypes = [
     ...new Set(
       dataLocation.map((item) => ({
-        Code: item.Id,
+        Code: item.LocationCode,
         Name: item.ProductName,
         Vehicle: item.VehicleType,
+        IdProduct: item.Id,
+      }))
+    ),
+  ];
+
+  const listLocation = [
+    ...new Set(
+      location.map((item) => ({
+        Code: item.LocationCode,
+        Name: item.LocationName,
       }))
     ),
   ];
@@ -94,19 +107,16 @@ export default function Membership() {
     const fetchMemberById = async () => {
       if (selectedVehicleType.Code) {
         try {
-          const response = await getProductById.getById(
-            selectedVehicleType.Code
+          const responseBundle = await productBundleAll.getByIdProduct(
+            selectedVehicleType.IdProduct
+          );
+          const responseQuota = await productBundleAll.getProductQuote(
+            selectedVehicleType.IdProduct
           );
 
-          const responseBundle = await getBundleById.getById(
-            selectedVehicleType.Code
-          );
-
-          console.log(responseBundle);
-          setProductBundle(responseBundle.data);
-          setProductId(response.data.product.Id);
-          setPeriodId(1);
-          setCurrentQuota(responseBundle.data.TrxMemberQuote?.CurrentQuota);
+          setProductBundle(responseBundle?.data);
+          setProductId(selectedVehicleType.IdProduct);
+          setPeriodId(responseQuota.data.Id);
           setTariff(responseBundle.data.Price);
           setStartDate(responseBundle.data.StartDate);
           setEndDate(responseBundle.data.EndDate);
@@ -117,8 +127,6 @@ export default function Membership() {
     };
     fetchMemberById();
   }, [selectedVehicleType, selectBundleProduct]);
-
-  //
 
   // Handle Proceed to Next Step
   const handleProceed = () => {
@@ -191,7 +199,6 @@ export default function Membership() {
           if (result.results && result.results.length > 0) {
             setPlatNomor(result.results[0].plate.toUpperCase());
           } else {
-            console.log("Plate number not detected");
             setEditEnabled(true); // Jika tidak terdeteksi, izinkan edit
           }
         } catch (error) {
@@ -253,7 +260,7 @@ export default function Membership() {
           <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
             <label className="text-gray-400">Lokasi Member</label>
             <ListComponent
-              list={location}
+              list={listLocation}
               title={"Pilih Lokasi"}
               search={"Cari Lokasi"}
               selected={selectedLocation}
@@ -300,18 +307,6 @@ export default function Membership() {
                 disabled
               />
             </div>
-
-            {/* <label htmlFor="kuotaMember" className="mt-2 text-gray-400">
-              Kuota Member
-            </label>
-            <input
-              type="text"
-              name="kuotaMember"
-              id="kuotaMember"
-              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              value={`${currentQuota ?? 0} /${maxQuota}`}
-              disabled
-            /> */}
 
             <label htmlFor="platnomor" className="mt-2 text-gray-400">
               Plat Nomor Kendaraan
