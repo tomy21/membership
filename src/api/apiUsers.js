@@ -171,7 +171,6 @@ export const getAllMembers = {
           limit,
         },
       });
-      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

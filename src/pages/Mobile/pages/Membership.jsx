@@ -120,6 +120,9 @@ export default function Membership() {
           const responseQuota = await productBundleAll.getProductQuote(
             selectedVehicleType.Code
           );
+
+          console.log(responseBundle.data.Price);
+
           setProductBundle(responseBundle?.data);
           setProductId(responseBundle.data.MemberProductId);
           setPeriodId(responseQuota.data[0].Id ?? responseQuota.data.Id);
