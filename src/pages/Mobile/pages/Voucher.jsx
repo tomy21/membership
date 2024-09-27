@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import Cookies from "js-cookie";
 
 function Voucher() {
   const [searchTerm, setSearchTerm] = useState("");

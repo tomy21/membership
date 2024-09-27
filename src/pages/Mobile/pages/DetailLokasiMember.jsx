@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import CardListMember from "../components/CardListMember";
-import Cookies from "js-cookie";
 
 export default function DetailLokasiMember() {
   const location = useLocation();
