@@ -24,9 +24,6 @@ export default function CardListMember({ dataList }) {
     setSelectedTransaction(null);
   };
 
-  // console.log("ini data", dataList.TrxHistories[0].MemberProduct.VehicleType);
-  // console.log("ini data2", );
-
   useEffect(() => {
     if (selectedTransaction) {
       fetchData();
@@ -59,7 +56,6 @@ export default function CardListMember({ dataList }) {
   };
 
   const handleConfirmExtend = () => {
-    // Lanjutkan ke halaman pembayaran
     const newErrors = {};
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);

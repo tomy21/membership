@@ -7,20 +7,10 @@ import Cookies from "js-cookie";
 export default function DetailLokasiMember() {
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(location);
+
   const handleBack = () => {
     navigate(-1);
   };
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token || token === undefined) {
-        navigate("/");
-      }
-    };
-    fetchToken();
-  }, [navigate]);
 
   return (
     <>

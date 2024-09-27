@@ -11,16 +11,6 @@ export default function CekStatusPayment() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token || token === undefined) {
-        navigate("/");
-      }
-    };
-    fetchToken();
-  }, [navigate]);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await apiBarindCekstatus.cekStatus(location.state);

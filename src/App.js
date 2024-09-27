@@ -32,6 +32,7 @@ import ListMahasiswa from "./pages/Dekstop/pages/client/ListMahasiswa";
 import ErrorPage404 from "./pages/Mobile/pages/ErrorPage404";
 import Login from "./pages/Dekstop/pages/Login";
 import MasterProduct from "./pages/Dekstop/pages/admin/MasterProduct";
+import ProtectedRoute from "./pages/Mobile/components/ProtectedRoute";
 
 function App() {
   return (
@@ -42,45 +43,126 @@ function App() {
             <>
               <Route path="/" element={<MobileLogin />}></Route>
               <Route path="/register" element={<MobileRegister />}></Route>
-              <Route path="/dashboard" element={<MobileDashboard />}></Route>
-              <Route path="/topup" element={<MobileTopup />}></Route>
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <MobileDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/topup"
+                element={
+                  <ProtectedRoute>
+                    <MobileTopup />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/verifikasi"
-                element={<MobileVeryfikasiPin />}
-              ></Route>
-              <Route path="/membership" element={<MobileMembership />}></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobileVeryfikasiPin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/membership"
+                element={
+                  <ProtectedRoute>
+                    <MobileMembership />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/payment_process"
-                element={<MobilePayment />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobilePayment />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/payment_member"
-                element={<MobilePaymentMember />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobilePaymentMember />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/detailMember/:id"
-                element={<DetailLokasiMember />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <DetailLokasiMember />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/cekStatus"
-                element={<MobilCekStatusPayment />}
-              ></Route>
-              <Route path="/lokasi" element={<MobileLokasi />}></Route>
-              <Route path="/voucher" element={<MobileVoucher />}></Route>
-              <Route path="/riwayat" element={<MobileRiwayat />}></Route>
-              <Route path="/profil" element={<MobileProfile />}></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobilCekStatusPayment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/lokasi"
+                element={
+                  <ProtectedRoute>
+                    <MobileLokasi />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/voucher"
+                element={
+                  <ProtectedRoute>
+                    <MobileVoucher />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/riwayat"
+                element={
+                  <ProtectedRoute>
+                    <MobileRiwayat />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profil"
+                element={
+                  <ProtectedRoute>
+                    <MobileProfile />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/input_identitas"
-                element={<MobileIdentitas />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobileIdentitas />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/lupapassword"
-                element={<MobileLupaPassword />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobileLupaPassword />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/reset-password"
-                element={<MobileResetPassword />}
-              ></Route>
+                element={
+                  <ProtectedRoute>
+                    <MobileResetPassword />
+                  </ProtectedRoute>
+                }
+              />
             </>
           ) : (
             <>

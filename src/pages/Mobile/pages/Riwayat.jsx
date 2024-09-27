@@ -10,6 +10,9 @@ import { RxDownload } from "react-icons/rx";
 import { format } from "date-fns";
 import * as XLSX from "xlsx";
 import HistoryPayment from "../components/HistoryPayment";
+import { HistoryPost } from "../../../api/apiProduct";
+import Skeleton from "react-loading-skeleton";
+import HistoryPostComponent from "../components/HistoryPost";
 
 function Riwayat() {
   const [data, setData] = useState([]);
@@ -21,56 +24,44 @@ function Riwayat() {
   const [showMore, setShowMore] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [activeTab, setActiveTab] = useState("tab1");
+  const [listRiwayat, setListRiwayat] = useState([]);
+  const [historyPost, setHistoryPost] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const tabs = ["Payment History", "Parking History"];
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token) {
-        navigate("/");
-        return;
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const historyResponse = await historyMembers.getHistory();
+        setListRiwayat(historyResponse?.data);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error("Failed to fetch history:", error);
+        } else {
+          setListRiwayat([]); // Set default empty list if not found
+        }
+      } finally {
+        setIsLoading(false);
       }
 
-      const decodedToken = jwtDecode(token);
-      setIdUser(decodedToken.Id);
+      try {
+        const historyPost = await HistoryPost.getById();
+        setHistoryPost(historyPost?.data);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error("Failed to fetch history:", error);
+        } else {
+          setHistoryPost([]); // Set default empty list if not found
+        }
+      } finally {
+        setIsLoading(false);
+      }
     };
-    fetchToken();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (idUser) {
-      fetchData(idUser, currentPage, currentTab);
-    }
-  }, [idUser, currentPage, currentTab]);
-
-  const fetchData = async (idUser, page, tab) => {
-    setLoading(true);
-    try {
-      let response;
-      switch (tab) {
-        case 1: // Payment History
-          response = await historyMembers.getHistory(idUser, page);
-          break;
-        case 2: // Parking History
-          // Jika tidak ada data, response akan tetap berupa array kosong
-          response = { data: [] };
-          break;
-        default: // Member History
-          response = await historyMembers.getHistory(idUser, page);
-      }
-
-      setData((prevData) =>
-        showMore ? [...prevData, ...response.data] : response.data
-      );
-      setTotalPages(response.totalPages || 1); // Mengatur total pages dari response atau default ke 1
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchData();
+  }, [currentPage, currentTab]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -125,15 +116,28 @@ function Riwayat() {
         <h1 className="text-lg font-semibold px-10">History</h1>
       </div>
       <div className="p-4">
-        <TabRiwayat
-          tabs={tabs}
-          currentTab={currentTab}
-          onTabChange={(tabIndex) => {
-            setShowMore(false);
-            setCurrentPage(1);
-            setCurrentTab(tabIndex);
-          }}
-        />
+        <div className="flex border-b border-gray-300 mb-4">
+          <button
+            onClick={() => setActiveTab("tab1")}
+            className={`py-2 px-4 text-sm font-semibold ${
+              activeTab === "tab1"
+                ? "border-b-2 border-amber-500 text-amber-500"
+                : "text-gray-500"
+            }`}
+          >
+            Payment
+          </button>
+          <button
+            onClick={() => setActiveTab("tab2")}
+            className={`py-2 px-4 text-sm font-semibold ${
+              activeTab === "tab2"
+                ? "border-b-2 border-amber-500 text-amber-500"
+                : "text-gray-500"
+            }`}
+          >
+            Parking
+          </button>
+        </div>
         <div className="mb-4">
           <input
             type="text"
@@ -144,7 +148,9 @@ function Riwayat() {
           />
         </div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-base font-semibold">{tabs[currentTab]}</h2>
+          <h2 className="text-base font-semibold">
+            {activeTab === "tab1" ? "Payment History" : "Parking History"}
+          </h2>
           <button
             onClick={handleExport}
             className="px-4 py-2 rounded-md flex flex-row justify-center items-center text-sm gap-x-2 text-blue-600"
@@ -155,19 +161,92 @@ function Riwayat() {
             Export Excel
           </button>
         </div>
-        <div className="space-y-4 max-h-[70vh] overflow-auto">
-          {loading ? (
-            <p>Loading...</p>
-          ) : filteredData.length > 0 ? (
-            <HistoryPayment listRiwayat={filteredData} />
-          ) : (
-            <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
-              <img src={"/parchment.png"} className="w-24 opacity-20" alt="" />
-              <p className="text-sm text-gray-500 mt-5">
-                Belum ada riwayat transaksi
-              </p>
-            </div>
-          )}
+
+        <div className="space-y-2 w-full max-h-[80%] overflow-auto">
+          <div className="">
+            {activeTab === "tab1" && (
+              <div>
+                {listRiwayat?.length === 0 ? (
+                  <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+                    <img
+                      src={"/parchment.png"}
+                      className="w-24 opacity-20"
+                      alt=""
+                    />
+                    <p className="text-sm text-gray-500 mt-5">
+                      Belum ada riwayat transaksi
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                    {isLoading ? (
+                      [...Array(5)].map((_, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                        >
+                          <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                            <Skeleton circle={true} height={30} width={30} />
+                            <div className="flex flex-col justify-start items-start">
+                              <Skeleton width={100} />
+                              <Skeleton width={80} />
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-start items-start w-14">
+                            <Skeleton width={40} />
+                            <Skeleton width={30} />
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <HistoryPayment listRiwayat={listRiwayat} />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab === "tab2" && (
+              <div>
+                {listRiwayat?.length === 0 ? (
+                  <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+                    <img
+                      src={"/parchment.png"}
+                      className="w-24 opacity-20"
+                      alt=""
+                    />
+                    <p className="text-sm text-gray-500 mt-5">
+                      Belum ada riwayat parkir
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                    {isLoading ? (
+                      [...Array(5)].map((_, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                        >
+                          <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                            <Skeleton circle={true} height={30} width={30} />
+                            <div className="flex flex-col justify-start items-start">
+                              <Skeleton width={100} />
+                              <Skeleton width={80} />
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-start items-start w-14">
+                            <Skeleton width={40} />
+                            <Skeleton width={30} />
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <HistoryPostComponent dataPost={historyPost} />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
         {currentPage < totalPages && (
           <div className="mt-4 flex justify-center">

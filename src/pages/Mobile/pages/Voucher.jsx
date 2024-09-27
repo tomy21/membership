@@ -22,16 +22,6 @@ function Voucher() {
     navigate(-1);
   };
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token || token === undefined) {
-        navigate("/");
-      }
-    };
-    fetchToken();
-  }, [navigate]);
-
   return (
     <>
       <div className="container">

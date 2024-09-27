@@ -356,10 +356,10 @@ export const HistoryPost = {
     }
   },
 
-  getById: async (id) => {
+  getById: async () => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/history-post/${id}`
+        `/v01/member/api/history-post/getById`
       );
       return response.data;
     } catch (error) {
