@@ -2,14 +2,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import {
-  apiUsers,
-  getUserProductById,
-  logoutUsers,
-} from "../../../api/apiUsers";
+import { apiUsers, logoutUsers } from "../../../api/apiUsers";
 import Loading from "./Loading";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 
 const userNavigation = [
   { name: "Profil", href: "/profil" },
@@ -19,7 +13,6 @@ const userNavigation = [
 export default function NavbarMobile() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [idUser, setIdUser] = useState(null);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
 
@@ -39,7 +32,7 @@ export default function NavbarMobile() {
     };
 
     fetchUser();
-  }, [idUser]);
+  }, []);
 
   const handleLogout = async () => {
     try {
