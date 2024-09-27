@@ -84,14 +84,14 @@ function PinInput() {
             periodId: location.state.periodId,
             providerId: location.state.providerId,
           };
-          console.log("data", data);
+
           const responseBayarind = await apiBayarindExtend.extend(
             location.state.userProductId,
             location.state.productId,
             location.state.periodId,
             location.state.providerId
           );
-          console.log("data", responseBayarind);
+
           if (responseBayarind.data.responseCode === "2002700") {
             const data = {
               periodId: location.state.periodId,
@@ -193,20 +193,6 @@ function PinInput() {
       inputRefs.current[index].focus();
     }
   };
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token) {
-        navigate("/");
-      }
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        setIdUser(decodedToken.Id);
-      }
-    };
-    fetchToken();
-  }, [navigate]);
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && index > 0 && e.target.value === "") {

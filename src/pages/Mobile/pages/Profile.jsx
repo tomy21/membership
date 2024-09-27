@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import { apiUsers, getUserProductById } from "../../../api/apiUsers";
 import Loading from "../components/Loading";
 import { IoIosArrowForward } from "react-icons/io";
@@ -10,7 +8,6 @@ import MotionProfile from "../components/MotionProfile";
 import { format } from "date-fns";
 
 function Profile() {
-  const [idUser, setIdUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -25,23 +22,7 @@ function Profile() {
 
   useEffect(() => {
     fetchData();
-  }, [idUser]);
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token) {
-        navigate("/");
-        return;
-      }
-      const decodedToken = jwtDecode(token);
-      console.log(decodedToken);
-      setIdUser(decodedToken.Id);
-      setUserName(decodedToken.sub);
-      setEmail(decodedToken.email);
-    };
-    fetchToken();
-  }, [navigate]);
+  }, []);
 
   const getInitials = (name) => {
     if (!name || typeof name !== "string") {
@@ -55,12 +36,11 @@ function Profile() {
   };
 
   const fetchData = async () => {
-    if (!idUser) return;
-
     try {
-      const userResponse = await apiUsers.getUserId(idUser);
-      console.log(userResponse);
+      const userResponse = await apiUsers.getUserId();
       setData(userResponse);
+      setUserName(userResponse.data.UserName);
+      setEmail(userResponse.data.Email);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     }
@@ -79,7 +59,7 @@ function Profile() {
   const handleUpdateData = async (updatedValue) => {
     const updatedData = { ...data.detaildata };
     const idDetails = data.detaildata?.id;
-    console.log(idDetails);
+
     switch (editData.label) {
       case "Nama Lengkap":
         updatedData.FullName = updatedValue;

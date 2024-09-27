@@ -55,7 +55,7 @@ export default function Login() {
     if (validateForm()) {
       setLoading(true);
       try {
-        const response = await loginUsers.login(formData);
+        await loginUsers.login(formData);
         setFormErrors({});
         setFormData({
           identifier: "",
@@ -63,8 +63,6 @@ export default function Login() {
           rememberMe: false,
         });
 
-        const token = response.token;
-        Cookies.set("refreshToken", token);
         setTimeout(() => {
           navigate("/dashboard");
           toast.success("Login successful!");

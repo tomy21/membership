@@ -2,81 +2,44 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import {
-  apiUsers,
-  getUserProductById,
-  logoutUsers,
-} from "../../../api/apiUsers";
+import { apiUsers, logoutUsers } from "../../../api/apiUsers";
 import Loading from "./Loading";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 
 const userNavigation = [
   { name: "Profil", href: "/profil" },
   { name: "Keluar", href: "/" },
 ];
-// const notifications = [
-//   {
-//     title: "Profil",
-//     subtitle: "Lengkapi profil kamu",
-//     status: "new",
-//     href: "#",
-//   },
-//   {
-//     title: "Daftar Akun",
-//     subtitle: "Kamu berhasil membuat akun",
-//     status: "read",
-//     href: "#",
-//   },
-// ];
 
 export default function NavbarMobile() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [idUser, setIdUser] = useState(null);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token || token === undefined) {
-        navigate("/");
-      }
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        setIdUser(decodedToken.Id);
-      }
-    };
-    fetchToken();
-  }, [navigate]);
-
-  useEffect(() => {
     const fetchUser = async () => {
-      setTimeout(async () => {
-        if (idUser) {
-          const response = await apiUsers.getUserId(idUser);
-          setName(response.data.UserName);
-          setEmail(response.data.Email);
-        }
-      }, 500);
+      setLoading(true);
+      try {
+        const response = await apiUsers.getUserId();
+        setName(response.data.UserName);
+        setEmail(response.data.Email);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
-  }, [idUser]);
+  }, []);
 
   const handleLogout = async () => {
-    setLoading(true);
     try {
       await logoutUsers.logout();
-      // Assuming a successful logout, redirect to login page
-      Cookies.remove("refreshToken");
       navigate("/");
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
-      console.error("Logout failed", error);
-      // Handle error appropriately, possibly show an error message
+      console.error("Logout failed:", error);
     }
   };
 
@@ -145,26 +108,13 @@ export default function NavbarMobile() {
             transition
             className="absolute right-0 z-10 -mt-1 w-56 origin-top-right text-start rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
-            {/* {notifications.map((item, index) => (
-              <MenuItem key={index}>
-                <a
-                  href={item.href}
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
-                >
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-sm font-semibold">{item.title}</h1>
-                    {item.status === "new" && (
-                      <span className="ml-2 px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
-                        New
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs font-reguler text-gray-400">
-                    {item.subtitle}
-                  </p>
-                </a>
-              </MenuItem>
-            ))} */}
+            <MenuItem>
+              <div className="block px-4 py-2 text-sm text-gray-700">
+                <p className="text-center text-gray-500">
+                  Tidak ada notifikasi
+                </p>
+              </div>
+            </MenuItem>
           </MenuItems>
         </Menu>
       </div>

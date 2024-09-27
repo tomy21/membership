@@ -5,13 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";
 import SliderComponent from "../components/Slider";
 import QRCode from "qrcode.react";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import { apiUsers, historyMembers } from "../../../api/apiUsers";
 import Skeleton from "react-loading-skeleton";
-import { getMemberById, getMemberByUserId } from "../../../api/apiProduct";
+import { getMemberByUserId, HistoryPost } from "../../../api/apiProduct";
 import { isMobile } from "react-device-detect";
 import HistoryPayment from "../components/HistoryPayment";
+import HistoryPostComponent from "../components/HistoryPost";
 
 const items = [
   {
@@ -42,10 +41,10 @@ const items = [
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
-  const [idUser, setIdUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [balance, setBalance] = useState(0);
   const [listRiwayat, setListRiwayat] = useState([]);
+  const [historyPost, setHistoryPost] = useState([]);
   const [memberProduct, setMemberProduct] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeTab, setActiveTab] = useState("tab1");
@@ -65,68 +64,16 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-
-      if (!token) {
-        // Token tidak ada, arahkan ke login
-        navigate("/login");
-        return;
-      }
-
-      try {
-        // Decode token untuk mendapatkan informasi seperti waktu kedaluwarsa
-        const decodedToken = jwtDecode(token);
-        const currentTime = Date.now() / 1000; // Waktu saat ini dalam detik
-
-        // Periksa apakah token sudah kedaluwarsa
-        if (decodedToken.exp && decodedToken.exp < currentTime) {
-          // Token sudah expired, hapus token dan arahkan ke login
-          Cookies.remove("refreshToken");
-          navigate("/login");
-          return;
-        }
-
-        // Token valid, set ID user atau lakukan tindakan lain
-        setIdUser(decodedToken.Id);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        // Jika terjadi error dalam decoding, hapus token dan arahkan ke login
-        Cookies.remove("refreshToken");
-        navigate("/login");
-      }
-    };
-
-    fetchToken();
-  }, [navigate]);
-
-  useEffect(() => {
     const fetchData = async () => {
-      if (!idUser) return;
-
       try {
-        setTimeout(async () => {
-          if (idUser) {
-            const response = await apiUsers.getUserId(idUser);
-            setBalance(response.detaildata?.Points);
-          }
-        }, 500);
+        const response = await apiUsers.getUserId();
+        setBalance(response.detaildata?.Points);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
 
       try {
-        setTimeout(async () => {
-          if (idUser) {
-            await getMemberById.getById(idUser);
-          }
-        }, 500);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-
-      try {
-        const historyResponse = await historyMembers.getHistory(idUser);
+        const historyResponse = await historyMembers.getHistory();
         setListRiwayat(historyResponse?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -137,9 +84,18 @@ export default function Dashboard() {
       }
 
       try {
-        const productMemberResponse = await getMemberByUserId.getByUserId(
-          idUser
-        );
+        const historyPost = await HistoryPost.getById();
+        setHistoryPost(historyPost?.data);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error("Failed to fetch history:", error);
+        } else {
+          setHistoryPost([]); // Set default empty list if not found
+        }
+      }
+
+      try {
+        const productMemberResponse = await getMemberByUserId.getByUserId();
         setMemberProduct(productMemberResponse?.data);
       } catch (error) {
         if (error.response && error.response.status !== 404) {
@@ -153,7 +109,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [idUser]);
+  }, []);
 
   // Disable back navigation on mobile
   useEffect(() => {
@@ -299,16 +255,43 @@ export default function Dashboard() {
           )}
           {activeTab === "tab2" && (
             <div>
-              <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
-                <img
-                  src={"/parchment.png"}
-                  className="w-24 opacity-20"
-                  alt=""
-                />
-                <p className="text-sm text-gray-500 mt-5">
-                  Belum ada riwayat transaksi
-                </p>
-              </div>
+              {listRiwayat?.length === 0 ? (
+                <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
+                  <img
+                    src={"/parchment.png"}
+                    className="w-24 opacity-20"
+                    alt=""
+                  />
+                  <p className="text-sm text-gray-500 mt-5">
+                    Belum ada riwayat parkir
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto py-2">
+                  {isLoading ? (
+                    [...Array(5)].map((_, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-row justify-between items-center bg-white shadow-md w-full py-2 rounded-lg px-3"
+                      >
+                        <div className="flex flex-row justify-center items-center space-x-3 py-2">
+                          <Skeleton circle={true} height={30} width={30} />
+                          <div className="flex flex-col justify-start items-start">
+                            <Skeleton width={100} />
+                            <Skeleton width={80} />
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-start items-start w-14">
+                          <Skeleton width={40} />
+                          <Skeleton width={30} />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <HistoryPostComponent dataPost={historyPost} />
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

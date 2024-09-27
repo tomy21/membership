@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import Cookies from "js-cookie";
 
 function Voucher() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,16 +20,6 @@ function Voucher() {
   const handleBack = () => {
     navigate(-1);
   };
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = Cookies.get("refreshToken");
-      if (!token || token === undefined) {
-        navigate("/");
-      }
-    };
-    fetchToken();
-  }, [navigate]);
 
   return (
     <>

@@ -122,25 +122,33 @@ function Lokasi() {
   const [locationData, setLocationData] = useState([]);
   const [filteredLokasi, setFilteredLokasi] = useState(lokasi);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await apiLocations.getLocation(page, limit);
-      setLocationData(response.data);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const response = await apiLocations.getLocation(page, limit);
+  //     setLocationData(response.data);
+  //   };
 
-    fetchData();
-  }, [page, limit]);
+  //   fetchData();
+  // }, [page, limit]);
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-    const term = event.target.value.toLowerCase();
-    const filtered = lokasi.filter(
-      (item) =>
-        item.name.toLowerCase().includes(term) ||
-        item.address.toLowerCase().includes(term)
-    );
-    setFilteredLokasi(filtered);
-  };
+  const data = [
+    {
+      Name: "SKY UNIVERSITAS PELITA HARAPAN",
+      Address:
+        "Jl. M.H. Thamrin Boulevard 1100, Lippo Village, Tangerang, Banten 15811",
+    },
+  ];
+
+  // const handleSearch = (event) => {
+  //   setSearchTerm(event.target.value);
+  //   const term = event.target.value.toLowerCase();
+  //   const filtered = lokasi.filter(
+  //     (item) =>
+  //       item.name.toLowerCase().includes(term) ||
+  //       item.address.toLowerCase().includes(term)
+  //   );
+  //   setFilteredLokasi(filtered);
+  // };
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
@@ -164,11 +172,11 @@ function Lokasi() {
               placeholder="Cari Lokasi"
               className="w-full p-3 mb-4 border rounded-md"
               value={searchTerm}
-              onChange={handleSearch}
+              // onChange={handleSearch}
             />
           </div>
           <div className="flex flex-col space-y-2 items-start justify-start w-full px-2 py-2 max-h-[75vh] overflow-y-auto">
-            {locationData.map((items, index) => (
+            {data.map((items, index) => (
               <div
                 key={index}
                 className="flex flex-row items-center shadow-md space-x-2 px-2 py-2 w-full border border-gray-300 rounded-lg bg-white"
@@ -180,13 +188,13 @@ function Lokasi() {
                 />
                 <div className="flex flex-col justify-start items-start text-xs w-full">
                   <h1 className="font-semibold text-sm text-start truncate w-full">
-                    {items.Name}
+                    {items?.Name}
                   </h1>
-                  <h1 className="text-sm text-gray-400">Sisa kuota :</h1>
+                  {/* <h1 className="text-sm text-gray-400">Sisa kuota :</h1>
                   <div className="flex flex-row space-x-5 text-gray-500 justify-start w-full items-center">
                     <p>Mobil : {items.totalQuotaMobil}</p>
                     <p>Motor : {items.totalQuotaMotor}</p>
-                  </div>
+                  </div> */}
                   <div className="w-full border-b border-gray-200 my-2"></div>
                   <address className="text-start">{items.Address}</address>
                 </div>

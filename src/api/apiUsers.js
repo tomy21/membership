@@ -1,9 +1,18 @@
 import { apiClient } from "./apiClient";
 
 export const apiUsers = {
-  getUserId: async (id) => {
+  getUserId: async () => {
     try {
-      const response = await apiClient.get(`/v01/member/api/auth/user/${id}`);
+      const response = await apiClient.get(`/v01/member/api/auth/userById`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  verifyToken: async () => {
+    try {
+      const response = await apiClient.get("/v01/member/api/auth/protected");
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -105,10 +114,9 @@ export const getUserProductById = {
 };
 
 export const verifikasiUsers = {
-  verifikasiPin: async ({ memberUserId, pinVerifikasi }) => {
+  verifikasiPin: async ({ pinVerifikasi }) => {
     try {
       const response = await apiClient.post(`/v01/member/api/auth/verifikasi`, {
-        MemberUserId: memberUserId,
         Pin: pinVerifikasi,
       });
       return response.data;
@@ -126,6 +134,7 @@ export const loginUsers = {
         "/v01/member/api/auth/login",
         userData
       );
+
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -136,7 +145,8 @@ export const loginUsers = {
 export const logoutUsers = {
   logout: async () => {
     try {
-      const response = await apiClient.post("/v01/member/api/auth/logout");
+      const response = await apiClient.get("/v01/member/api/auth/logout");
+      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

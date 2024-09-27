@@ -19,7 +19,6 @@ export default function Membership() {
   const [location, setLocation] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [tariff, setTariff] = useState(0);
-  const [currentQuota, setCurrentQuota] = useState(0);
   const [dataLocation, setDataLocation] = useState([]);
   const [platNomor, setPlatNomor] = useState("");
   const [productId, setProductId] = useState(0);
@@ -45,22 +44,15 @@ export default function Membership() {
   // Fetch Locations
   useEffect(() => {
     const fetchLocation = async () => {
-      const token = Cookies.get("refreshToken");
-      if (token) {
-        try {
-          const response = await getProductAll.getAll();
-          if (response.data && Array.isArray(response.data.products)) {
-            setLocation(response.data.products);
-          } else {
-            console.error("Invalid response format");
-          }
-        } catch (error) {
-          console.error("Failed to fetch location data:", error);
+      try {
+        const response = await getProductAll.getAll();
+        if (response.data && Array.isArray(response.data.products)) {
+          setLocation(response.data.products);
+        } else {
+          console.error("Invalid response format");
         }
-      }
-
-      if (!token || token === undefined) {
-        navigate("/");
+      } catch (error) {
+        console.error("Failed to fetch location data:", error);
       }
     };
     fetchLocation();
@@ -78,7 +70,6 @@ export default function Membership() {
             selectedLocation.IdProduct
           );
           setPeriodId(responseQuota.data[0].Id ?? responseQuota.data.Id);
-          console.log(responseQuota.data[0].Id ?? responseQuota.data.Id);
           setDataLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
