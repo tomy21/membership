@@ -28,6 +28,7 @@ export default function MemberProductBundleForm({
         <div className="flex flex-col justify-start items-start gap-y-2 w-72">
           <label htmlFor="productName">Product Name</label>
           <input
+            id="productName"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -37,8 +38,9 @@ export default function MemberProductBundleForm({
           />
         </div>
         <div className="flex flex-col justify-start items-start gap-y-2 w-72">
-          <label htmlFor="productName">Price</label>
+          <label htmlFor="price">Price</label>
           <input
+            id="price"
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
@@ -65,7 +67,7 @@ export default function MemberProductBundleForm({
         </div>
         <div className="flex flex-col justify-start items-start gap-y-2 w-72">
           <label
-            htmlFor="start-date"
+            htmlFor="end-date"
             className="text-sm font-medium text-gray-700"
           >
             Fee Activation Member

@@ -216,10 +216,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
               <div className="grid grid-cols-3 md:grid-cols-3 gap-4 text-start">
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="Name"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Product Name
                   </label>
                   <input
+                    id="Name"
                     type="text"
                     name="Name"
                     value={formProduct.Name}
@@ -230,10 +234,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="Type"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Product Type
                   </label>
                   <select
+                    id="Type"
                     name="Type"
                     value={formProduct.Type}
                     onChange={handleChange}
@@ -249,7 +257,10 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="Price"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Price
                   </label>
                   <div className="relative">
@@ -257,6 +268,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                       Rp
                     </span>
                     <input
+                      id="Price"
                       type="text"
                       name="Price"
                       value={formatCurrency(formProduct.Price)}
@@ -268,7 +280,10 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="CardActivateFee"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Card Activation Fee
                   </label>
                   <div className="relative">
@@ -276,6 +291,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                       Rp
                     </span>
                     <input
+                      id="CardActivateFee"
                       type="text"
                       name="CardActivateFee"
                       value={formatCurrency(formProduct.CardActivateFee)}
@@ -287,7 +303,10 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="Fee"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Additional Fee
                   </label>
                   <div className="relative">
@@ -295,6 +314,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                       Rp
                     </span>
                     <input
+                      id="Fee"
                       type="text"
                       name="Fee"
                       value={formatCurrency(formProduct.Fee)}
@@ -310,10 +330,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
               <div className="grid grid-cols-2 gap-4 text-start">
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="monthsDuration"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Duration Members
                   </label>
                   <input
+                    id="monthsDuration"
                     type="number"
                     name="monthsDuration"
                     value={monthsDuration}
@@ -324,10 +348,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    for="selectedMonth"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Selected Month
                   </label>
                   <select
+                    id="selectedMonth"
                     name="selectedMonth"
                     value={selectedMonth}
                     onChange={handleMonthSelect}
@@ -347,10 +375,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
               <div className="grid grid-cols-2 md:grid-cols-2 gap-4 text-start">
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="StartDate"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Start Date
                   </label>
                   <input
+                    id="StartDate"
                     type="text" // Gunakan tipe text agar bisa diisi secara manual jika perlu
                     name="StartDate"
                     value={formProduct.StartDate} // Format custom dd/mm/yyyy HH:mm:ss
@@ -360,10 +392,14 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                 </div>
 
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="EndDate"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     End Date
                   </label>
                   <input
+                    id="EndDate"
                     type="text" // Gunakan tipe text agar bisa diisi secara manual jika perlu
                     name="EndDate"
                     value={formProduct.EndDate} // Format custom dd/mm/yyyy HH:mm:ss

@@ -74,6 +74,7 @@ export default function MemberProductForm({ onSubmit, preview }) {
         <div className="flex flex-col justify-start items-start gap-y-2 w-72">
           <label htmlFor="location">Location</label>
           <Select
+            id="location"
             options={locationList}
             onInputChange={handleInputChange}
             onChange={(selectedOption) => {

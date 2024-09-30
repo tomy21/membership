@@ -87,10 +87,10 @@ export default function Dashboard() {
         const historyPost = await HistoryPost.getById();
         setHistoryPost(historyPost?.data);
       } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.error("Failed to fetch history:", error);
+        if (error.statusCode && error.statusCode === 404) {
+          setHistoryPost([]);
         } else {
-          setHistoryPost([]); // Set default empty list if not found
+          console.error("Failed to fetch history:", error);
         }
       }
 
@@ -255,7 +255,7 @@ export default function Dashboard() {
           )}
           {activeTab === "tab2" && (
             <div>
-              {listRiwayat?.length === 0 ? (
+              {historyPost?.length === 0 ? (
                 <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
                   <img
                     src={"/parchment.png"}
