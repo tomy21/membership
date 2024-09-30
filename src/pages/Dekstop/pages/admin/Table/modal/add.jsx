@@ -188,7 +188,10 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
 
             <div className="grid grid-cols-3 md:grid-cols-3 gap-4 text-start mb-2">
               <div>
-                <label className="block mb-1 font-semibold text-sm text-gray-600">
+                <label
+                  htmlFor="ProductName"
+                  className="block mb-1 font-semibold text-sm text-gray-600"
+                >
                   Product Name
                 </label>
                 <input
@@ -202,7 +205,10 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
               </div>
 
               <div>
-                <label className="block mb-1 font-semibold text-sm text-gray-600">
+                <label
+                  htmlFor="VehicleType"
+                  className="block mb-1 font-semibold text-sm text-gray-600"
+                >
                   Vehicle Type
                 </label>
                 <select
@@ -220,10 +226,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
 
               {formProduct.VehicleType && vehicleOptions.length > 0 && (
                 <div>
-                  <label className="block mb-2 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="MemberProductBundleId"
+                    className="block mb-2 font-semibold text-sm text-gray-600"
+                  >
                     Product Bundle
                   </label>
                   <select
+                    id="MemberProductBundleId"
                     name="MemberProductBundleId"
                     value={formProduct.MemberProductBundleId}
                     onChange={handleChange}
@@ -245,10 +255,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
 
             <div className="grid grid-cols-3 gap-4 text-start mb-5">
               <div>
-                <label className="text-start block mb-1 font-semibold text-sm text-gray-600">
+                <label
+                  htmlFor="LocationCode"
+                  className="text-start block mb-1 font-semibold text-sm text-gray-600"
+                >
                   Location Code
                 </label>
                 <select
+                  id="LocationCode"
                   name="LocationCode"
                   value={formProduct.LocationCode}
                   onChange={handleChange}
@@ -269,10 +283,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
               {/* Display input for Location Name if location is selected */}
               {selectedLocation && (
                 <div>
-                  <label className="block mb-1 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="LocationName"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
                     Location Name
                   </label>
                   <input
+                    id="LocationName"
                     type="text"
                     name="LocationName"
                     value={selectedLocation.Name}
@@ -283,10 +301,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
               )}
 
               <div>
-                <label className="block mb-1 font-semibold text-sm text-gray-600">
+                <label
+                  htmlFor="MaxQuote"
+                  className="block mb-1 font-semibold text-sm text-gray-600"
+                >
                   Quota
                 </label>
                 <input
+                  id="MaxQuote"
                   type="text"
                   name="MaxQuote"
                   value={formProduct.MaxQuote}
@@ -299,10 +321,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
 
             <div className="grid grid-cols-3 gap-4 text-start mb-5">
               <div>
-                <label className="block mb-1 font-semibold text-sm text-gray-600">
+                <label
+                  htmlFor="DateActive"
+                  className="block mb-1 font-semibold text-sm text-gray-600"
+                >
                   Date Active
                 </label>
                 <input
+                  id="DateActive"
                   type="text"
                   name="DateActive"
                   value={formProduct.DateActive}
@@ -313,10 +339,14 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
             </div>
 
             <div>
-              <label className="block mb-1 font-semibold text-sm text-gray-600 text-start">
+              <label
+                htmlFor="ProductDescription"
+                className="block mb-1 font-semibold text-sm text-gray-600 text-start"
+              >
                 Product Description
               </label>
               <textarea
+                id="ProductDescription"
                 name="ProductDescription"
                 value={formProduct.ProductDescription}
                 onChange={handleChange}
