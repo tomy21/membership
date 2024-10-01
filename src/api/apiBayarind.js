@@ -1,9 +1,13 @@
 import { apiSkyBayarind } from "./apiClient";
-import Cookies from "js-cookie";
+import { apiUsers } from "./apiUsers";
 
-const getToken = () => {
-  const token = Cookies.get("refreshToken");
-  return token;
+const getToken = async () => {
+  try {
+    const token = await apiUsers.getToken();
+    return token;
+  } catch (error) {
+    throw error.response;
+  }
 };
 
 export const apiBayarindVa = {
@@ -23,14 +27,14 @@ export const apiBayarindVa = {
         formData.append(`files[${index}]`, file);
       });
 
-      const token = getToken();
+      const token = await getToken();
 
       const response = await apiSkyBayarind.post(
         "/api/v1.0/transfer-va/create-va",
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.token}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -45,7 +49,8 @@ export const apiBayarindVa = {
 export const apiBayarindTopUp = {
   createVaTopup: async (data) => {
     try {
-      const token = getToken();
+      const token = await getToken();
+
       const dataSubmit = {
         providerId: data.providerId,
         expiredByMinute: data.expiredByMinute,
@@ -56,7 +61,7 @@ export const apiBayarindTopUp = {
         dataSubmit,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.token}`,
             "Content-Type": "application/json",
           },
         }
@@ -87,7 +92,7 @@ export const apiBarindCekstatus = {
 
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.token}`,
             "Content-Type": "application/json",
           },
         }
@@ -110,7 +115,7 @@ export const apiBayarindExtend = {
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.token}`,
             "Content-Type": "application/json",
           },
         }
