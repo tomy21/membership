@@ -33,6 +33,9 @@ import ErrorPage404 from "./pages/Mobile/pages/ErrorPage404";
 import Login from "./pages/Dekstop/pages/Login";
 import MasterProduct from "./pages/Dekstop/pages/admin/MasterProduct";
 import ProtectedRoute from "./pages/Mobile/components/ProtectedRoute";
+import Users from "./pages/Dekstop/pages/admin/Users";
+import Roles from "./pages/Dekstop/pages/admin/Roles";
+import SuccessRegister from "./pages/Mobile/components/SuccessRegister";
 
 function App() {
   return (
@@ -42,6 +45,10 @@ function App() {
           {isMobile ? (
             <>
               <Route path="/" element={<MobileLogin />}></Route>
+              <Route
+                path="/registerSuccess"
+                element={<SuccessRegister />}
+              ></Route>
               <Route path="/register" element={<MobileRegister />}></Route>
               <Route
                 path="/dashboard"
@@ -166,14 +173,27 @@ function App() {
             </>
           ) : (
             <>
-              <Route path="/" element={<ErrorPage404 />}></Route>
-              <Route path="/dashboard/*" element={<Layout />}>
+              <Route path="/" element={<Login />}></Route>
+              <Route
+                path="/registerSuccess"
+                element={<SuccessRegister />}
+              ></Route>
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
                 <Route path="" element={<Dashboard />} />
-                <Route path="product" element={<Product />} />
+                <Route path="product" element={<MasterProduct />} />
                 <Route path="client" element={<Tenants />} />
                 <Route path="members" element={<Membership />} />
-                <Route path="master-products" element={<MasterProduct />} />
+                <Route path="master-products" element={<Product />} />
                 <Route path="transaction" element={<Transaction />} />
+                <Route path="users" element={<Users />} />
+                <Route path="roles" element={<Roles />} />
                 <Route
                   path="tenants/transaction"
                   element={<TransactionTenants />}

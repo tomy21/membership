@@ -52,16 +52,12 @@ function Login() {
     if (validateForm()) {
       setLoading(true);
       try {
-        const response = await loginUsers.login(formData);
-        console.log("response", response);
+        await loginUsers.login(formData);
         setFormErrors({});
         setFormData({
           identifier: "",
           password: "",
         });
-
-        const token = response.token;
-        Cookies.set("refreshToken", token);
 
         // Add a delay before navigating to the dashboard
         setTimeout(() => {
@@ -88,11 +84,11 @@ function Login() {
   return (
     <>
       <ToastContainer />
-      <div className="flex justify-center items-center min-h-screen w-[80%] m-auto">
-        <div className="flex flex-row items-center justify-center gap-3 h-full w-full p-3 border border-gray-400 rounded-md">
+      <div className="flex justify-center items-center min-h-screen m-auto bg-slate-100">
+        <div className="flex flex-row items-center justify-center gap-3 h-full p-3 rounded-md shadow-md w-[50%] border border-slate-200">
           <img
             src={"/assets/skyparking_image.jpg"}
-            className="w-[600px] h-[450px] rounded-sm shadow-md"
+            className="w-1/2 h-[450px] rounded-sm shadow-md"
             alt=""
           />
           <div className="flex flex-col w-full px-7">
@@ -171,12 +167,6 @@ function Login() {
               >
                 Masuk
               </button>
-              <p className="flex text-center items-center justify-center text-xs">
-                Belum punya akun ?
-                <span className="text-cyan-600 font-semibold ml-1">
-                  <Link to={"/register"}>Daftar akun</Link>
-                </span>
-              </p>
             </form>
           </div>
         </div>

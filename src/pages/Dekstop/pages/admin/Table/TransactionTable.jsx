@@ -8,47 +8,40 @@ import { BsPenFill, BsTrashFill } from "react-icons/bs";
 import { getMemberPayments } from "../../../../../api/apiTrxPayment";
 
 export default function TransactionTable() {
+  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dataProduct, setDataProduct] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [totalItems, setTotalItems] = useState(0); // Add totalItems state
+  const [totalPages, setTotalPages] = useState(1);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleSuccess = (success, message) => {
-    if (success === true) {
-      toast.success(message);
-      fetchData();
-    } else {
-      toast.error(message);
-    }
-    setIsModalOpen(false);
-  };
-
-  const fetchData = useCallback(
-    async (page = currentPage, limit = itemsPerPage) => {
-      const response = await getMemberPayments.getPayment(page, limit);
-      console.log(response);
-      setDataProduct(response.data);
-      setTotalPages(response.totalPages);
-      setCurrentPage(response.currentPage);
-      setTotalItems(response.total);
-    },
-    [itemsPerPage, currentPage]
-  );
-
+  // Contoh data pesanan, Anda bisa mengambil dari API
   useEffect(() => {
-    fetchData(currentPage, itemsPerPage);
-  }, [fetchData, currentPage, itemsPerPage]);
+    const mockOrders = [
+      {
+        id: "012345/10",
+        date: "Apr 23, 2023",
+        customer: "Dunder Mifflin LTD.",
+        priority: "Normal",
+        total: "$2,960.00",
+        status: "Paid",
+        items: 3,
+        delivery: "DV/012345/101/RF",
+      },
+      {
+        id: "012345/11",
+        date: "Apr 23, 2023",
+        customer: "Acme Inc.",
+        priority: "Normal",
+        total: "$2,960.00",
+        status: "Unpaid",
+        items: 2,
+        delivery: "-",
+      },
+      // Tambah data lain sesuai kebutuhan
+    ];
+    setOrders(mockOrders);
+    setTotalPages(Math.ceil(mockOrders.length / itemsPerPage));
+  }, [itemsPerPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -56,7 +49,7 @@ export default function TransactionTable() {
 
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
+    setCurrentPage(1);
   };
   return (
     <>
@@ -85,116 +78,121 @@ export default function TransactionTable() {
               </svg>
             </div>
           </div>
-          <div className="flex flex-row justify-center items-center space-x-2">
-            <button
-              className="px-3 py-2 rounded-lg text-blue-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-blue-100"
-              onClick={handleOpenModal}
-            >
-              <p>Add Tenant</p>
-              <MdOutlineAddCircle />
-            </button>
-            <button className="px-3 py-2 rounded-lg text-green-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
-              <p>Export</p>
-              <MdCloudDownload />
-            </button>
+          <div className="flex justify-between mb-5">
+            <div className="flex space-x-4">
+              <select className="border rounded p-2">
+                <option>Customer</option>
+                {/* Tambah opsi lain */}
+              </select>
+              <select className="border rounded p-2">
+                <option>Order Status</option>
+                {/* Tambah opsi lain */}
+              </select>
+              <select className="border rounded p-2">
+                <option>Payment Status</option>
+                {/* Tambah opsi lain */}
+              </select>
+              <select className="border rounded p-2">
+                <option>Material</option>
+                {/* Tambah opsi lain */}
+              </select>
+            </div>
+            <div className="flex space-x-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center">
+                <MdOutlineAddCircle className="mr-2" /> Add Order
+              </button>
+              <button className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center">
+                <MdCloudDownload className="mr-2" /> Export
+              </button>
+            </div>
           </div>
         </div>
-        <div className="inline-block min-w-full shadow-md rounded-lg overflow-auto">
+        <div className="bg-white rounded-lg shadow-lg">
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  No
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Order ID
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Transaction Id
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Created at
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Issuer Name
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Customer
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Amount
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Priority
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Type Payment
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Total
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Status
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Payment Status
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  #
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Items
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Delivery Number
                 </th>
               </tr>
             </thead>
             <tbody>
-              {dataProduct.map((item, index) => (
-                <tr key={item.id} className="text-start">
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {index + 1}
+              {orders.map((order, index) => (
+                <tr key={index}>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.id}
                   </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <div className="flex items-center">
-                      <div className="">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {item.TrxId}
-                        </p>
-                      </div>
-                    </div>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.date}
                   </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <p className="text-gray-900 whitespace-no-wrap">
-                      {item.Email}
-                    </p>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.customer}
                   </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.Address}
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.priority}
                   </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.Status === "active" && (
-                      <button className="text-green-400 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2">
-                        Active
-                      </button>
-                    )}
-                    {item.Status === "not active" && (
-                      <span className="text-red-400 border border-red-500 font-bold py-1 px-3 rounded-xl mr-2">
-                        Inactive
-                      </span>
-                    )}
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.total}
                   </td>
-                  <td className="py-3 border-b border-gray-200 bg-white text-xs text-center">
-                    <div className="flex flex-row justify-center items-center gap-x-3">
-                      <BsTrashFill className="text-red-500 text-sm cursor-pointer" />
-                      <div className="border-l border-slate-400 h-4"></div>
-                      <BsPenFill className="text-sky-500 text-sm cursor-pointer" />
-                    </div>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        order.status === "Paid"
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.items} items
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.delivery}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="flex justify-between items-center mt-4 px-2">
+        <div className="flex justify-between items-center mt-4">
           <div className="flex items-center">
-            <span className="text-sm mr-2">Total {totalItems}</span>
+            <span className="text-sm mr-2">Lines per page</span>
+            <select
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="border border-gray-300 rounded-md py-1 px-2"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
           </div>
           <div className="flex items-center">
-            <div className="flex flex-row justify-center items-center gap-x-3 mr-3">
-              <span className="ml-2 text-sm text-slate-400">
-                Lines per page
-              </span>
-              <select
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-                className="border border-gray-300 rounded-md py-1 px-2"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-              </select>
-            </div>
             <button
-              onClick={() => handlePageChange(currentPage)}
+              onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className="px-3 py-2 rounded-lg text-gray-500 border border-slate-200 shadow-inner hover:bg-gray-100"
             >
@@ -204,11 +202,11 @@ export default function TransactionTable() {
               <button
                 key={i + 1}
                 onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-2 rounded-lg ${
+                className={`px-3 py-2 rounded-lg mx-1 ${
                   currentPage === i + 1
                     ? "bg-blue-500 text-white"
                     : "text-gray-500 border border-slate-200"
-                } mx-1`}
+                }`}
               >
                 {i + 1}
               </button>
@@ -223,13 +221,6 @@ export default function TransactionTable() {
           </div>
         </div>
       </div>
-      {/* {isModalOpen && (
-        <AddModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          onSuccess={handleSuccess}
-        />
-      )} */}
     </>
   );
 }

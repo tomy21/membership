@@ -98,10 +98,18 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const currentUrl = window.location.href;
+    const siteUrl = new URL(currentUrl).origin;
+
     if (validateForm()) {
       setLoading(true);
       try {
-        await apiUsers.register(formData);
+        const formDataWithUrl = {
+          ...formData,
+          referralUrl: siteUrl,
+        };
+
+        await apiUsers.register(formDataWithUrl);
         setFormErrors({});
         setIsModalOpen(true);
         setLoading(false);
@@ -156,7 +164,7 @@ export default function Register() {
         closeModal();
         navigate(-1);
         setLoading(true);
-      }, 3000); // Modal akan tertutup setelah 3 detik dan navigasi ke login
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
@@ -326,18 +334,21 @@ export default function Register() {
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Success Modal"
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
+        className="bg-white p-6 rounded-lg shadow-md text-center w-full max-w-[90%]"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
       >
-        <div className="flex justify-center items-center bg-green-100 w-28 h-28 rounded-full m-auto">
-          <div className="flex justify-center items-center bg-green-400 w-20 h-20 rounded-full m-auto border border-green-700 shadow-inner shadow-green-600 text-green-200">
-            <IoCheckmarkOutline size={70} />
-          </div>
-        </div>
-        <h2 className="text-center text-xl font-semibold mb-4 mt-3">
-          Berhasil
-        </h2>
-        <p className="text-center text-sm mb-6">Pendaftaran berhasil</p>
+        <img
+          src={"/assets/successRegister.svg"}
+          alt="Success"
+          className="mb-4 w-24 h-24 mx-auto"
+        />
+        <h1 className="text-2xl font-bold mb-4 text-emerald-600">
+          Registrasi Berhasil!
+        </h1>
+        <p className="mb-6 text-gray-600">
+          Terimakasih sudah mendaftar di SKY Membership, Cek email anda untuk
+          lakukan aktifasi akun anda
+        </p>
       </Modal>
       <ToastContainer />
     </>

@@ -4,7 +4,6 @@ import {
   MdDashboard,
   MdLogout,
   MdAssignment,
-  MdLocationPin,
   MdOutlineReceiptLong,
   MdCardMembership,
   MdOutlineSupervisedUserCircle,
@@ -24,19 +23,21 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 h-full w-60 bg-white text-black">
+    <div className="fixed top-0 left-0 h-screen w-60 bg-white text-black">
       <div className="flex flex-col space-x-3 items-center justify-center h-20 px-4 py-4 border-b border-gray-300">
         <img src={"/logo.png"} className="w-12" alt="" />
         <h1 className="text-lg">Membership</h1>
       </div>
-      <nav className="px-4 py-4 overflow-auto text-sm max-h-[85vh]">
+      <nav className="px-4 py-4 overflow-y-auto text-sm max-h-[calc(100vh-80px)]">
         <ul>
-          {/* <h1 className="text-start mb-2">Main</h1>
+          <h1 className="text-start mb-2">Main</h1>
           <li className="mb-1">
             <Link
               to="/dashboard"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdDashboard className="mr-2" /> Dashboard
@@ -47,7 +48,9 @@ const Sidebar = () => {
             <Link
               to="/dashboard/ticket"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/ticket" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/ticket"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdAssignment className="mr-2" /> Reports
@@ -55,28 +58,17 @@ const Sidebar = () => {
           </li>
 
           <h1 className="mb-2 text-start">Tenants</h1>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/tenants/membership"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/tenants/membership"
-                  ? "bg-slate-400"
-                  : ""
-              }`}
-            >
-              <TiGroupOutline className="mr-2" /> List Membership
-            </Link>
-          </li>
+
           <li className="mb-1">
             <Link
               to="/dashboard/tenants/listmahasiswa"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/tenants/listmahasiswa"
-                  ? "bg-slate-400"
+                  ? "bg-slate-400 text-white"
                   : ""
               }`}
             >
-              <MdOutlineReceiptLong className="mr-2" /> List Mahasiswa
+              <TiGroupOutline className="mr-2" /> Members Tenant
             </Link>
           </li>
           <li className="mb-1">
@@ -84,11 +76,11 @@ const Sidebar = () => {
               to="/dashboard/tenants/transaction"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/tenants/transaction"
-                  ? "bg-slate-400"
+                  ? "bg-slate-400 text-white"
                   : ""
               }`}
             >
-              <MdOutlineReceiptLong className="mr-2" /> Order Membership
+              <MdOutlineReceiptLong className="mr-2" /> Order Tenants
             </Link>
           </li>
           <li className="mb-2">
@@ -96,13 +88,13 @@ const Sidebar = () => {
               to="/dashboard/tenants/history"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/tenants/history"
-                  ? "bg-slate-400"
+                  ? "bg-slate-400 text-white"
                   : ""
               }`}
             >
               <GoHistory className="mr-2" /> History
             </Link>
-          </li> */}
+          </li>
 
           <h1 className="mb-2 text-start">Manage</h1>
           <li className="mb-1">
@@ -110,7 +102,7 @@ const Sidebar = () => {
               to="/dashboard/transaction"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/transaction"
-                  ? "bg-slate-400"
+                  ? "bg-slate-400 text-white"
                   : ""
               }`}
             >
@@ -122,7 +114,7 @@ const Sidebar = () => {
               to="/dashboard/master-products"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
                 location.pathname === "/dashboard/master-products"
-                  ? "bg-slate-400"
+                  ? "bg-slate-400 text-white"
                   : ""
               }`}
             >
@@ -133,27 +125,33 @@ const Sidebar = () => {
             <Link
               to="/dashboard/product"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/product" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/product"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdCardMembership className="mr-2" /> Products
             </Link>
           </li>
-          {/* <li className="mb-2">
+          <li className="mb-2">
             <Link
               to="/dashboard/client"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/client" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/client"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdOutlineSupervisedUserCircle className="mr-2" /> Tenants
             </Link>
-          </li> */}
+          </li>
           <li className="mb-2">
             <Link
               to="/dashboard/members"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/members" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/members"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdOutlineGroups className="mr-2" /> Membership
@@ -163,9 +161,11 @@ const Sidebar = () => {
           <h1 className="mb-2 text-start">User Management</h1>
           <li className="mb-1">
             <Link
-              to="/dashboard/lokasi"
+              to="/dashboard/users"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/lokasi" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/users"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdSupervisorAccount className="mr-2" /> Users
@@ -173,9 +173,11 @@ const Sidebar = () => {
           </li>
           <li className="mb-1">
             <Link
-              to="/dashboard/lokasi"
+              to="/dashboard/roles"
               className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/lokasi" ? "bg-slate-400" : ""
+                location.pathname === "/dashboard/roles"
+                  ? "bg-slate-400 text-white"
+                  : ""
               }`}
             >
               <MdSupervisorAccount className="mr-2" /> Roles

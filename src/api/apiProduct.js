@@ -28,6 +28,16 @@ export const getProductAll = {
       throw error.response.data;
     }
   },
+  getAllByType: async (VehicleType) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/product/byType?VehicleType=${VehicleType}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };
 
 export const getProductById = {
