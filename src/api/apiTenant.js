@@ -1,6 +1,6 @@
 import { apiClient } from "./apiClient";
 
-export const getAllTenants = {
+export const Tenants = {
   getTenant: async (page, limit) => {
     try {
       const response = await apiClient.get("v01/member/api/tenant", {
@@ -14,9 +14,7 @@ export const getAllTenants = {
       throw error.response.data;
     }
   },
-};
 
-export const getAllTransactionTenants = {
   getTransaction: async (page, limit) => {
     try {
       const response = await apiClient.get(
@@ -33,4 +31,18 @@ export const getAllTransactionTenants = {
       throw error.response.data;
     }
   },
+
+  createOrder: async (formData) => {
+    try {
+      const response = await apiClient.post(
+        "/v01/member/api/transactionTenants",
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };
+
+export const getAllTransactionTenants = {};

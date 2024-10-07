@@ -179,9 +179,11 @@ export default function Membership() {
     if (file) {
       const fetchPlateNumber = async () => {
         setLoadingPlate(true);
+        const cameraId = selectedLocation.Code + "-Membership";
         const formData = new FormData();
         formData.append("upload", file);
-        const apiToken = "c6f266f5f06d9bbbb9b1688722211a9f2e7770d0";
+        formData.append("camera_id", cameraId);
+        const apiToken = "2ee83fb34e74d1bd32772ac11129862e8f8161e1";
         try {
           const response = await fetch(
             "https://api.platerecognizer.com/v1/plate-reader/",

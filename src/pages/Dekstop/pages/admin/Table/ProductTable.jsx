@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import AddModal from "./modal/add.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaRegThumbsUp } from "react-icons/fa6";
 
 export default function ProductTable() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +18,8 @@ export default function ProductTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [totalItems, setTotalItems] = useState(0); // Add totalItems state
+  const [totalItems, setTotalItems] = useState(0);
+  const [successModal, setSuccessModal] = useState(false);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -27,14 +29,9 @@ export default function ProductTable() {
     setIsModalOpen(false);
   };
 
-  const handleSuccess = (success, message) => {
-    if (success === true) {
-      toast.success(message);
-      fetchData();
-    } else {
-      toast.error(message);
-    }
-    setIsModalOpen(false);
+  const handleCloseModalSuccess = () => {
+    setSuccessModal(false);
+    fetchData();
   };
 
   const fetchData = useCallback(
@@ -60,6 +57,16 @@ export default function ProductTable() {
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const handleSuccess = (success, message) => {
+    console.log(message);
+    if (success === true) {
+      setSuccessModal(true);
+    } else {
+      toast.error(message);
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -146,7 +153,7 @@ export default function ProductTable() {
                     {item.VehicleType}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item?.RefLocation?.Name}
+                    {item.LocationName}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
                     {item.IsActive === 1 && (
@@ -225,7 +232,24 @@ export default function ProductTable() {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onSuccess={handleSuccess}
+          message={handleSuccess}
         />
+      )}
+      {successModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center">
+            <div className="flex flex-col justify-center items-center space-y-3 mb-10">
+              <FaRegThumbsUp size={40} className="text-green-600" />
+              <h3 className="text-lg">Product successfully added!</h3>{" "}
+            </div>
+            <button
+              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300"
+              onClick={handleCloseModalSuccess}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

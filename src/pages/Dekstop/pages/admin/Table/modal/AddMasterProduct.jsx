@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
-import { productBundleAll } from "../../../../../../api/apiProduct";
+import {
+  getProductAll,
+  productBundleAll,
+} from "../../../../../../api/apiProduct";
 import Loading from "../../../../../Dekstop/components/Loading";
 import { FaRegThumbsUp } from "react-icons/fa6";
-import { startOfMonth, endOfMonth, addMonths } from "date-fns";
+import { startOfMonth, endOfMonth, addMonths, format } from "date-fns";
 
 const monthNames = [
   "January",
@@ -30,7 +33,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
     CardActivateFee: "",
     Type: "",
     Fee: "",
-    CreatedBy: "Admin",
+    MemberProductId: "",
   });
 
   const [monthsDuration, setMonthsDuration] = useState(0);
@@ -39,6 +42,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [locationOptions, setLocationOptions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,8 +58,21 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
       }
     };
 
+    const fetchProduct = async () => {
+      if (formProduct.Type) {
+        try {
+          const response = await getProductAll.getAllByType(formProduct.Type);
+          console.log(response);
+          setLocationOptions(response.data);
+        } catch (error) {
+          return null;
+        }
+      }
+    };
+
     fetchData();
-  }, [data]);
+    fetchProduct();
+  }, [data, formProduct.Type]);
 
   const formatDateToCustomString = (date) => {
     const day = `0${date.getDate()}`.slice(-2);
@@ -258,6 +275,33 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
                 <div>
                   <label
+                    htmlFor="MemberProductId"
+                    className="block mb-1 font-semibold text-sm text-gray-600"
+                  >
+                    Product Location
+                  </label>
+
+                  <select
+                    id="MemberProductId"
+                    name="MemberProductId"
+                    value={formProduct.MemberProductId}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Location
+                    </option>
+                    {locationOptions.map((data, index) => (
+                      <option key={index} value={parseInt(data.Id)}>
+                        {data.LocationName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label
                     htmlFor="Price"
                     className="block mb-1 font-semibold text-sm text-gray-600"
                   >
@@ -402,7 +446,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                     id="EndDate"
                     type="text" // Gunakan tipe text agar bisa diisi secara manual jika perlu
                     name="EndDate"
-                    value={formProduct.EndDate} // Format custom dd/mm/yyyy HH:mm:ss
+                    value={formProduct.EndDate}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-200 focus:outline-none"
                   />
@@ -419,7 +463,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                   }`}
                   disabled={loading}
                 >
-                  {loading ? "Submitting..." : "Add Product"}
+                  {loading ? "Submitting..." : data ? "Update" : "Add Product"}
                 </button>
               </div>
             </form>

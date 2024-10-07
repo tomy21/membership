@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { FaRegThumbsUp } from "react-icons/fa6";
 import Loading from "../../../../components/Loading";
-import {
-  getBundleByType,
-  storeProduct,
-} from "../../../../../../api/apiProduct";
+import { storeProduct } from "../../../../../../api/apiProduct";
 import { apiLocations } from "../../../../../../api/apiLocations";
-import { format } from "date-fns";
 
-export default function AddModal({ isOpen, onClose, onSuccess }) {
+export default function AddModal({ isOpen, onClose, onSuccess, message }) {
   const [formProduct, setFormProduct] = useState({
     ProductName: "",
     ProductDescription: "",
@@ -23,57 +19,25 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
     isDeleted: 0,
   });
 
-  const [dataProduct, setDataProduct] = useState([]);
   const [dataLocation, setDataLocation] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  // const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [vehicleOptions, setVehicleOptions] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(""); // Inisialisasi sebagai string
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const responseBundle = await getBundleByType.getByType(
-          formProduct.VehicleType
-        );
-        setDataProduct(responseBundle.data);
-
-        // Mengatur DateActive berdasarkan StartDate dari response
-      } catch (err) {
-        setError("Failed to fetch product data.");
-      }
-    };
-
     const fetchLocation = async () => {
       try {
         const responseData = await apiLocations.getLocationActive();
-        setDataLocation(responseData);
+        setDataLocation(responseData.data);
       } catch (error) {
         setError("Failed to fetch location data.");
       }
     };
 
     fetchLocation();
-    if (formProduct.VehicleType) {
-      fetchProduct();
-    }
-  }, [formProduct.VehicleType]);
-
-  useEffect(() => {
-    if (formProduct.VehicleType) {
-      setVehicleOptions(
-        dataProduct.map((data) => ({
-          value: data.id,
-          label: data.Name,
-        }))
-      );
-    } else {
-      setVehicleOptions([]);
-    }
-  }, [dataProduct, formProduct.VehicleType]);
+  }, []);
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
@@ -95,25 +59,6 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
     onClose();
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Simulasi request submit data ke API
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const response = await storeProduct.createProduct(formProduct);
-      console.log(response);
-      setLoading(false);
-      setShowSuccessModal(true);
-      onSuccess(); // Memanggil fungsi `onSuccess` jika ada
-    } catch (err) {
-      setLoading(false);
-      setError(err.message || "Something went wrong");
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormProduct({
@@ -121,37 +66,46 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
       [name]: value,
     });
 
-    // Ketika MemberProductBundleId berubah, ambil StartDate dari bundle yang dipilih
-    if (name === "MemberProductBundleId") {
-      const selectedBundle = dataProduct.find(
-        (bundle) => bundle.id === Number(value)
-      );
-      console.log(selectedBundle);
-      if (selectedBundle) {
-        setFormProduct((prevForm) => ({
-          ...prevForm,
-          DateActive: selectedBundle.StartDate, // Mengisi DateActive dengan StartDate dari bundle
-        }));
-      }
-    }
-    console.log(formProduct.DateActive);
     // Ketika LocationCode berubah, kita simpan data lokasi yang dipilih
     if (name === "LocationCode") {
       const location = dataLocation.find((loc) => loc.LocationCode === value);
+      const quotaMobil = parseInt(location.QuotaMobil) || 0;
+      const quotaMotor = parseInt(location.QuotaMotor) || 0;
+      const maxQuote = quotaMobil + quotaMotor;
       if (location) {
         setSelectedLocation(location);
         setFormProduct((prevForm) => ({
           ...prevForm,
-          LocationName: location.Name, // Set LocationName in formProduct
+          LocationName: location.LocationName,
+          MaxQuote: maxQuote,
         }));
       }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      await storeProduct.createProduct(formProduct);
+      setLoading(false);
+      setSuccessMessage("Product successfully added!"); // Set success message
+      setShowSuccessModal(true); // Tampilkan modal sukses
+      if (onSuccess) {
+        onSuccess(true);
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Something went wrong");
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-gray-900 bg-opacity-50">
       {loading ? (
         <Loading />
       ) : showSuccessModal ? (
@@ -159,7 +113,8 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
             <div className="flex flex-col justify-center items-center space-y-3 mb-10">
               <FaRegThumbsUp size={40} className="text-green-600" />
-              <h3 className="text-lg">{successMessage}</h3>
+              <h3 className="text-lg">{successMessage}</h3>{" "}
+              {/* Tampilkan successMessage */}
             </div>
             <button
               className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300"
@@ -224,36 +179,6 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                 </select>
               </div>
 
-              {formProduct.VehicleType && vehicleOptions.length > 0 && (
-                <div>
-                  <label
-                    htmlFor="MemberProductBundleId"
-                    className="block mb-2 font-semibold text-sm text-gray-600"
-                  >
-                    Product Bundle
-                  </label>
-                  <select
-                    id="MemberProductBundleId"
-                    name="MemberProductBundleId"
-                    value={formProduct.MemberProductBundleId}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="" disabled>
-                      Select Product Bundle
-                    </option>
-                    {vehicleOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 text-start mb-5">
               <div>
                 <label
                   htmlFor="LocationCode"
@@ -279,63 +204,80 @@ export default function AddModal({ isOpen, onClose, onSuccess }) {
                   ))}
                 </select>
               </div>
-
-              {/* Display input for Location Name if location is selected */}
-              {selectedLocation && (
-                <div>
-                  <label
-                    htmlFor="LocationName"
-                    className="block mb-1 font-semibold text-sm text-gray-600"
-                  >
-                    Location Name
-                  </label>
-                  <input
-                    id="LocationName"
-                    type="text"
-                    name="LocationName"
-                    value={selectedLocation.Name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    readOnly
-                  />
-                </div>
-              )}
-
-              <div>
-                <label
-                  htmlFor="MaxQuote"
-                  className="block mb-1 font-semibold text-sm text-gray-600"
-                >
-                  Quota
-                </label>
-                <input
-                  id="MaxQuote"
-                  type="text"
-                  name="MaxQuote"
-                  value={formProduct.MaxQuote}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 text-start mb-5">
-              <div>
-                <label
-                  htmlFor="DateActive"
-                  className="block mb-1 font-semibold text-sm text-gray-600"
-                >
-                  Date Active
-                </label>
-                <input
-                  id="DateActive"
-                  type="text"
-                  name="DateActive"
-                  value={formProduct.DateActive}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  readOnly
-                />
-              </div>
+              {selectedLocation && (
+                <>
+                  <div>
+                    <label
+                      htmlFor="LocationName"
+                      className="block mb-1 font-semibold text-sm text-gray-600"
+                    >
+                      Location Name
+                    </label>
+                    <input
+                      id="LocationName"
+                      type="text"
+                      name="LocationName"
+                      value={selectedLocation.LocationName}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="MaxQuoteMobil"
+                      className="block mb-1 font-semibold text-sm text-gray-600"
+                    >
+                      Quota Mobil
+                    </label>
+                    <input
+                      id="MaxQuoteMobil"
+                      type="text"
+                      name="MaxQuoteMobil"
+                      value={selectedLocation.QuotaMobil}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="MaxQuoteMotor"
+                      className="block mb-1 font-semibold text-sm text-gray-600"
+                    >
+                      Quota Motor
+                    </label>
+                    <input
+                      id="MaxQuoteMotor"
+                      type="text"
+                      name="MaxQuoteMotor"
+                      value={selectedLocation.QuotaMotor}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      readOnly
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="DateActive"
+                      className="block mb-1 font-semibold text-sm text-gray-600"
+                    >
+                      Date Active
+                    </label>
+                    <input
+                      id="DateActive"
+                      type="date"
+                      name="DateActive"
+                      value={formProduct.DateActive}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             <div>

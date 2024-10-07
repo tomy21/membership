@@ -230,7 +230,7 @@ function PinInput() {
         <div className="text-center mb-4 text-lg font-semibold mt-5">
           Masukkan 6 digit PIN Kamu
         </div>
-        <div className="flex justify-center space-x-2 mb-4">
+        <div className="flex justify-center space-x-2 mb-4 mt-8">
           {Array(6)
             .fill(0)
             .map((_, index) => (
@@ -252,7 +252,7 @@ function PinInput() {
             ))}
         </div>
         {/* <button className="mb-6 text-blue-600">Lupa PIN?</button> */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-10 mt-20">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num, idx) => (
             <button
               key={idx}

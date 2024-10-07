@@ -13,7 +13,6 @@ export const apiUsers = {
   getToken: async () => {
     try {
       const response = await apiClient.get(`/v01/member/api/auth/protected`);
-      console.log(response);
       return response.data;
     } catch (error) {
       throw error.response.data;

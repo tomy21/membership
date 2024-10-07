@@ -25,7 +25,7 @@ export const apiLocations = {
   },
   getLocationActive: async (page, limit) => {
     try {
-      const response = await apiClient.get("/api/getByLocationMembers", {
+      const response = await apiClient.get("/v01/member/api/location-members", {
         params: {
           page,
           limit,
