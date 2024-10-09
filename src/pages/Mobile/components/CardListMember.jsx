@@ -298,9 +298,24 @@ export default function CardListMember({ dataList }) {
               alt="RFID Card Scan"
             />
             {isNfcSupported ? (
-              <p className="text-gray-500 mt-4 text-center">
-                Hold your card close to the phone to scan.
-              </p>
+              <div className="mt-4">
+                <p className="text-gray-500 mt-4 text-center">
+                  Hold your card close to the phone to scan.
+                </p>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md p-2 mt-2"
+                  value={manualInput}
+                  onChange={handleManualInputChange}
+                  placeholder="Enter card number manually"
+                />
+                <button
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md w-full"
+                  onClick={handleManualInputSubmit}
+                >
+                  Submit Card Number
+                </button>
+              </div>
             ) : (
               <div className="mt-4">
                 <p className="text-red-500 text-center">
