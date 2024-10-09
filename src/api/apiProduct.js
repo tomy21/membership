@@ -188,11 +188,34 @@ export const storeProductMember = {
   },
 };
 export const updateProductUsers = {
-  patchMember: async (idMember, formProduct) => {
+  patchMember: async (idMember, updatedData) => {
     try {
       const response = await apiClient.patch(
         `/v01/member/api/userProduct/${idMember}`,
-        formProduct
+        updatedData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  patchMemberById: async (idProduct, updatedData) => {
+    try {
+      const response = await apiClient.patch(
+        `/v01/member/api/userProduct/updateData/byIdProduct/${idProduct}`,
+        updatedData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getMemberById: async (idProduct) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/userProduct/updateData/byIdProduct/${idProduct}`
       );
       return response.data;
     } catch (error) {
