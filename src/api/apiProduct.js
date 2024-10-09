@@ -105,10 +105,10 @@ export const getAllUserMembers = {
   },
 };
 export const getMemberByUserId = {
-  getByUserId: async (idUser, page, limit) => {
+  getByUserId: async (page, limit) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/userProduct/byUser?userId=${idUser}`,
+        `/v01/member/api/userProduct/byUser`,
         {
           params: {
             page,
@@ -123,16 +123,13 @@ export const getMemberByUserId = {
   },
 };
 export const getMemberById = {
-  getById: async (idMember) => {
+  getById: async () => {
     // Check if idMember is provided
-    if (!idMember) {
-      return { error: "ID member is required" };
-    }
 
     try {
       // Make API call
       const response = await apiClient.get(
-        `/v01/member/api/userProduct/byUser?userId=${idMember}`
+        `/v01/member/api/userProduct/byUser`
       );
       const data = response.data;
 

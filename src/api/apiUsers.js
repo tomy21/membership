@@ -128,10 +128,11 @@ export const verifikasiUsers = {
       const response = await apiClient.post(`/v01/member/api/auth/verifikasi`, {
         Pin: pinVerifikasi,
       });
+
       return response.data;
     } catch (error) {
       console.error("API error:", error.response ? error.response.data : error);
-      throw error.response ? error.response.data : error;
+      return error.response.data;
     }
   },
 };

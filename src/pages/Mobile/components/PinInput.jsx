@@ -34,8 +34,11 @@ function PinInput() {
         memberUserId: idUser,
         pinVerifikasi: enteredPin,
       });
-
-      if (response.statusCode === 200) {
+      console.log(response.status === "fail");
+      if (response.status === "fail") {
+        setErrorMessage(response.message);
+        setErrorShowModal(true);
+      } else if (response.statusCode === 200) {
         const dataForm = {
           providerId: location.state?.providerId ?? "",
           productId: location.state?.productId ?? "",
@@ -215,8 +218,8 @@ function PinInput() {
 
   return (
     <>
+      <ToastContainer />
       <div className="flex flex-col items-center justify-center w-full">
-        <ToastContainer />
         <ErrorModal
           showModal={errorShowModal}
           handleClose={handleCloseModal}
