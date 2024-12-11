@@ -34,7 +34,7 @@ function PinInput() {
         memberUserId: idUser,
         pinVerifikasi: enteredPin,
       });
-      console.log(response.status === "fail");
+      console.log(response.statusCode === 200);
       if (response.status === "fail") {
         setErrorMessage(response.message);
         setErrorShowModal(true);

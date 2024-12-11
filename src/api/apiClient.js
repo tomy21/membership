@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:3008",
+  baseURL: "https://apiintegration.skyparking.online",
   // baseURL: "https://apimembershipservice.skyparking.online",
   withCredentials: true,
   headers: {
