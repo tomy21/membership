@@ -144,7 +144,7 @@ export default function Dashboard() {
             </div>
             {/* Top Up Button */}
             <button
-              className="bg-gray-200 text-gray-700 p-2 font-medium rounded-lg flex items-center space-x-1"
+              className="bg-emerald-600 text-white text-sm p-2 font-medium rounded-lg flex items-center space-x-1"
               onClick={handleTopUp}
             >
               <span>Top up</span>
@@ -213,7 +213,7 @@ export default function Dashboard() {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-28 max-h-72 overflow-y-auto py-2">
+                <div className="flex flex-col justify-start items-start mt-5 px-5 pb-3 space-y-2 min-h-1/2 max-h-80 overflow-y-auto py-2">
                   {isLoading ? (
                     [...Array(5)].map((_, index) => (
                       <div

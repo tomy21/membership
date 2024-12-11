@@ -10,6 +10,7 @@ import { getProviderById } from "../../../api/apiProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TermsAndCondition from "../components/TermAndCondition";
+import { Provider } from "../../../api/apiMembershipV2";
 
 export default function Topup() {
   const [amount, setAmount] = useState(0);
@@ -29,25 +30,35 @@ export default function Topup() {
   };
 
   useEffect(() => {
-    if (selectedType) {
-      const filtered = providers.filter(
-        (provider) => provider.Type === selectedType
-      );
-      setFilteredProviders(filtered);
-      setTypePayment(typePayment);
-    } else {
-      setFilteredProviders([]);
-    }
-  }, [selectedType, providers, typePayment]);
-
-  useEffect(() => {
     const fetchProvider = async () => {
-      const response = await getProviderById.getById(0);
-      setProviders(response.data);
+      if (!selectedType) return;
+
+      try {
+        const response = await Provider.getAllByType(selectedType.value);
+
+        setProviders(response);
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setProviders([]);
+      }
     };
 
     fetchProvider();
-  }, []);
+  }, [selectedType]);
+
+  useEffect(() => {
+    if (selectedType && Array.isArray(providers)) {
+      setFilteredProviders(
+        providers.filter(
+          (provider) => provider.code_bank === selectedType.value
+        )
+      );
+    } else {
+      setFilteredProviders([]);
+    }
+  }, [selectedType, providers]);
+
+  console.log("filteredProviders", selectedProvider);
 
   const handleProceed = () => {
     if (!isTermsAccepted) {
@@ -80,9 +91,9 @@ export default function Topup() {
     navigate("/verifikasi", {
       state: {
         type: "topup",
-        providerName: selectedProvider.ProviderName,
-        providerId: selectedProvider.Id,
-        amount: totalAmount.toFixed(2),
+        bank_id: selectedProvider.id,
+        amount: totalAmount,
+        code_bank: selectedProvider.code_bank,
       },
     });
   };
@@ -161,20 +172,23 @@ export default function Topup() {
               <ProviderSelector
                 selectedProvider={selectedProvider}
                 setSelectedProvider={setSelectedProvider}
-                filteredProviders={filteredProviders}
+                filteredProviders={providers}
               />
             )}
           </div>
 
           {/* Checkbox untuk Syarat dan Ketentuan */}
-          <div className="mt-5 flex items-center space-x-3">
+          <div className="mt-5 flex flex-row justify-start items-center space-x-3 w-full">
             <input
               type="checkbox"
               className="form-checkbox h-5 w-5 text-blue-600"
               checked={isTermsAccepted}
               onChange={() => setIsTermsAccepted(!isTermsAccepted)}
             />
-            <span className="text-gray-700 text-sm" onClick={onShowTerms}>
+            <span
+              className="text-gray-700 text-sm cursor-pointer"
+              onClick={onShowTerms}
+            >
               Saya menyetujui syarat dan ketentuan.
             </span>
           </div>

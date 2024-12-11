@@ -51,14 +51,9 @@ export const apiBayarindTopUp = {
     try {
       const token = await getToken();
 
-      const dataSubmit = {
-        providerId: data.providerId,
-        expiredByMinute: data.expiredByMinute,
-        amount: data.amount.toString(),
-      };
       const response = await apiSkyBayarind.post(
-        "/api/v1.0/transfer-va/topup",
-        dataSubmit,
+        "/v1/productPurchase/TOP_UP",
+        data,
         {
           headers: {
             Authorization: `Bearer ${token.token}`,
@@ -66,7 +61,7 @@ export const apiBayarindTopUp = {
           },
         }
       );
-      return response;
+      return response.data;
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response);

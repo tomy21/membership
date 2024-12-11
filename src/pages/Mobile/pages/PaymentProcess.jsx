@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Accordion from "../components/Accordion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { getIdTrx } from "../../../api/apiTrxPayment";
+import { Users } from "../../../api/apiMembershipV2";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -55,14 +56,13 @@ const copyToClipboard = (text) => {
 };
 
 export default function PaymentProcess() {
+  const [name, setName] = useState(null);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const formatAmount = formatNumber(
-    Math.floor(location.state.response.virtualAccountData.totalAmount.value)
+    Math.floor(location.state.bankProvider.amount)
   );
-  const formattedDate = formatDate(
-    location.state.response.virtualAccountData.expiredDate
-  );
+  const formattedDate = formatDate(location.state.response.expired_date);
   const navigate = useNavigate();
 
   const handleCekStatus = async () => {
@@ -89,6 +89,23 @@ export default function PaymentProcess() {
     }
   };
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const response = await Users.getByUserId();
+        setName(response.data.fullname);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const handleBack = async () => {
     navigate("/dashboard");
   };
@@ -98,61 +115,50 @@ export default function PaymentProcess() {
   }
 
   return (
-    <div className="bg-gray-100 h-screen">
+    <div className="bg-gray-100 min-h-screen text-left">
       <ToastContainer />
-      <div className="w-full flex flex-col justify-center items-center py-3 space-y-2 bg-white mb-3">
-        <h1 className="text-xs font-normal text-gray-400">
-          Lakukan pembayaran sebelum
-        </h1>
-        <h1 className="text-base font-bold text-red-500">{formattedDate}</h1>
+
+      {/* Header */}
+      <div className="w-full flex flex-col justify-center items-center py-4 bg-white shadow-sm mb-5">
+        <h1 className="text-sm text-gray-500">Lakukan pembayaran sebelum</h1>
+        <h1 className="text-lg font-bold text-red-500">{formattedDate}</h1>
       </div>
 
-      <div className="w-full flex flex-col justify-start items-start px-3 py-3 space-y-7 bg-white">
-        <div className="flex flex-col justify-start items-start w-full space-y-2">
-          <h1 className="text-sm font-normal text-gray-400">
+      {/* Payment Details */}
+      <div className="max-w-lg mx-auto bg-white shadow-sm rounded-lg p-6 space-y-6">
+        <div>
+          <h2 className="text-gray-500 text-sm">
             Bayar ke nomor rekening virtual
-          </h1>
-          <div className="flex justify-between items-center w-full">
-            <h1 className="text-base font-bold text-black">
-              {location.state.response.virtualAccountData.virtualAccountNo}
-            </h1>
+          </h2>
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-lg font-semibold text-gray-800">
+              {location.state.response.virtual_account}
+            </span>
             <button
               onClick={() =>
-                copyToClipboard(
-                  location.state.response.virtualAccountData.virtualAccountNo
-                )
+                copyToClipboard(location.state.response.virtual_account)
               }
-              className="border border-blue-500 rounded-md px-2 py-1 text-blue-500 text-center text-sm"
+              className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
               Salin
             </button>
           </div>
-          <h1 className="text-sm font-normal text-gray-700">
-            Bank {location.state.bankProvider} a/n{" "}
-            {location.state.response.virtualAccountData.virtualAccountName}
-          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Bank {location.state.bankProvider.code_bank} a/n {name}
+          </p>
         </div>
 
-        <div className="flex flex-col justify-start items-start w-full space-y-3">
-          <h1 className="text-sm font-normal text-gray-400">Bayar sejumlah</h1>
-
-          <div className="flex justify-between items-center w-full">
-            <h1 className="text-2xl font-normal text-black">
-              <span className="text-bold">
-                {
-                  location.state.response.virtualAccountData.totalAmount
-                    .currency
-                }
-              </span>{" "}
-              {formatAmount}
-            </h1>
+        <div>
+          <h2 className="text-gray-500 text-sm">Bayar sejumlah</h2>
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-2xl font-semibold text-gray-800">
+              IDR {formatAmount}
+            </span>
             <button
               onClick={() =>
-                copyToClipboard(
-                  location.state.response.virtualAccountData.totalAmount
-                )
+                copyToClipboard(location.state.bankProvider.amount)
               }
-              className="border border-blue-500 rounded-md px-2 py-1 text-blue-500 text-center text-sm"
+              className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
               Salin
             </button>
@@ -160,20 +166,20 @@ export default function PaymentProcess() {
         </div>
       </div>
 
-      <div className="w-full flex flex-col justify-start items-start px-3 py-3  bg-white mt-3">
-        <h1 className="text-sm text-gray-400 mb-5">Cara Pembayaran</h1>
-
+      {/* Payment Instructions */}
+      <div className="max-w-lg h-full mx-auto bg-white shadow-sm rounded-lg p-6 mt-6">
+        <h2 className="text-gray-500 text-sm mb-4">Cara Pembayaran</h2>
         <Accordion />
 
         <button
           onClick={handleCekStatus}
-          className="w-full border border-blue-500 rounded-md py-3 text-blue-500 mt-10"
+          className="w-full text-blue-600 border border-blue-600 rounded-lg py-3 mt-5 hover:bg-blue-50 transition"
         >
           Cek Status Pembayaran
         </button>
         <button
           onClick={handleBack}
-          className="w-full border border-red-500 rounded-md py-3 text-red-500 mt-2"
+          className="w-full text-red-600 border border-red-600 rounded-lg py-3 mt-3 hover:bg-red-50 transition"
         >
           Kembali
         </button>

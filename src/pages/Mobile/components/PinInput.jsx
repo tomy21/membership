@@ -117,18 +117,17 @@ function PinInput() {
           }
         } else if (location.state.type === "topup") {
           const dataFormTopUp = {
-            providerId: location.state.providerId,
-            amount: dataForm.amount,
-            expiredByMinute: dataForm.expiredByMinute,
+            bank_id: location.state.bank_id,
+            amount: location.state.amount,
           };
-
           const responseBayarind = await apiBayarindTopUp.createVaTopup(
             dataFormTopUp
           );
+          console.log(responseBayarind);
 
-          if (responseBayarind.data.responseCode === "2002700") {
+          if (responseBayarind.status === true) {
             const data = {
-              bankProvider: location.state.providerName,
+              bankProvider: location.state,
               response: responseBayarind.data,
             };
 
