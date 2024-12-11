@@ -36,7 +36,6 @@ function PaymentMember() {
           location.state.locationCode
         );
 
-        console.log("selectedType", response);
         setProviders(response);
       } catch (error) {
         console.error("Error fetching providers:", error);
@@ -101,9 +100,6 @@ function PaymentMember() {
   };
 
   const currentPeriod = getMonthlyPeriod();
-
-  console.log("currentPeriod", selectedType);
-  console.log("provider", selectedProvider);
 
   return (
     <div>

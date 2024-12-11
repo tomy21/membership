@@ -58,8 +58,6 @@ export default function Topup() {
     }
   }, [selectedType, providers]);
 
-  console.log("filteredProviders", selectedProvider);
-
   const handleProceed = () => {
     if (!isTermsAccepted) {
       toast.error("Anda harus menyetujui syarat dan ketentuan.");

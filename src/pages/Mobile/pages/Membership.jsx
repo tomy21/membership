@@ -41,7 +41,6 @@ export default function Membership() {
           const response = await MembershipProduct.getByLocationCode(
             locationCode
           );
-          console.log(response.data);
           setDataLocation(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -54,7 +53,6 @@ export default function Membership() {
       if (selectedLocation) {
         try {
           const response = await Users.getVehicleByType(typeVehicle);
-          console.log(response.data);
           setVehicleList(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);

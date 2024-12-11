@@ -35,8 +35,6 @@ function PinInput() {
         pinVerifikasi: enteredPin,
       });
 
-      console.log(location.state);
-
       if (response.status === false) {
         setErrorMessage(response.message);
         setErrorShowModal(true);
