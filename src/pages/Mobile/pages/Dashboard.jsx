@@ -26,8 +26,8 @@ const items = [
   },
   {
     src: "/assets/map.png",
-    alt: "Lokasi Parkir",
-    label: "Lokasi Parkir",
+    alt: "Location",
+    label: "Location",
     path: "/lokasi",
   },
   {
