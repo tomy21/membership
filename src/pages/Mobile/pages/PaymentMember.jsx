@@ -92,6 +92,7 @@ function PaymentMember() {
     setIsModalVisible(false);
     navigate("/verifikasi", {
       state: {
+        type: "Member",
         providerId: selectedProvider.id,
         productId: location.state.productId,
         plateNumber: location.state.plateNumber,
@@ -100,6 +101,9 @@ function PaymentMember() {
   };
 
   const currentPeriod = getMonthlyPeriod();
+
+  console.log("currentPeriod", selectedType);
+  console.log("provider", selectedProvider);
 
   return (
     <div>

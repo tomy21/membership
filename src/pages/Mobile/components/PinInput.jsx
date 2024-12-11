@@ -34,49 +34,34 @@ function PinInput() {
         memberUserId: idUser,
         pinVerifikasi: enteredPin,
       });
-      console.log(response.statusCode === 200);
-      if (response.status === "fail") {
+
+      console.log(location.state);
+
+      if (response.status === false) {
         setErrorMessage(response.message);
         setErrorShowModal(true);
       } else if (response.statusCode === 200) {
-        const dataForm = {
-          providerId: location.state?.providerId ?? "",
-          productId: location.state?.productId ?? "",
-          periodId: location.state?.periodId ?? "",
-          plateNumber: location.state?.data?.location?.state?.platNomor ?? "",
-          expiredByMinute: 30,
-          amount: Math.floor(
-            location.state?.data?.location?.state?.tariff ??
-              location.state.amount
-          ).toFixed(2),
-          files: Array.isArray(location.state?.data?.location?.state?.file)
-            ? location.state.data.location.state.file
-            : [],
-        };
-
         if (location.state.type === "Member") {
-          const responseBayarind = await apiBayarindVa.createVa(dataForm);
-          console.log(responseBayarind);
-          if (responseBayarind.data.responseCode === "2002700") {
+          const dataFormTopUp = {
+            bank_id: location.state.providerId,
+            plate_number: location.state.plateNumber,
+          };
+          const idProduct = location.state.productId;
+          const responseBayarind = await apiBayarindVa.createVa(
+            idProduct,
+            dataFormTopUp
+          );
+
+          if (responseBayarind.status === true) {
             const data = {
-              periodId: location.state.periodId,
-              bankProvider: location.state.providerName,
-              virtualAccountNomor:
-                responseBayarind.data.virtualAccountData.virtualAccountNo,
-              amount:
-                responseBayarind.data.virtualAccountData.totalAmount.value,
+              bankProvider: location.state,
               response: responseBayarind.data,
             };
+
             navigate("/payment_process", { state: data });
-          } else if (responseBayarind.data.responseCode === "400") {
-            setErrorMessage(responseBayarind.data.responseMessage);
-            setPin(Array(6).fill(""));
-            setErrorShowModal(true);
-          } else if (responseBayarind.data.responseCode === "200") {
-            setShowModal(true);
-            setSuccessMessage(responseBayarind.data.responseMessage);
           } else {
-            setErrorMessage(responseBayarind.data.responseMessage);
+            console.log(responseBayarind.data.message);
+            setErrorMessage(responseBayarind.data.message);
             setPin(Array(6).fill(""));
             setErrorShowModal(true);
           }

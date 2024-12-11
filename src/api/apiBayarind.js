@@ -11,37 +11,24 @@ const getToken = async () => {
 };
 
 export const apiBayarindVa = {
-  createVa: async (data) => {
+  createVa: async (idProduct, data) => {
     try {
-      const totalAmount = data.amount;
-      const formData = new FormData();
-      formData.append("providerId", data.providerId);
-      formData.append("productId", data.productId);
-      formData.append("periodId", data.periodId);
-      formData.append("plateNumber", data.plateNumber);
-      formData.append("expiredByMinute", data.expiredByMinute);
-      formData.append("amount", totalAmount);
-
-      // Asumsikan files adalah array dari file
-      data.files.forEach((file, index) => {
-        formData.append(`files[${index}]`, file);
-      });
-
       const token = await getToken();
 
       const response = await apiSkyBayarind.post(
-        "/api/v1.0/transfer-va/create-va",
-        formData,
+        `/v1/productPurchase/purchase/${idProduct}`,
+        data,
         {
           headers: {
             Authorization: `Bearer ${token.token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
       return response;
     } catch (error) {
-      throw error.response;
+      console.log(error.response.data);
+      return error.response;
     }
   },
 };
