@@ -7,6 +7,7 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
+  console.log("filteredProviders", filteredProviders);
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>
@@ -14,13 +15,13 @@ const ProviderSelector = ({
           <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 flex flex-row justify-start items-center gap-x-3">
             {selectedProvider ? (
               <>
-                <img
+                {/* <img
                   src={`/assets/payment/${selectedProvider?.LogoUrl}`}
                   className="w-7"
-                  alt={selectedProvider?.ProviderName}
-                />
+                  alt={selectedProvider?.code_bank}
+                /> */}
                 <span className="block truncate">
-                  {selectedProvider?.ProviderName}
+                  {selectedProvider?.code_bank}
                 </span>
               </>
             ) : (
@@ -36,7 +37,7 @@ const ProviderSelector = ({
           <Listbox.Options className="absolute z-20 mt-12 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {filteredProviders.map((provider) => (
               <Listbox.Option
-                key={provider.Id}
+                key={provider.id}
                 value={provider}
                 className={({ active }) =>
                   `relative cursor-default select-none py-2 pl-3 pr-9 flex flex-row justify-start items-center gap-x-4 ${
@@ -46,17 +47,17 @@ const ProviderSelector = ({
               >
                 {({ selected, active }) => (
                   <>
-                    <img
+                    {/* <img
                       src={`/assets/payment/${provider.LogoUrl}`}
                       className="w-10"
                       alt=""
-                    />
+                    /> */}
                     <span
                       className={`block truncate ${
                         selected ? "font-semibold" : "font-normal"
                       }`}
                     >
-                      {provider.ProviderName}
+                      {provider.code_bank}
                     </span>
                     {selected ? (
                       <span

@@ -62,36 +62,6 @@ export default function MembershipTable() {
     <>
       <ToastContainer />
       <div className="w-full px-2 py-4">
-        <div className="flex justify-between items-center mb-5">
-          <div className="relative">
-            <input
-              type="text"
-              className="w-full py-2 pr-10 pl-4 text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 text-sm"
-              placeholder="Search product"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.9 14.32a8 8 0 111.414-1.414l4.243 4.243a1 1 0 01-1.415 1.415l-4.242-4.243zM8 14a6 6 0 100-12 6 6 0 000 12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex flex-row justify-center items-center space-x-2">
-            <button className="px-3 py-2 rounded-lg text-green-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
-              <p>Export</p>
-              <MdCloudDownload />
-            </button>
-          </div>
-        </div>
         <div className="inline-block min-w-full shadow-md rounded-lg overflow-auto">
           <table className="min-w-full leading-normal">
             <thead>

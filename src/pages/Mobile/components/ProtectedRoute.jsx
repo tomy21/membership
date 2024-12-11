@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }) => {
       try {
         const response = await apiUsers.verifyToken();
 
-        if (response.statusCode === 200) {
+        if (response.status === "success") {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);

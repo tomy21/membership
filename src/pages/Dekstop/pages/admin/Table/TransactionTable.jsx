@@ -1,11 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { getAllTenants } from "../../../../../api/apiTenant";
+import React, { useEffect, useState } from "react";
 import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
-import { format } from "date-fns";
-import { BsPenFill, BsTrashFill } from "react-icons/bs";
-import { getMemberPayments } from "../../../../../api/apiTrxPayment";
+import { History, Transaction } from "../../../../../api/apiProduct";
 
 export default function TransactionTable() {
   const [orders, setOrders] = useState([]);
@@ -14,34 +9,16 @@ export default function TransactionTable() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Contoh data pesanan, Anda bisa mengambil dari API
+  const fetchData = async () => {
+    const response = await Transaction.getAll(currentPage, itemsPerPage);
+    console.log(response);
+    setOrders(response.data?.transaction);
+    setTotalPages(response.data?.totalPages);
+  };
+
   useEffect(() => {
-    const mockOrders = [
-      {
-        id: "012345/10",
-        date: "Apr 23, 2023",
-        customer: "Dunder Mifflin LTD.",
-        priority: "Normal",
-        total: "$2,960.00",
-        status: "Paid",
-        items: 3,
-        delivery: "DV/012345/101/RF",
-      },
-      {
-        id: "012345/11",
-        date: "Apr 23, 2023",
-        customer: "Acme Inc.",
-        priority: "Normal",
-        total: "$2,960.00",
-        status: "Unpaid",
-        items: 2,
-        delivery: "-",
-      },
-      // Tambah data lain sesuai kebutuhan
-    ];
-    setOrders(mockOrders);
-    setTotalPages(Math.ceil(mockOrders.length / itemsPerPage));
-  }, [itemsPerPage]);
+    fetchData();
+  }, [currentPage, itemsPerPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -49,111 +26,62 @@ export default function TransactionTable() {
 
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
+
   return (
     <>
-      <ToastContainer />
-      <div className="w-full px-2 py-4">
-        <div className="flex justify-between items-center mb-5">
-          <div className="relative">
-            <input
-              type="text"
-              className="w-full py-2 pr-10 pl-4 text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 text-sm"
-              placeholder="Search tenant"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.9 14.32a8 8 0 111.414-1.414l4.243 4.243a1 1 0 01-1.415 1.415l-4.242-4.243zM8 14a6 6 0 100-12 6 6 0 000 12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-          <div className="flex justify-between mb-5">
-            <div className="flex space-x-4">
-              <select className="border rounded p-2">
-                <option>Customer</option>
-                {/* Tambah opsi lain */}
-              </select>
-              <select className="border rounded p-2">
-                <option>Order Status</option>
-                {/* Tambah opsi lain */}
-              </select>
-              <select className="border rounded p-2">
-                <option>Payment Status</option>
-                {/* Tambah opsi lain */}
-              </select>
-              <select className="border rounded p-2">
-                <option>Material</option>
-                {/* Tambah opsi lain */}
-              </select>
-            </div>
-            <div className="flex space-x-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center">
-                <MdOutlineAddCircle className="mr-2" /> Add Order
-              </button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center">
-                <MdCloudDownload className="mr-2" /> Export
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="w-full px-3 py-4">
         <div className="bg-white rounded-lg shadow-lg">
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300 rounded-tl-lg">
                   Order ID
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Created at
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
+                  Transaction Date
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Customer
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
+                  Issuer Name
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Priority
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
+                  Payment Method
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
+                  Location
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
                   Total
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
                   Payment Status
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300 rounded-tr-lg">
                   Items
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Delivery Number
                 </th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
-                <tr key={index}>
+                <tr key={index} className="text-sm">
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.id}
+                    {order.TransactionId}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.date}
+                    {order.CreatedOn}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.customer}
+                    {order.ProviderName}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.priority}
+                    {order.TypePayment}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.total}
+                    {order.LocationName}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {order.total ?? "0"}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
                     <span
@@ -163,14 +91,11 @@ export default function TransactionTable() {
                           : "bg-red-500 text-white"
                       }`}
                     >
-                      {order.status}
+                      {order.status ?? "-"}
                     </span>
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.items} items
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200">
-                    {order.delivery}
+                    {order.ProductName}
                   </td>
                 </tr>
               ))}

@@ -5,9 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
-import { loginUsers } from "../../../api/apiUsers";
-import Cookies from "js-cookie";
-import LupaPassword from "./LupaPassword";
+import { Users } from "../../../api/apiMembershipV2";
 
 export default function Login() {
   const [captcha, setCaptcha] = useState("");
@@ -16,7 +14,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    identifier: "",
+    username: "",
     password: "",
     rememberMe: false,
   });
@@ -38,7 +36,7 @@ export default function Login() {
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.identifier) errors.identifier = "Username is required";
+    if (!formData.username) errors.username = "Username is required";
     if (!formData.password) errors.password = "Password is required";
     if (inputCaptcha !== captcha) errors.captcha = "Captcha does not match";
     setFormErrors(errors);
@@ -52,31 +50,31 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      setLoading(true);
-      try {
-        await loginUsers.login(formData);
-        setFormErrors({});
-        setFormData({
-          identifier: "",
-          password: "",
-          rememberMe: false,
-        });
+    if (!validateForm()) return;
 
-        setTimeout(() => {
-          navigate("/dashboard");
-          toast.success("Login successful!");
-        }, 500);
+    setLoading(true);
 
-        setLoading(false);
-      } catch (error) {
-        toast.error(error.message);
-        setLoading(false);
-      }
-    } else {
-      if (formErrors.captcha) {
-        toast.error("Captcha does not match!");
-      }
+    try {
+      const response = await Users.login(formData.username, formData.password);
+      console.log(response);
+      localStorage.setItem("userToken", response.token); // Simpan token autentikasi
+      localStorage.setItem("userData", JSON.stringify(response.user));
+      setFormErrors({});
+      setFormData({
+        username: "",
+        password: "",
+        rememberMe: false,
+      });
+
+      setTimeout(() => {
+        navigate("/dashboard");
+        toast.success("Login successful!");
+      }, 500);
+
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
     }
   };
 
@@ -109,13 +107,13 @@ export default function Login() {
                 type="text"
                 className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Email atau username"
-                name="identifier"
-                value={formData.identifier}
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 autoComplete="username"
               />
-              {formErrors.identifier && (
-                <p className="text-red-500 text-xs">{formErrors.identifier}</p>
+              {formErrors.username && (
+                <p className="text-red-500 text-xs">{formErrors.username}</p>
               )}
               <input
                 type="password"

@@ -14,7 +14,7 @@ function Login() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    identifier: "",
+    username: "",
     password: "",
     rememberMe: false,
   });
@@ -55,16 +55,11 @@ function Login() {
         await loginUsers.login(formData);
         setFormErrors({});
         setFormData({
-          identifier: "",
+          username: "",
           password: "",
         });
 
-        // Add a delay before navigating to the dashboard
-        setTimeout(() => {
-          navigate("/dashboard");
-          toast.success("Login successful!");
-        }, 500); // 500 milliseconds delay
-
+        navigate("/dashboard");
         setLoading(false);
       } catch (error) {
         toast.error(error.message);
@@ -84,37 +79,37 @@ function Login() {
   return (
     <>
       <ToastContainer />
-      <div className="flex justify-center items-center min-h-screen m-auto bg-slate-100">
-        <div className="flex flex-row items-center justify-center gap-3 h-full p-3 rounded-md shadow-md w-[50%] border border-slate-200">
+      <div className="flex justify-center items-center min-h-screen max-h-screen m-auto bg-slate-300 w-full p-10">
+        <div className="container flex flex-row items-center justify-center gap-3 h-full w-full bg-white p-3 rounded-md shadow-md border border-slate-200">
           <img
             src={"/assets/skyparking_image.jpg"}
-            className="w-1/2 h-[450px] rounded-sm shadow-md"
+            className="w-3/4 rounded-sm shadow-md"
             alt=""
           />
           <div className="flex flex-col w-full px-7">
-            <div className="flex flex-col items-start justify-start w-full h-full border-b border-gray-400 pt-2 pb-3 space-y-3">
-              <div className="flex flex-row space-x-3 justify-end items-end">
-                <img src={"/logo.png"} className="w-10" alt="" />
-                <h1 className="text-xl font-semibold">Membership</h1>
+            <div className="flex flex-col items-center justify-center w-full h-full border-b border-gray-400 pt-2 pb-3 space-y-3 mb-5">
+              <div className="flex flex-col space-x-3 justify-center items-center border-l border-t border-r border-slate-300 p-7 rounded-full">
+                <img src={"/logo.png"} className="w-16" alt="" />
               </div>
-              <p className="text-xs text-gray-400 ">
+              <h1 className="text-xl font-semibold">Membership</h1>
+              <p className="text-base text-gray-400 ">
                 Silahkan masuk ke akun anda
               </p>
             </div>
             <form
-              action={handleLogin}
+              onSubmit={handleLogin}
               className="flex flex-col items-end justify-end space-y-3 mt-2"
             >
               <input
                 type="text"
                 className="w-full py-3 px-3 text-sm border border-slate-300 bg-slate-100 rounded-lg"
                 placeholder="Masukan email atau username"
-                value={formData.identifier}
-                name="identifier"
+                value={formData.username}
+                name="username"
                 onChange={handleChange}
               />
-              {formErrors.identifier && (
-                <p className="text-red-500 text-xs">{formErrors.identifier}</p>
+              {formErrors.username && (
+                <p className="text-red-500 text-xs">{formErrors.username}</p>
               )}
 
               <input

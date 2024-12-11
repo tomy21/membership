@@ -7,10 +7,15 @@ import SliderComponent from "../components/Slider";
 import QRCode from "qrcode.react";
 import { apiUsers, historyMembers } from "../../../api/apiUsers";
 import Skeleton from "react-loading-skeleton";
-import { getMemberByUserId, HistoryPost } from "../../../api/apiProduct";
+import {
+  getMemberByUserId,
+  History,
+  HistoryPost,
+} from "../../../api/apiProduct";
 import { isMobile } from "react-device-detect";
 import HistoryPayment from "../components/HistoryPayment";
 import HistoryPostComponent from "../components/HistoryPost";
+import { Users } from "../../../api/apiMembershipV2";
 
 const items = [
   {
@@ -32,22 +37,22 @@ const items = [
     path: "/voucher",
   },
   {
-    src: "/assets/clock.png",
+    src: "/assets/vehicles.png",
     alt: "History",
-    label: "History",
-    path: "/riwayat",
+    label: "Vehicle List",
+    path: "/vehicle-list",
   },
 ];
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [balance, setBalance] = useState(0);
+  const [dataCustomer, setDataCustomer] = useState([]);
   const [listRiwayat, setListRiwayat] = useState([]);
   const [historyPost, setHistoryPost] = useState([]);
   const [memberProduct, setMemberProduct] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [activeTab, setActiveTab] = useState("tab1");
+  const [activeTab, setActiveTab] = useState("Payment");
   const navigate = useNavigate();
 
   const openModal = (product) => {
@@ -66,49 +71,28 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiUsers.getUserId();
-        setBalance(response.detaildata?.Points);
+        const response = await Users.getByUserId();
+        setDataCustomer(response.data);
+        setMemberProduct(response.data?.membership_cards);
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
+        console.error(error);
       }
+    };
 
+    const fetchDataHistoryPayment = async () => {
+      setIsLoading(true);
       try {
-        const historyResponse = await historyMembers.getHistory();
-        setListRiwayat(historyResponse?.data);
+        const response = await History.getAll();
+        setListRiwayat(response.data);
       } catch (error) {
-        if (error.response && error.response.status === 404) {
-          console.error("Failed to fetch history:", error);
-        } else {
-          setListRiwayat([]); // Set default empty list if not found
-        }
-      }
-
-      try {
-        const historyPost = await HistoryPost.getById();
-        setHistoryPost(historyPost?.data);
-      } catch (error) {
-        if (error.statusCode && error.statusCode === 404) {
-          setHistoryPost([]);
-        } else {
-          console.error("Failed to fetch history:", error);
-        }
-      }
-
-      try {
-        const productMemberResponse = await getMemberByUserId.getByUserId();
-        setMemberProduct(productMemberResponse?.data);
-      } catch (error) {
-        if (error.response && error.response.status !== 404) {
-          console.error("Failed to fetch product member data:", error);
-        } else {
-          setMemberProduct([]); // Set default empty list if not found
-        }
+        console.error(error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
+    fetchDataHistoryPayment();
   }, []);
 
   // Disable back navigation on mobile
@@ -154,7 +138,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-xl font-normal flex flex-col justify-start items-start">
                   <span className="text-sm"> Points</span>
-                  {balance?.toLocaleString("id-ID") ?? 0}
+                  {(dataCustomer?.points ?? 0).toLocaleString("id-ID")}
                 </p>
               </div>
             </div>
@@ -170,10 +154,13 @@ export default function Dashboard() {
 
         <div className="flex flex-row space-x-6 justify-center items-center my-5 px-2">
           {items.map((item, index) => (
-            <div key={index} className="flex flex-col items-center">
+            <div
+              key={index}
+              className="flex flex-col justify-center items-center"
+            >
               <Link to={item.path}>
-                <div className="bg-gray-200 rounded-lg p-2 shadow-md">
-                  <img src={item.src} alt={item.alt} className="w-12 h-12" />
+                <div className="bg-gray-200 rounded-lg p-2 shadow-md items-center flex justify-center ">
+                  <img src={item.src} alt={item.alt} className="w-12" />
                 </div>
                 <p className="mt-2 text-xs text-center">{item.label}</p>
               </Link>
@@ -190,9 +177,9 @@ export default function Dashboard() {
 
         <div className="flex border-b border-gray-300 mb-4">
           <button
-            onClick={() => setActiveTab("tab1")}
+            onClick={() => setActiveTab("Payment")}
             className={`py-2 px-4 text-sm font-semibold ${
-              activeTab === "tab1"
+              activeTab === "Payment"
                 ? "border-b-2 border-amber-500 text-amber-500"
                 : "text-gray-500"
             }`}
@@ -200,9 +187,9 @@ export default function Dashboard() {
             Payment
           </button>
           <button
-            onClick={() => setActiveTab("tab2")}
+            onClick={() => setActiveTab("POST")}
             className={`py-2 px-4 text-sm font-semibold ${
-              activeTab === "tab2"
+              activeTab === "POST"
                 ? "border-b-2 border-amber-500 text-amber-500"
                 : "text-gray-500"
             }`}
@@ -212,7 +199,7 @@ export default function Dashboard() {
         </div>
 
         <div className="">
-          {activeTab === "tab1" && (
+          {activeTab === "Payment" && (
             <div>
               {listRiwayat?.length === 0 ? (
                 <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">
@@ -253,7 +240,7 @@ export default function Dashboard() {
               )}
             </div>
           )}
-          {activeTab === "tab2" && (
+          {activeTab === "POST" && (
             <div>
               {historyPost?.length === 0 ? (
                 <div className="flex flex-col justify-center items-center w-full h-[30vh] opacity-60">

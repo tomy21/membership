@@ -55,7 +55,7 @@ function ListComponent({ list, title, search, selected, setSelected }) {
                     className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white max-h-52 overflow-y-auto"
                   >
                     <div className="flex items-center">
-                      <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
+                      <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold text-xs">
                         {person.Name}{" "}
                         {person.Vehicle ? `(${person.Vehicle})` : ""}
                       </span>

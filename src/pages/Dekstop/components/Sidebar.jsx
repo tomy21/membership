@@ -1,197 +1,121 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  MdDashboard,
-  MdLogout,
-  MdAssignment,
-  MdOutlineReceiptLong,
-  MdCardMembership,
-  MdOutlineSupervisedUserCircle,
-  MdSupervisorAccount,
-  MdOutlineGroups,
+  MdOutlineHistoryEdu,
+  MdOutlineScreenSearchDesktop,
+  MdOutlineEditLocationAlt,
+  MdOutlineCardMembership,
+  MdOutlineCorporateFare,
 } from "react-icons/md";
-import { GoHistory } from "react-icons/go";
-import { TiGroupOutline } from "react-icons/ti";
+import { LuFileBox, LuLayoutDashboard, LuWallet2 } from "react-icons/lu";
+import { IoTicketSharp } from "react-icons/io5";
+import { FaUsersGear } from "react-icons/fa6";
+import { GoDot, GoGear } from "react-icons/go";
 
 const Sidebar = () => {
-  const [isMasterOpen, setIsMasterOpen] = useState(false);
-
+  const [openSubMenu, setOpenSubMenu] = useState(null);
   const location = useLocation();
+  const [listMenu, setListMenu] = useState([
+    {
+      name: "Dashboard",
+      link: "/dashboard",
+      icon: <LuLayoutDashboard className="mr-2" />,
+    },
+    {
+      name: "Transaction",
+      link: "/dashboard/transaction",
+      icon: <MdOutlineHistoryEdu className="mr-2" />,
+    },
+    {
+      name: "Customer",
+      link: "/dashboard/customer",
+      icon: <MdOutlineCorporateFare className="mr-2" />,
+    },
+    {
+      name: "Location",
+      link: "/dashboard/location",
+      icon: <MdOutlineEditLocationAlt className="mr-2" />,
+    },
+    {
+      name: "Product",
+      link: "/dashboard/product",
+      icon: <LuFileBox className="mr-2" />,
+    },
+    {
+      name: "User Management",
+      icon: <FaUsersGear className="mr-2" />,
+      subMenu: [
+        {
+          name: "User List",
+          icon: <GoDot className="mr-2" />,
+          link: "/dashboard/users",
+        },
+        {
+          name: "Roles",
+          icon: <GoDot className="mr-2" />,
+          link: "/dashboard/roles",
+        },
+      ],
+    },
 
-  const toggleMasterMenu = () => {
-    setIsMasterOpen(!isMasterOpen);
+    {
+      name: "Setting",
+      link: "/dashboard/",
+      icon: <GoGear className="mr-2" />,
+    },
+  ]);
+
+  const handleToggleSubMenu = (index) => {
+    setOpenSubMenu(openSubMenu === index ? null : index);
   };
 
   return (
-    <div className="fixed top-0 left-0 h-screen w-60 bg-white text-black">
-      <div className="flex flex-col space-x-3 items-center justify-center h-20 px-4 py-4 border-b border-gray-300">
-        <img src={"/logo.png"} className="w-12" alt="" />
-        <h1 className="text-lg">Membership</h1>
+    <div className="fixed top-0 left-0 h-screen w-60 bg-gradient-to-tr from-slate-900 to-black text-white">
+      <div className="flex flex-row space-x-3 items-center justify-start px-2 h-20 border-b border-gray-300">
+        <div className="bg-gray-400 rounded-full w-10 h-10 flex items-center justify-center p-1">
+          <img src="/man.png" className="w-full" alt="" />
+        </div>
+        <div className="flex flex-col justify-start items-start">
+          <h1 className="text-sm font-semibold">Tomy Agung Saputro</h1>
+          <h1 className="text-xs text-slate-400">Tomy@gmail.com</h1>
+        </div>
       </div>
-      <nav className="px-4 py-4 overflow-y-auto text-sm max-h-[calc(100vh-80px)]">
-        <ul>
-          <h1 className="text-start mb-2">Main</h1>
-          <li className="mb-1">
-            <Link
-              to="/dashboard"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdDashboard className="mr-2" /> Dashboard
-            </Link>
-          </li>
 
-          <li className="mb-2">
+      <nav className="mt-6 space-y-1 text-gray-300 px-3">
+        {listMenu.map((menu, index) => (
+          <div key={index}>
             <Link
-              to="/dashboard/ticket"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/ticket"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
+              to={menu.link}
+              className={`flex text-base items-center py-2 px-4 rounded-md 
+                ${
+                  location.pathname === menu.link
+                    ? "text-slate-100 bg-yellow-500"
+                    : "text-slate-400 hover:bg-yellow-500 hover:text-slate-100"
+                }`}
+              onClick={() => menu.subMenu && handleToggleSubMenu(index)}
             >
-              <MdAssignment className="mr-2" /> Reports
+              {menu.icon} {menu.name}
             </Link>
-          </li>
-
-          <h1 className="mb-2 text-start">Tenants</h1>
-
-          <li className="mb-1">
-            <Link
-              to="/dashboard/tenants/listmahasiswa"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/tenants/listmahasiswa"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <TiGroupOutline className="mr-2" /> Members Tenant
-            </Link>
-          </li>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/tenants/transaction"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/tenants/transaction"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdOutlineReceiptLong className="mr-2" /> Order Tenants
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
-              to="/dashboard/tenants/history"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/tenants/history"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <GoHistory className="mr-2" /> History
-            </Link>
-          </li>
-
-          <h1 className="mb-2 text-start">Manage</h1>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/transaction"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/transaction"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdOutlineReceiptLong className="mr-2" /> Transactions
-            </Link>
-          </li>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/master-products"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/master-products"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdCardMembership className="mr-2" /> Master Products
-            </Link>
-          </li>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/product"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/product"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdCardMembership className="mr-2" /> Products
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
-              to="/dashboard/client"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/client"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdOutlineSupervisedUserCircle className="mr-2" /> Tenants
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
-              to="/dashboard/members"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/members"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdOutlineGroups className="mr-2" /> Membership
-            </Link>
-          </li>
-
-          <h1 className="mb-2 text-start">User Management</h1>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/users"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/users"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdSupervisorAccount className="mr-2" /> Users
-            </Link>
-          </li>
-          <li className="mb-1">
-            <Link
-              to="/dashboard/roles"
-              className={`flex items-center px-4 py-2 hover:bg-slate-400 rounded ${
-                location.pathname === "/dashboard/roles"
-                  ? "bg-slate-400 text-white"
-                  : ""
-              }`}
-            >
-              <MdSupervisorAccount className="mr-2" /> Roles
-            </Link>
-          </li>
-          <li className="mb-1">
-            <Link
-              to="/"
-              className="flex items-center px-4 py-2 hover:bg-slate-400 rounded"
-            >
-              <MdLogout className="mr-2" /> Logout
-            </Link>
-          </li>
-        </ul>
+            {menu.subMenu && openSubMenu === index && (
+              <div className="pl-8 space-y-1 mt-1">
+                {menu.subMenu.map((subMenu, subIndex) => (
+                  <Link
+                    key={subIndex}
+                    to={subMenu.link}
+                    className={`flex text-sm items-center p-2 rounded-md 
+                      ${
+                        location.pathname === subMenu.link
+                          ? "text-slate-100 bg-slate-600"
+                          : "text-slate-400 hover:bg-slate-600 hover:text-slate-100"
+                      }`}
+                  >
+                    {subMenu.icon} {subMenu.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </nav>
     </div>
   );

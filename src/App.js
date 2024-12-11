@@ -21,7 +21,6 @@ import MobileResetPassword from "./pages/Mobile/pages/NewPassword";
 import DekstopLogin from "./pages/Dekstop/pages/Login";
 import Transaction from "./pages/Dekstop/pages/admin/Transaction";
 import Layout from "./pages/Dekstop/pages/Layout";
-import Dashboard from "./pages/Dekstop/pages/dashboard/Dashboard";
 import Product from "./pages/Dekstop/pages/admin/Product";
 import Tenants from "./pages/Dekstop/pages/admin/Tenants";
 import Membership from "./pages/Dekstop/pages/admin/Membership";
@@ -36,6 +35,9 @@ import ProtectedRoute from "./pages/Mobile/components/ProtectedRoute";
 import Users from "./pages/Dekstop/pages/admin/Users";
 import Roles from "./pages/Dekstop/pages/admin/Roles";
 import SuccessRegister from "./pages/Mobile/components/SuccessRegister";
+import Dashboard from "./pages/Dekstop/pages/admin/Dashboard";
+import Location from "./pages/Dekstop/pages/admin/Location";
+import VehicleList from "./pages/Mobile/pages/VehicleList";
 
 function App() {
   return (
@@ -163,6 +165,14 @@ function App() {
                 }
               />
               <Route
+                path="/vehicle-list"
+                element={
+                  <ProtectedRoute>
+                    <VehicleList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/reset-password"
                 element={
                   <ProtectedRoute>
@@ -181,29 +191,25 @@ function App() {
               <Route
                 path="/dashboard/*"
                 element={
-                  <ProtectedRoute>
-                    <Layout />
-                  </ProtectedRoute>
+                  <Layout />
+                  // <ProtectedRoute>
+                  // </ProtectedRoute>
                 }
               >
                 <Route path="" element={<Dashboard />} />
                 <Route path="product" element={<MasterProduct />} />
-                <Route path="client" element={<Tenants />} />
-                <Route path="members" element={<Membership />} />
+                <Route path="membership" element={<Membership />} />
                 <Route path="master-products" element={<Product />} />
                 <Route path="transaction" element={<Transaction />} />
+                <Route path="location" element={<Location />} />
+                <Route path="vehicle-list" element={<VehicleList />} />
                 <Route path="users" element={<Users />} />
                 <Route path="roles" element={<Roles />} />
                 <Route
                   path="tenants/transaction"
                   element={<TransactionTenants />}
                 />
-                <Route path="tenants/history" element={<History />} />
-                <Route path="tenants/membership" element={<ListMembership />} />
-                <Route
-                  path="tenants/listmahasiswa"
-                  element={<ListMahasiswa />}
-                />
+                <Route path="customer" element={<Tenants />} />
               </Route>
             </>
           )}
