@@ -49,7 +49,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "globals": {
+    "NDEFReader": "readonly"
+  }
   },
   "browserslist": {
     "production": [

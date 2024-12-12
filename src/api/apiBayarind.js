@@ -1,4 +1,4 @@
-import { apiSkyBayarind } from "./apiClient";
+import { apiClient, apiSkyBayarind } from "./apiClient";
 import { apiUsers } from "./apiUsers";
 
 const getToken = async () => {
@@ -104,6 +104,38 @@ export const apiBayarindExtend = {
       );
       console.log(response);
       return response;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const vehicleAdd = {
+  addVehicle: async (data) => {
+    try {
+      const token = await getToken();
+
+      const response = await apiSkyBayarind.post(
+        `/v1/productPurchase/register-vehicle`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token.token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+  getById: async (id) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/vehicle-list/by-id/${id}`
+      );
+      return response.data;
     } catch (error) {
       throw error.response.data;
     }
