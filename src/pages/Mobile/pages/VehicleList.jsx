@@ -386,7 +386,9 @@ export default function VehicleList() {
               {rfidHex && (
                 <div className="mt-4">
                   <h3 className="text-sm text-gray-600">RFID HEX:</h3>
-                  <p className="text-lg font-bold text-blue-600">{rfidHex}</p>
+                  <p className="text-lg font-bold text-blue-600">
+                    {rfidHex.replace(/:/g, "").toUpperCase()}
+                  </p>
                 </div>
               )}
             </div>
