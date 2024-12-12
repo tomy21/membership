@@ -140,4 +140,18 @@ export const vehicleAdd = {
       throw error.response.data;
     }
   },
+
+  udpatedRFID: async (id, rfid) => {
+    try {
+      const response = await apiClient.put(
+        `/v01/member/api/vehicle-list/by-id/${id}`,
+        {
+          rfid: rfid,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };

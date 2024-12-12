@@ -17,6 +17,7 @@ export default function VehicleList() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isModalError, setIsModalError] = useState(false);
   const [rfidHex, setRfidHex] = useState("");
+  const [idVehicle, setIdVehicle] = useState("");
   const [formData, setFormData] = useState({
     vehicle_type: "",
     plate_number: "",
@@ -26,7 +27,12 @@ export default function VehicleList() {
   // const location = useLocation();
   const navigate = useNavigate();
 
-  const handleScanRfid = async () => {
+  const handleModalRfid = (id) => {
+    setIdVehicle(id);
+    setIsModalRfid(true);
+  };
+
+  const handleScanRfid = async (id) => {
     try {
       if ("NDEFReader" in window) {
         const ndef = new NDEFReader();
@@ -35,8 +41,9 @@ export default function VehicleList() {
 
         ndef.addEventListener("reading", (event) => {
           const { message, serialNumber } = event;
-          console.log(`Serial Number: ${serialNumber}`);
-          setRfidHex(serialNumber); // Simpan serial number ke state
+          const formattedRfid = serialNumber.replace(/:/g, "").toUpperCase();
+          setRfidHex(formattedRfid);
+          updateRfid(formattedRfid);
         });
       } else {
         setIsModalRfid(false);
@@ -45,6 +52,23 @@ export default function VehicleList() {
     } catch (error) {
       console.error("NFC reading error:", error);
       alert("Failed to read NFC tag. Please try again.");
+    }
+  };
+
+  const updateRfid = async (rfid) => {
+    try {
+      const selectedVehicleId = listVehicle[0]?.id; // Assuming you update the first vehicle
+      if (selectedVehicleId) {
+        const response = await vehicleAdd.udpatedRFID(idVehicle, rfid);
+        if (response.status === 200) {
+          fetchData(); // Refresh data after update
+          alert("RFID updated successfully");
+        } else {
+          alert("Failed to update RFID");
+        }
+      }
+    } catch (error) {
+      console.error("Error updating RFID:", error);
     }
   };
 
@@ -150,7 +174,7 @@ export default function VehicleList() {
 
               <div className="flex flex-row justify-end items-center text-left w-full mb-3 py-3 px-3 space-x-5">
                 <BiRfid
-                  onClick={() => setIsModalRfid(true)}
+                  onClick={() => handleModalRfid(items.id)}
                   size={20}
                   className="text-blue-600"
                 />
