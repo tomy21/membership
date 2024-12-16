@@ -9,8 +9,10 @@ import { BiRfid } from "react-icons/bi";
 import { vehicleAdd } from "../../../api/apiBayarind";
 import { BsPatchCheck } from "react-icons/bs";
 import { TbFaceIdError } from "react-icons/tb";
+import Loading from "../components/Loading";
 
 export default function VehicleList() {
+  const [isLoading, setIsLoading] = useState(false);
   const [listVehicle, setVehicle] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalRfid, setIsModalRfid] = useState(false);
@@ -103,6 +105,7 @@ export default function VehicleList() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const data = new FormData();
     data.append("vehicle_type", formData.vehicle_type);
     data.append("plate_number", formData.plate_number);
@@ -120,9 +123,11 @@ export default function VehicleList() {
           plate_number_image: null,
           stnk_image: null,
         });
+        setIsLoading(false);
         fetchData();
       } else {
         alert(response.message);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error:", error.response || error.message);
@@ -315,6 +320,8 @@ export default function VehicleList() {
           </div>
         </div>
       )}
+
+      {isLoading && <Loading />}
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

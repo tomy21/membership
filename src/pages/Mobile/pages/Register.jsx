@@ -235,7 +235,7 @@ export default function Register() {
   return (
     <>
       <ToastContainer />
-      <div className="flex min-h-screen flex-col items-center justify-between p-6 md:p-20">
+      <div className="flex min-h-screen flex-col items-center justify-between p-3 md:p-20">
         <div className="container w-full md:w-[80%] h-full">
           <div className="flex flex-col items-center space-y-2">
             <img src="/assets/logo.png" className="w-16 h-16" alt="Logo" />
@@ -243,7 +243,7 @@ export default function Register() {
           </div>
           <div className="w-full h-full p-5 text-start">
             <h1 className="text-base font-semibold">Daftar akun</h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-sm text-slate-400">
               Silahkan lengkapi form pendaftaran
             </p>
 
@@ -251,7 +251,7 @@ export default function Register() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col items-center justify-end space-y-3 text-xs"
+              className="flex flex-col items-center justify-end space-y-3"
             >
               <div className="w-full">
                 <label
@@ -266,7 +266,7 @@ export default function Register() {
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="Masukkan nama lengkap"
                 />
                 {formErrors.fullname && (
@@ -287,7 +287,7 @@ export default function Register() {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan username"
                 />
                 {formErrors.username && (
@@ -308,7 +308,7 @@ export default function Register() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan email"
                 />
                 {formErrors.email && (
@@ -329,7 +329,7 @@ export default function Register() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan password"
                 />
                 {formErrors.password && (
@@ -355,7 +355,7 @@ export default function Register() {
                   name="passwordConfirm"
                   value={formData.passwordConfirm}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Konfirmasi password"
                 />
                 {formErrors.passwordConfirm && (
@@ -377,7 +377,7 @@ export default function Register() {
                   id="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan alamat"
                   cols="30"
                   rows={5}
@@ -400,7 +400,7 @@ export default function Register() {
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nomor telepon"
                 />
                 {formErrors.phone_number && (
@@ -454,7 +454,7 @@ export default function Register() {
                   name="dob"
                   value={formData.dob || ""}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {formErrors.dob && (
                   <p className="text-red-500 text-xs">{formErrors.dob}</p>
@@ -474,7 +474,7 @@ export default function Register() {
                   name="pin"
                   value={formData.pin}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan PIN (6 digit)"
                 />
                 {formErrors.pin && (
@@ -485,7 +485,7 @@ export default function Register() {
               <div className="w-full">
                 <div className="flex items-center space-x-2">
                   <span
-                    className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white font-bold rounded-lg shadow-lg w-[70%] h-12 text-lg tracking-wide"
+                    className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white font-bold rounded-md shadow-lg w-[70%] h-12 text-lg tracking-wide"
                     style={{
                       letterSpacing: "0.2em", // Tambahkan jarak antar karakter
                       textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)", // Efek bayangan
@@ -509,7 +509,7 @@ export default function Register() {
                   <button
                     type="button"
                     onClick={refreshCaptcha}
-                    className="flex items-center px-3 py-2 text-blue-500 border border-amber-500 rounded-lg shadow-md hover:bg-amber-500 hover:text-white transition-all duration-300"
+                    className="flex items-center px-3 py-2 text-blue-500 border border-amber-500 rounded-md shadow-md hover:bg-amber-500 hover:text-white transition-all duration-300"
                   >
                     <MdOutlineRefresh size={20} className="mr-1" />
                   </button>
@@ -521,7 +521,7 @@ export default function Register() {
                   name="captcha"
                   value={inputCaptcha}
                   onChange={(e) => setInputCaptcha(e.target.value)}
-                  className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan captcha"
                 />
                 {formErrors.captcha && (
@@ -531,7 +531,7 @@ export default function Register() {
 
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Daftar
               </button>

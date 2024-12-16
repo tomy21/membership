@@ -13,7 +13,4 @@ export const apiClient = axios.create({
 export const apiSkyBayarind = axios.create({
   baseURL: "https://apimembershipservice.skyparking.online",
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
