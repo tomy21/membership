@@ -73,7 +73,8 @@ export default function Dashboard() {
       try {
         const response = await Users.getByUserId();
         setDataCustomer(response.data);
-        setMemberProduct(response.data?.membership_cards);
+        const getCard = await Users.getCardLocation();
+        setMemberProduct(getCard.data);
       } catch (error) {
         console.error(error);
       }

@@ -2,7 +2,6 @@
   "name": "skymembership",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://apimembershipservice.skyparking.online",
   "dependencies": {
     "@headlessui/react": "^2.1.1",
     "@heroicons/react": "^2.1.5",

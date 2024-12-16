@@ -35,22 +35,22 @@ function PinInput() {
         pinVerifikasi: enteredPin,
       });
 
-      if (response.status === false) {
-        setErrorMessage(response.message);
-        setErrorShowModal(true);
-      } else if (response.statusCode === 200) {
+      if (response.statusCode === 200) {
         if (location.state.type === "Member") {
           const dataFormTopUp = {
             bank_id: location.state.providerId,
             plate_number: location.state.plateNumber,
           };
           const idProduct = location.state.productId;
+
           const responseBayarind = await apiBayarindVa.createVa(
             idProduct,
             dataFormTopUp
           );
 
-          if (responseBayarind.status === true) {
+          console.log(responseBayarind);
+
+          if (responseBayarind.status === 200) {
             const data = {
               bankProvider: location.state,
               response: responseBayarind.data,
@@ -64,13 +64,6 @@ function PinInput() {
             setErrorShowModal(true);
           }
         } else if (location.state.type === "Extend") {
-          const data = {
-            userProductId: location.state.userProductId,
-            productId: location.state.productId,
-            periodId: location.state.periodId,
-            providerId: location.state.providerId,
-          };
-
           const responseBayarind = await apiBayarindExtend.extend(
             location.state.userProductId,
             location.state.productId,
@@ -106,7 +99,6 @@ function PinInput() {
           const responseBayarind = await apiBayarindTopUp.createVaTopup(
             dataFormTopUp
           );
-          console.log(responseBayarind);
 
           if (responseBayarind.status === true) {
             const data = {
@@ -122,7 +114,8 @@ function PinInput() {
           }
         }
       } else {
-        toast.error("Silahkan coba kembali");
+        setErrorMessage(response.message);
+        setErrorShowModal(true);
       }
     } catch (err) {
       toast.error("Terjadi kesalahan, silahkan coba lagi");

@@ -1,4 +1,14 @@
 import { apiClient, apiSkyBayarind } from "./apiClient";
+import { apiUsers } from "./apiUsers";
+
+const getToken = async () => {
+  try {
+    const token = await apiUsers.getToken();
+    return token;
+  } catch (error) {
+    throw error.response;
+  }
+};
 
 export const Users = {
   login: async (identifier, password) => {
@@ -50,6 +60,24 @@ export const Users = {
             page,
             limit,
             search,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getCardLocation: async () => {
+    try {
+      const token = await getToken();
+      const response = await apiSkyBayarind.get(
+        `/v1/customer/members-vehicle`,
+        {
+          headers: {
+            Authorization: `Bearer ${token.token}`,
+            "Content-Type": "application/json",
           },
         }
       );

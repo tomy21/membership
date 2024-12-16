@@ -93,11 +93,14 @@ function PaymentMember() {
       state: {
         type: "Member",
         providerId: selectedProvider.id,
+        code_bank: selectedProvider.code_bank,
         productId: location.state.productId,
         plateNumber: location.state.plateNumber,
       },
     });
   };
+
+  console.log(selectedProvider);
 
   const currentPeriod = getMonthlyPeriod();
 

@@ -63,18 +63,16 @@ export default function PaymentProcess() {
   const [dataStatus, setDataStatus] = useState(null);
   const location = useLocation();
   const formatAmount = formatNumber(
-    Math.floor(location.state.bankProvider.amount)
+    Math.floor(location.state.response.data.price)
   );
-  const formattedDate = formatDate(location.state.response.expired_date);
+  const formattedDate = formatDate(location.state.response.data.expired_date);
   const navigate = useNavigate();
-
-  console.log(location.state);
 
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
-      location.state.response.trxId
+      location.state.response.data.trxId
     );
-    console.log(responseCek);
+
     if (responseCek.statusCode === 200) {
       setIsModalOpen(true);
       setDataStatus(responseCek.data);
@@ -124,11 +122,11 @@ export default function PaymentProcess() {
           </h2>
           <div className="flex justify-between items-center mt-2">
             <span className="text-lg font-semibold text-gray-800">
-              {location.state.response.virtual_account}
+              {location.state.response.data.virtual_account}
             </span>
             <button
               onClick={() =>
-                copyToClipboard(location.state.response.virtual_account)
+                copyToClipboard(location.state.response.data.virtual_account)
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
@@ -148,7 +146,7 @@ export default function PaymentProcess() {
             </span>
             <button
               onClick={() =>
-                copyToClipboard(location.state.bankProvider.amount)
+                copyToClipboard(location.state.response.data.price)
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
