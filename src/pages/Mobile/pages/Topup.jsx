@@ -46,17 +46,17 @@ export default function Topup() {
     fetchProvider();
   }, [selectedType]);
 
-  useEffect(() => {
-    if (selectedType && Array.isArray(providers)) {
-      setFilteredProviders(
-        providers.filter(
-          (provider) => provider.code_bank === selectedType.value
-        )
-      );
-    } else {
-      setFilteredProviders([]);
-    }
-  }, [selectedType, providers]);
+  // useEffect(() => {
+  //   if (selectedType && Array.isArray(providers)) {
+  //     setFilteredProviders(
+  //       providers.filter(
+  //         (provider) => provider.code_bank === selectedType.value
+  //       )
+  //     );
+  //   } else {
+  //     setFilteredProviders([]);
+  //   }
+  // }, [selectedType, providers]);
 
   const handleProceed = () => {
     if (!isTermsAccepted) {
@@ -112,7 +112,7 @@ export default function Topup() {
   const handleBack = () => {
     navigate("/dashboard");
   };
-
+  console.log(selectedProvider);
   return (
     <>
       <ToastContainer />
@@ -207,6 +207,7 @@ export default function Topup() {
           </button>
         </div>
       </div>
+
       {isModalVisible && (
         <motion.div
           initial={{ y: "100%" }}
@@ -225,8 +226,10 @@ export default function Topup() {
           <div className="flex justify-between items-center mt-5 border-b border-gray-300 pb-2 pt-3">
             <div className="text-base text-gray-400">Metode pembayaran</div>
             <p className="font-semibold">
-              {selectedProvider.ProviderName}{" "}
-              {selectedProvider.Type === "Virtual Account" ? "VA" : "E-Wallet"}
+              {selectedProvider.type_payment === "VIRTUAL_ACCOUNT"
+                ? "VA"
+                : "E-Wallet"}{" "}
+              {selectedProvider.code_bank}
             </p>
           </div>
 

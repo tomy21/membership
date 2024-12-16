@@ -63,11 +63,13 @@ export default function PaymentProcess() {
   const [dataStatus, setDataStatus] = useState(null);
   const location = useLocation();
   const formatAmount = formatNumber(
-    Math.floor(location.state.response.data.price)
+    Math.floor(
+      location.state.response.data.price ?? location.state.response.price
+    )
   );
   const formattedDate = formatDate(location.state.response.data.expired_date);
   const navigate = useNavigate();
-
+  console.log(location.state);
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
       location.state.response.data.trxId
@@ -103,6 +105,8 @@ export default function PaymentProcess() {
   if (loading) {
     return <Loading />;
   }
+
+  console.log(location.state);
 
   return (
     <div className="bg-gray-100 min-h-screen text-left">
@@ -206,21 +210,25 @@ export default function PaymentProcess() {
             )}
 
             {/* Header Text */}
-            <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">
+            <div className="text-lg font-semibold text-gray-800 mb-2 text-center">
               {dataStatus.statusPayment === "PAID"
                 ? "Pembayaran Berhasil"
                 : dataStatus.statusPayment === "PENDING"
                 ? "Pembayaran Tertunda"
                 : "Pembayaran Gagal"}
-            </h2>
+            </div>
             <p className="text-sm text-gray-500 text-center">
               {dataStatus.statusPayment === "PAID"
                 ? `Berhasil membayar sebesar`
-                : "Silakan cek status pembayaran Anda kembali."}
+                : "Silakan lakukan pembayaran."}
             </p>
-            <p className="text-sm text-gray-500 mb-4 text-center">
-              <h1>Rp. {parseInt(dataStatus.price).toLocaleString("id-ID")}</h1>
-            </p>
+            {dataStatus.statusPayment === "PENDING" ? (
+              <div className="mb-4"></div>
+            ) : (
+              <h1 className="text-sm text-gray-500 mb-4 text-center">
+                <p>Rp. {parseInt(dataStatus.price).toLocaleString("id-ID")}</p>
+              </h1>
+            )}
 
             {/* Divider */}
             <div className="border-t border-gray-200 w-full mb-4"></div>
@@ -228,22 +236,20 @@ export default function PaymentProcess() {
             {/* Detail Informasi */}
             <div className="w-full text-xs text-gray-600 space-y-2">
               <div className="flex justify-between">
-                <span className="font-medium">ID Invoice</span>
-                <span>{dataStatus.invoice_id}</span>
+                <p className="font-medium">ID Invoice</p>
+                <p>{dataStatus.invoice_id}</p>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium">Type Pembelian</span>
-                <span>{dataStatus.purchase_type}</span>
+                <p className="font-medium">Type Pembelian</p>
+                <p>{dataStatus.purchase_type}</p>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium">Metode </span>
-                <span>{dataStatus.transactionType}</span>
+                <p className="font-medium">Metode </p>
+                <p>{dataStatus.transactionType}</p>
               </div>
               <div className="flex justify-between">
-                <span className="font-medium">Tanggal</span>
-                <span>
-                  {format(dataStatus.updatedAt, "dd MMMM yyyy HH:mm:ss")}
-                </span>
+                <p className="font-medium">Tanggal</p>
+                <p>{format(dataStatus.updatedAt, "dd MMMM yyyy HH:mm:ss")}</p>
               </div>
             </div>
 

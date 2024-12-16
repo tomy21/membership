@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { apiUsers } from "../../../api/apiUsers";
 import Modal from "react-modal";
 import Loading from "../components/Loading";
+import { BsPatchCheck } from "react-icons/bs";
 
 Modal.setAppElement("#root");
 
@@ -16,6 +17,8 @@ export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
@@ -127,30 +130,21 @@ export default function Register() {
           referralUrl: siteUrl,
         };
         const response = await apiUsers.register(formDataWithUrl);
+        console.log(response);
 
         if (response.status === "success") {
           setLoading(false);
-          setFormErrors({});
           setIsModalOpen(true);
-          setLoading(false);
-          setFormData({
-            fullname: "",
-            username: "",
-            address: "",
-            password: "",
-            passwordConfirm: "",
-            email: "",
-            phone_number: "",
-            pin: "",
-            gender: "",
-            dob: "",
-          });
+          setMessage(
+            "Akun anda berhasil dibuat, silahkan cek email untuk aktivasi"
+          );
         } else {
           setLoading(false);
-          toast.error(response.message);
+          setMessage(response.message);
         }
       } catch (error) {
         setLoading(false);
+        setIsError(true);
         toast.error(error.message);
       }
     }
@@ -179,6 +173,20 @@ export default function Register() {
   // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
+    setFormErrors({});
+    setFormData({
+      fullname: "",
+      username: "",
+      address: "",
+      password: "",
+      passwordConfirm: "",
+      email: "",
+      phone_number: "",
+      pin: "",
+      gender: "",
+      dob: "",
+    });
+    navigate("/");
   };
 
   // Effect hooks
@@ -189,18 +197,6 @@ export default function Register() {
   useEffect(() => {
     checkPasswordStrength(formData.password);
   }, [formData.password]);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      const timer = setTimeout(() => {
-        closeModal();
-        navigate(-1);
-        setLoading(true);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isModalOpen, navigate]);
 
   // Get password progress bar color
   const getProgressBarColor = () => {
@@ -539,6 +535,35 @@ export default function Register() {
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed bg-black bg-opacity-50 w-full inset-0 z-50 flex items-center justify-center p-5">
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto animate-fade-in flex flex-col justify-center items-center">
+            {/* Header */}
+            <div className="flex justify-center">
+              <div className="bg-green-100 text-green-600 rounded-full p-3">
+                <BsPatchCheck size={30} />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-800">
+                {isError ? "Error" : "Success"}
+              </h2>
+            </div>
+
+            {/* Body */}
+            <div className="mt-4 text-sm text-gray-600">{message}</div>
+
+            <button
+              className="bg-blue-500 hover:bg-blue-700 mt-7 text-white font-bold py-2 px-4 rounded"
+              onClick={closeModal}
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

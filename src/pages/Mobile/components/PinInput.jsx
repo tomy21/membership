@@ -103,9 +103,10 @@ function PinInput() {
           if (responseBayarind.status === true) {
             const data = {
               bankProvider: location.state,
-              response: responseBayarind.data,
+              response: responseBayarind,
             };
 
+            console.log(data);
             navigate("/payment_process", { state: data });
           } else if (responseBayarind.data.responseCode === "400") {
             setErrorMessage(responseBayarind.data.responseMessage);

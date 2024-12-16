@@ -70,9 +70,9 @@ export default function VehicleList() {
       const selectedVehicleId = listVehicle[0]?.id; // Assuming you update the first vehicle
       if (selectedVehicleId) {
         const response = await vehicleAdd.udpatedRFID(idVehicle, rfid);
-        if (response.status === 200) {
+        if (response.status === true) {
           setIsLoading(false);
-          fetchData(); // Refresh data after update
+          fetchData();
           setIsModal(true);
           setMessage(response.message);
         } else {
@@ -115,7 +115,7 @@ export default function VehicleList() {
     setIsLoading(true);
     const data = new FormData();
     data.append("vehicle_type", formData.vehicle_type);
-    data.append("plate_number", formData.plate_number);
+    data.append("plate_number", formData.plate_number.toUpperCase());
     data.append("plate_number_image", formData.plate_number_image);
     data.append("stnk_image", formData.stnk_image);
 
@@ -328,7 +328,11 @@ export default function VehicleList() {
         </div>
       )}
 
-      {isLoading && <Loading />}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <Loading />
+        </div>
+      )}
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
