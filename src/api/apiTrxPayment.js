@@ -20,7 +20,7 @@ export const getIdTrx = {
   getIdStatus: async (trxId) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/paymentStatus/${trxId}`
+        `/v01/member/api/history/payments-detail?trxId=${trxId}`
       );
       return response.data;
     } catch (error) {

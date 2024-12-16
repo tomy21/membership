@@ -53,6 +53,7 @@ export default function Membership() {
       if (selectedLocation) {
         try {
           const response = await Users.getVehicleByType(typeVehicle);
+          console.log(response.data);
           setVehicleList(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -152,16 +153,18 @@ export default function Membership() {
             className="pl-3 w-10 cursor-pointer"
             onClick={handleBack}
           />
-          <h1 className="text-lg font-semibold px-3">Product Purchase</h1>
+          <h1 className="text-lg font-semibold px-3">Pembelian Produk</h1>
         </div>
 
         <div className="w-full flex flex-col items-start justify-start px-3 py-3 font-medium border-b border-gray-300">
-          <h1 className="text-xl">Package Membership</h1>
-          <p className="text-sm text-gray-400">Choose the package you want.</p>
+          <h1 className="text-xl">Paket Membership</h1>
+          <p className="text-sm text-gray-400">
+            Pilih paket yang kamu inginkan.{" "}
+          </p>
         </div>
 
         <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Location Member</label>
+          <label className="text-gray-400">Lokasi Member</label>
           <ListComponent
             list={listLocation}
             title={"Select Location"}
@@ -175,7 +178,7 @@ export default function Membership() {
         </div>
 
         <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Product Membership</label>
+          <label className="text-gray-400">Produk Membership</label>
           <ListComponent
             list={vehicleTypes}
             title={"Select Product Membership"}
@@ -193,7 +196,7 @@ export default function Membership() {
             htmlFor="price"
             className="text-gray-600 font-medium mb-2 block"
           >
-            Price
+            Harga
           </label>
           <div className="relative bg-gray-100 rounded-lg shadow-inner p-3">
             <div className="absolute inset-y-0 left-4 flex items-center">
@@ -215,7 +218,7 @@ export default function Membership() {
         </div>
 
         <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Vehicle</label>
+          <label className="text-gray-400">Kendaraan</label>
           <ListComponent
             list={vehicleListData}
             title={"Select your vehicle"}

@@ -56,7 +56,6 @@ export default function Login() {
 
     try {
       const response = await Users.login(formData.username, formData.password);
-      console.log(response);
       localStorage.setItem("userToken", response.token); // Simpan token autentikasi
       localStorage.setItem("userData", JSON.stringify(response.user));
       setFormErrors({});

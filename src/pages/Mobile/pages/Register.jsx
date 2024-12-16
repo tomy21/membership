@@ -5,7 +5,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiUsers } from "../../../api/apiUsers";
 import Modal from "react-modal";
-import { IoCheckmarkOutline } from "react-icons/io5";
 import Loading from "../components/Loading";
 
 Modal.setAppElement("#root");
@@ -18,58 +17,70 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
+    fullname: "",
     username: "",
+    address: "",
     password: "",
     passwordConfirm: "",
     email: "",
-    phone: "",
+    phone_number: "+62",
     pin: "",
+    gender: "",
+    dob: "",
   });
   const [formErrors, setFormErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState("");
 
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let sanitizedValue = value;
 
-    // Menghapus semua spasi dari input
-    const sanitizedValue = value.replace(/\s+/g, "");
+    // Terapkan sanitasi hanya pada properti tertentu
+    if (
+      [
+        "username",
+        "email",
+        "password",
+        "passwordConfirm",
+        "phone_number",
+      ].includes(name)
+    ) {
+      sanitizedValue = value.replace(/\s+/g, ""); // Hilangkan spasi
+    }
 
-    if (name === "phone") {
-      let formattedPhone = sanitizedValue;
+    if (name === "phone_number") {
+      // Pastikan +62 tetap di awal
+      let sanitizedValue = value.startsWith("+62") ? value : "+62" + value;
 
-      // Remove leading zeros
-      if (formattedPhone.startsWith("0")) {
-        formattedPhone = formattedPhone.replace(/^0+/, "");
+      // Hapus spasi atau karakter tidak valid
+      sanitizedValue = sanitizedValue.replace(/[^0-9+]/g, "");
+
+      // Mencegah penghapusan +62
+      if (!sanitizedValue.startsWith("+62")) {
+        sanitizedValue = "+62";
       }
 
-      // Ensure phone starts with +62
-      if (!formattedPhone.startsWith("+62")) {
-        formattedPhone = "+62" + formattedPhone;
-      }
-
+      // Perbarui nilai input dan validasi
       setFormData((prevData) => ({
         ...prevData,
-        [name]: formattedPhone,
+        [name]: sanitizedValue,
       }));
 
-      // Check for errors
       setFormErrors((prevErrors) => ({
         ...prevErrors,
-        phone: !/^\+628[0-9]{8,13}$/.test(formattedPhone)
-          ? "Nomor telepon tidak valid"
+        phone_number: !/^\+628[0-9]{8,13}$/.test(sanitizedValue)
+          ? "Nomor telepon tidak valid (harus antara 8-13 digit setelah +62)"
           : "",
       }));
     } else if (name === "pin") {
-      const formattedPin = sanitizedValue.replace(/[^0-9]/g, "");
-
+      const formattedPin = sanitizedValue.replace(/[^0-9]/g, ""); // Hanya angka
       if (formattedPin.length <= 6) {
         setFormData((prevData) => ({
           ...prevData,
           [name]: formattedPin,
         }));
       }
-
-      // Check for errors
       setFormErrors((prevErrors) => ({
         ...prevErrors,
         pin: formattedPin.length !== 6 ? "PIN harus terdiri dari 6 angka" : "",
@@ -82,20 +93,27 @@ export default function Register() {
     }
   };
 
+  // Validate form fields
   const validateForm = () => {
     let errors = {};
-    if (!formData.username) errors.username = "Username is required";
-    if (!formData.email) errors.email = "Email is required";
-    if (!formData.password) errors.password = "Password is required";
+    if (!formData.fullname) errors.fullname = "Nama Lengkap harus diisi";
+    if (!formData.username) errors.username = "Username harus diisi";
+    if (!formData.address) errors.address = "Alamat harus diisi";
+    if (!formData.email) errors.email = "Email harus diisi";
+    if (!formData.dob) errors.dob = "Tanggal lahir harus diisi";
+    if (!formData.gender) errors.gender = "Jenis kelamin harus diisi";
+    if (!formData.password) errors.password = "Password harus diisi";
     if (formData.password !== formData.passwordConfirm)
-      errors.passwordConfirm = "Passwords do not match";
-    if (!formData.phone) errors.phone = "Phone number is required";
-    if (!formData.pin) errors.pin = "PIN is required";
-    if (inputCaptcha !== captcha) errors.captcha = "Captcha does not match";
+      errors.passwordConfirm = "Passwords tidak cocok";
+    if (!formData.phone_number)
+      errors.phone_number = "Nomor telpone harus diisi";
+    if (!formData.pin) errors.pin = "PIN harus diisi";
+    if (inputCaptcha !== captcha) errors.captcha = "Captcha tidak cocok";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const currentUrl = window.location.href;
@@ -108,18 +126,21 @@ export default function Register() {
           ...formData,
           referralUrl: siteUrl,
         };
-
         await apiUsers.register(formDataWithUrl);
         setFormErrors({});
         setIsModalOpen(true);
         setLoading(false);
         setFormData({
+          fullname: "",
           username: "",
+          address: "",
           password: "",
           passwordConfirm: "",
           email: "",
-          phone: "",
+          phone_number: "",
           pin: "",
+          gender: "",
+          dob: "",
         });
       } catch (error) {
         setLoading(false);
@@ -128,12 +149,14 @@ export default function Register() {
     }
   };
 
+  // Refresh captcha
   const refreshCaptcha = () => {
     const newCaptcha = Math.random().toString(36).slice(2, 8);
     setCaptcha(newCaptcha);
     setValid(false);
   };
 
+  // Check password strength
   const checkPasswordStrength = (password) => {
     let strength = "Weak";
     if (password.length > 8) strength = "Medium";
@@ -146,10 +169,12 @@ export default function Register() {
     setPasswordStrength(strength);
   };
 
+  // Close modal
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
+  // Effect hooks
   useEffect(() => {
     refreshCaptcha();
   }, []);
@@ -170,6 +195,7 @@ export default function Register() {
     }
   }, [isModalOpen, navigate]);
 
+  // Get password progress bar color
   const getProgressBarColor = () => {
     switch (passwordStrength) {
       case "Strong":
@@ -182,6 +208,7 @@ export default function Register() {
     }
   };
 
+  // Get password progress bar width
   const getProgressBarWidth = () => {
     switch (passwordStrength) {
       case "Strong":
@@ -200,10 +227,11 @@ export default function Register() {
 
   return (
     <>
+      <ToastContainer />
       <div className="flex min-h-screen flex-col items-center justify-between p-6 md:p-20">
         <div className="container w-full md:w-[80%] h-full">
           <div className="flex flex-col items-center space-y-2">
-            <img src={"/assets/logo.png"} className="w-16 h-16" alt="" />
+            <img src="/assets/logo.png" className="w-16 h-16" alt="Logo" />
             <h1 className="text-lg font-semibold">SKY Membership</h1>
           </div>
           <div className="w-full h-full p-5 text-start">
@@ -216,141 +244,294 @@ export default function Register() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col items-end justify-end space-y-3 text-xs"
+              className="flex flex-col items-center justify-end space-y-3 text-xs"
             >
-              <input
-                type="text"
-                className={`w-full p-3 border ${
-                  formErrors.username ? "border-red-600" : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Masukan username anda"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-              />
-
-              <input
-                type="text"
-                className={`w-full p-3 border ${
-                  formErrors.email ? "border-red-600" : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Masukan email anda"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <input
-                type="password"
-                className={`w-full p-3 border ${
-                  formErrors.password ? "border-red-600" : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Masukan password anda"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <div className="w-full bg-gray-200 h-2 rounded mt-2">
-                <div
-                  className={`h-2 rounded ${getProgressBarColor()} ${getProgressBarWidth()}`}
-                ></div>
+              <div className="w-full">
+                <label
+                  htmlFor="fullname"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Nama Lengkap
+                </label>
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  value={formData.fullname}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan nama lengkap"
+                />
+                {formErrors.fullname && (
+                  <p className="text-red-500 text-xs">{formErrors.fullname}</p>
+                )}
               </div>
 
-              <input
-                type="password"
-                className={`w-full p-3 border ${
-                  formErrors.passwordConfirm
-                    ? "border-red-600"
-                    : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Validasi password anda"
-                name="passwordConfirm"
-                value={formData.passwordConfirm}
-                onChange={handleChange}
-              />
-              <input
-                type="text"
-                className={`w-full p-3 border ${
-                  formErrors.phone ? "border-red-600" : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Masukan nomor telepon anda"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-              <input
-                type="password"
-                className={`w-full p-3 border ${
-                  formErrors.pin ? "border-red-600" : "border-slate-300"
-                } bg-slate-100 rounded-lg`}
-                placeholder="Masukan pin anda"
-                name="pin"
-                value={formData.pin}
-                onChange={handleChange}
-              />
-
-              <div className="relative bg-black w-full select-none">
-                <div
-                  className={`${
-                    valid ? "bg-green-500" : "bg-black text-white"
-                  } font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]`}
+              <div className="w-full">
+                <label
+                  htmlFor="username"
+                  className="block mb-2 text-sm font-medium text-gray-700"
                 >
-                  {captcha}
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan username"
+                />
+                {formErrors.username && (
+                  <p className="text-red-500 text-xs">{formErrors.username}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan email"
+                />
+                {formErrors.email && (
+                  <p className="text-red-500 text-xs">{formErrors.email}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan password"
+                />
+                {formErrors.password && (
+                  <p className="text-red-500 text-xs">{formErrors.password}</p>
+                )}
+                <div className="relative mt-2 h-2 w-full bg-gray-300 rounded-full">
+                  <div
+                    className={`${getProgressBarColor()} ${getProgressBarWidth()} h-full rounded-full`}
+                  ></div>
                 </div>
-                <button
-                  type="button"
-                  className="absolute text-white top-2 right-5"
-                  onClick={refreshCaptcha}
-                >
-                  <MdOutlineRefresh />
-                </button>
               </div>
 
-              <input
-                type="text"
-                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
-                placeholder="Captcha"
-                value={inputCaptcha}
-                onChange={(e) => setInputCaptcha(e.target.value)}
-              />
-              {formErrors.captcha && (
-                <span className="text-red-500">{formErrors.captcha}</span>
-              )}
+              <div className="w-full">
+                <label
+                  htmlFor="passwordConfirm"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Konfirmasi Password
+                </label>
+                <input
+                  type="password"
+                  id="passwordConfirm"
+                  name="passwordConfirm"
+                  value={formData.passwordConfirm}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Konfirmasi password"
+                />
+                {formErrors.passwordConfirm && (
+                  <p className="text-red-500 text-xs">
+                    {formErrors.passwordConfirm}
+                  </p>
+                )}
+              </div>
 
-              <button className="bg-cyan-600 text-white w-full h-10 rounded-md">
+              <div className="w-full">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Alamat
+                </label>
+                <textarea
+                  name="address"
+                  id="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan alamat"
+                  cols="30"
+                  rows={5}
+                />
+                {formErrors.address && (
+                  <p className="text-red-500 text-xs">{formErrors.address}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="phone_number"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Nomor Telepon
+                </label>
+                <input
+                  type="text"
+                  id="phone_number"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan nomor telepon"
+                />
+                {formErrors.phone_number && (
+                  <p className="text-red-500 text-xs">
+                    {formErrors.phone_number}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Gender
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Male"
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    Male
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Female"
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    Female
+                  </label>
+                </div>
+                {formErrors.gender && (
+                  <p className="text-red-500 text-xs">{formErrors.gender}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="dob"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Tanggal Lahir
+                </label>
+                <input
+                  type="date"
+                  id="dob"
+                  name="dob"
+                  value={formData.dob || ""}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {formErrors.dob && (
+                  <p className="text-red-500 text-xs">{formErrors.dob}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="pin"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  PIN
+                </label>
+                <input
+                  type="text"
+                  id="pin"
+                  name="pin"
+                  value={formData.pin}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan PIN (6 digit)"
+                />
+                {formErrors.pin && (
+                  <p className="text-red-500 text-xs">{formErrors.pin}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <div className="flex items-center space-x-2">
+                  <span
+                    className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white font-bold rounded-lg shadow-lg w-[70%] h-12 text-lg tracking-wide"
+                    style={{
+                      letterSpacing: "0.2em", // Tambahkan jarak antar karakter
+                      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)", // Efek bayangan
+                      transform: "rotate(-1deg)", // Miringkan sedikit teks secara global
+                    }}
+                  >
+                    {captcha.split("").map((char, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          transform: `rotate(${Math.random() * 20 - 10}deg)`, // Random rotasi per karakter
+                          margin: "0 2px", // Tambahkan margin antar angka
+                          color: idx % 2 === 0 ? "gold" : "white", // Variasi warna
+                          fontSize: `${Math.random() * 0.4 + 1.2}rem`, // Variasi ukuran font
+                        }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={refreshCaptcha}
+                    className="flex items-center px-3 py-2 text-blue-500 border border-amber-500 rounded-lg shadow-md hover:bg-amber-500 hover:text-white transition-all duration-300"
+                  >
+                    <MdOutlineRefresh size={20} className="mr-1" />
+                  </button>
+                </div>
+
+                <input
+                  type="text"
+                  id="captcha"
+                  name="captcha"
+                  value={inputCaptcha}
+                  onChange={(e) => setInputCaptcha(e.target.value)}
+                  className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan captcha"
+                />
+                {formErrors.captcha && (
+                  <p className="text-red-500 text-xs">{formErrors.captcha}</p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
                 Daftar
               </button>
-
-              <p className="flex text-center items-center justify-center text-xs">
-                Sudah punya akun ?
-                <span className="text-cyan-600 font-semibold ml-1">
-                  <Link to={"/"}> Login</Link>
-                </span>
-              </p>
             </form>
           </div>
         </div>
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Success Modal"
-        className="bg-white p-6 rounded-lg shadow-md text-center w-full max-w-[90%]"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-      >
-        <img
-          src={"/assets/successRegister.svg"}
-          alt="Success"
-          className="mb-4 w-24 h-24 mx-auto"
-        />
-        <h1 className="text-2xl font-bold mb-4 text-emerald-600">
-          Registrasi Berhasil!
-        </h1>
-        <p className="mb-6 text-gray-600">
-          Terimakasih sudah mendaftar di SKY Membership, Cek email anda untuk
-          lakukan aktifasi akun anda
-        </p>
-      </Modal>
-      <ToastContainer />
     </>
   );
 }

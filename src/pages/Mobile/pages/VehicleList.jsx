@@ -16,6 +16,9 @@ export default function VehicleList() {
   const [isModalRfid, setIsModalRfid] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isModalError, setIsModalError] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [isModal, setIsModal] = useState(false);
   const [rfidHex, setRfidHex] = useState("");
   const [idVehicle, setIdVehicle] = useState("");
   const [formData, setFormData] = useState({
@@ -37,7 +40,6 @@ export default function VehicleList() {
       if ("NDEFReader" in window) {
         const ndef = new NDEFReader();
         await ndef.scan();
-        console.log("NFC scan started");
 
         ndef.addEventListener("reading", (event) => {
           const { message, serialNumber } = event;
@@ -50,8 +52,9 @@ export default function VehicleList() {
         setIsModalError(true);
       }
     } catch (error) {
-      console.error("NFC reading error:", error);
-      alert("Failed to read NFC tag. Please try again.");
+      setIsError(true);
+      setIsModalError(true);
+      setMessage("Failed to read RFID. Please try again.");
     }
   };
 
@@ -62,9 +65,12 @@ export default function VehicleList() {
         const response = await vehicleAdd.udpatedRFID(idVehicle, rfid);
         if (response.status === 200) {
           fetchData(); // Refresh data after update
-          alert("RFID updated successfully");
+          setIsModal(true);
+          setMessage(response.message);
         } else {
-          alert("Failed to update RFID");
+          setIsError(true);
+          setIsModalError(true);
+          setMessage("Failed to update RFID. Please try again.");
         }
       }
     } catch (error) {
@@ -105,7 +111,6 @@ export default function VehicleList() {
 
     try {
       const response = await vehicleAdd.addVehicle(data);
-      console.log("Success:", response.data);
       if (response.status === true) {
         setIsModalOpen(false);
         setIsSuccessModalOpen(true); // Buka modal success
@@ -130,7 +135,7 @@ export default function VehicleList() {
         <h1>Vehicle List</h1>
       </div>
 
-      <div className="max-h-screen w-full p-3 overflow-y-auto relative">
+      <div className="max-h-screen min-h-screen w-full p-3 overflow-y-auto relative">
         {listVehicle.map((items, index) => (
           <div
             key={index}
@@ -173,12 +178,16 @@ export default function VehicleList() {
               </div>
 
               <div className="flex flex-row justify-end items-center text-left w-full mb-3 py-3 px-3 space-x-5">
-                <BiRfid
-                  onClick={() => handleModalRfid(items.id)}
-                  size={20}
-                  className="text-blue-600"
-                />
-                <div className="border-l border-slate-200 h-5"></div>
+                {items.rfid === "" ? (
+                  <>
+                    <BiRfid
+                      onClick={() => handleModalRfid(items.id)}
+                      size={20}
+                      className="text-blue-600"
+                    />
+                    <div className="border-l border-slate-200 h-5"></div>
+                  </>
+                ) : null}
                 <IoTrashOutline size={20} className="text-red-600" />
               </div>
             </div>
@@ -201,7 +210,7 @@ export default function VehicleList() {
           >
             {/* Header */}
             <div className="flex justify-between items-center w-full">
-              <h1 className="text-lg font-medium">Add Vehicle</h1>
+              <h1 className="text-lg font-medium">Tambah Kendaraan</h1>
               <FaTimes
                 size={20}
                 className="text-red-600 cursor-pointer"
@@ -222,7 +231,7 @@ export default function VehicleList() {
                     htmlFor="vehicle_type"
                     className="block text-sm font-medium mb-2"
                   >
-                    Vehicle Type
+                    Jenis Kendaraan
                   </label>
                   <select
                     name="vehicle_type"
@@ -232,8 +241,8 @@ export default function VehicleList() {
                     className="border p-2 rounded w-full"
                     required
                   >
-                    <option value="">Select Vehicle Type</option>
-                    <option value="MOTOR">Motor</option>
+                    <option value="">Pilih jenis kendaraan</option>
+                    <option value="MOTOR">MOTOR</option>
                     <option value="MOBIL">MOBIL</option>
                   </select>
                 </div>
@@ -244,7 +253,7 @@ export default function VehicleList() {
                     htmlFor="plate_number"
                     className="block text-sm font-medium mb-2"
                   >
-                    Plate Number
+                    Plat Nomor
                   </label>
                   <input
                     type="text"
@@ -253,7 +262,7 @@ export default function VehicleList() {
                     value={formData.plate_number}
                     onChange={handleChange}
                     className="border p-2 rounded w-full"
-                    placeholder="Enter plate number"
+                    placeholder="Masukan plat nomor kendaraan"
                     required
                   />
                 </div>
@@ -264,7 +273,7 @@ export default function VehicleList() {
                     htmlFor="plate_number_image"
                     className="block text-sm font-medium mb-2"
                   >
-                    Plate Number Image
+                    Upload Plat Nomor
                   </label>
                   <input
                     type="file"
@@ -282,7 +291,7 @@ export default function VehicleList() {
                     htmlFor="stnk_image"
                     className="block text-sm font-medium mb-2"
                   >
-                    STNK Image
+                    Upload STNK
                   </label>
                   <input
                     type="file"
@@ -392,6 +401,27 @@ export default function VehicleList() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {isModal && (
+        <div className="fixed bg-black bg-opacity-50 w-full inset-0 z-50 flex items-center justify-center">
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto animate-fade-in">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-800">
+                {isError ? "Error" : "Success"}
+              </h2>
+            </div>
+
+            {/* Body */}
+            <div className="mt-4 text-sm text-gray-600">
+              {message || "This is a modern modal."}
+            </div>
+
+            {/* Footer */}
           </div>
         </div>
       )}

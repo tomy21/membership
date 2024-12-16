@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
 import { History, Transaction } from "../../../../../api/apiProduct";
+import { Payment } from "../../../../../api/apiMembershipV2";
 
 export default function TransactionTable() {
   const [orders, setOrders] = useState([]);
@@ -10,9 +11,9 @@ export default function TransactionTable() {
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchData = async () => {
-    const response = await Transaction.getAll(currentPage, itemsPerPage);
+    const response = await Payment.getAllTransaction(currentPage, itemsPerPage);
     console.log(response);
-    setOrders(response.data?.transaction);
+    setOrders(response.data);
     setTotalPages(response.data?.totalPages);
   };
 
@@ -37,7 +38,7 @@ export default function TransactionTable() {
             <thead>
               <tr>
                 <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300 rounded-tl-lg">
-                  Order ID
+                  Transaction ID
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
                   Transaction Date
@@ -57,31 +58,28 @@ export default function TransactionTable() {
                 <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300">
                   Payment Status
                 </th>
-                <th className="px-5 py-3 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-300 rounded-tr-lg">
-                  Items
-                </th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
                 <tr key={index} className="text-sm">
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.TransactionId}
+                    {order.trxId}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.CreatedOn}
+                    {order.createdAt}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
                     {order.ProviderName}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.TypePayment}
+                    {order.transactionType}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
                     {order.LocationName}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
-                    {order.total ?? "0"}
+                    {order.price ?? "0"}
                   </td>
                   <td className="px-5 py-3 border-b border-gray-200">
                     <span
@@ -91,11 +89,8 @@ export default function TransactionTable() {
                           : "bg-red-500 text-white"
                       }`}
                     >
-                      {order.status ?? "-"}
+                      {order.statusPayment ?? "-"}
                     </span>
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200">
-                    {order.ProductName}
                   </td>
                 </tr>
               ))}

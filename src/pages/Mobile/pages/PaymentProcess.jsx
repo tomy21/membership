@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { getIdTrx } from "../../../api/apiTrxPayment";
 import { Users } from "../../../api/apiMembershipV2";
+import { format } from "date-fns";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -58,6 +59,8 @@ const copyToClipboard = (text) => {
 export default function PaymentProcess() {
   const [name, setName] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataStatus, setDataStatus] = useState(null);
   const location = useLocation();
   const formatAmount = formatNumber(
     Math.floor(location.state.bankProvider.amount)
@@ -65,27 +68,16 @@ export default function PaymentProcess() {
   const formattedDate = formatDate(location.state.response.expired_date);
   const navigate = useNavigate();
 
+  console.log(location.state);
+
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
-      location.state.response.virtualAccountData.trxId
+      location.state.response.trxId
     );
-
+    console.log(responseCek);
     if (responseCek.statusCode === 200) {
-      navigate("/cekStatus", {
-        state: {
-          responseCek: responseCek.data[0].Id,
-          TrxId: location.state.response.virtualAccountData.trxId,
-          accountName:
-            location.state.response.virtualAccountData.virtualAccountName,
-          virtualAccountNomor:
-            location.state.response.virtualAccountData.virtualAccountNo,
-          totalAmount:
-            location.state.response.virtualAccountData.totalAmount.value,
-          currency:
-            location.state.response.virtualAccountData.totalAmount.currency,
-          bankName: location.state.bankProvider,
-        },
-      });
+      setIsModalOpen(true);
+      setDataStatus(responseCek.data);
     }
   };
 
@@ -184,6 +176,97 @@ export default function PaymentProcess() {
           Kembali
         </button>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex items-center justify-center z-50 animate-fade-in">
+          <div className="relative bg-white p-6 rounded-2xl shadow-2xl flex flex-col justify-center items-center w-[90%] max-w-md">
+            {/* Icon Status */}
+            {dataStatus.statusPayment === "PAID" ? (
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center shadow-md mb-4">
+                <img
+                  src={"/assets/success.png"}
+                  alt="success"
+                  className="w-14 h-14"
+                />
+              </div>
+            ) : dataStatus.statusPayment === "PENDING" ? (
+              <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center shadow-md mb-4">
+                <img
+                  src="/assets/pending.png"
+                  alt="pending"
+                  className="w-12 h-12"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center shadow-md mb-4">
+                <img
+                  src="/assets/delete.png"
+                  alt="delete"
+                  className="w-12 h-12"
+                />
+              </div>
+            )}
+
+            {/* Header Text */}
+            <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">
+              {dataStatus.statusPayment === "PAID"
+                ? "Pembayaran Berhasil"
+                : dataStatus.statusPayment === "PENDING"
+                ? "Pembayaran Tertunda"
+                : "Pembayaran Gagal"}
+            </h2>
+            <p className="text-sm text-gray-500 text-center">
+              {dataStatus.statusPayment === "PAID"
+                ? `Berhasil membayar sebesar`
+                : "Silakan cek status pembayaran Anda kembali."}
+            </p>
+            <p className="text-sm text-gray-500 mb-4 text-center">
+              <h1>Rp. {parseInt(dataStatus.price).toLocaleString("id-ID")}</h1>
+            </p>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 w-full mb-4"></div>
+
+            {/* Detail Informasi */}
+            <div className="w-full text-xs text-gray-600 space-y-2">
+              <div className="flex justify-between">
+                <span className="font-medium">ID Invoice</span>
+                <span>{dataStatus.invoice_id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Type Pembelian</span>
+                <span>{dataStatus.purchase_type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Metode </span>
+                <span>{dataStatus.transactionType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Tanggal</span>
+                <span>
+                  {format(dataStatus.updatedAt, "dd MMMM yyyy HH:mm:ss")}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end w-full mt-6 space-x-3">
+              {/* <button
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Tutup
+              </button> */}
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                onClick={() => setIsModalOpen(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
