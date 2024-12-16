@@ -85,12 +85,11 @@ export default function Topup() {
 
   const verifikasi = () => {
     setIsModalVisible(false);
-    const totalAmount = amount + 5000;
     navigate("/verifikasi", {
       state: {
         type: "topup",
         bank_id: selectedProvider.id,
-        amount: totalAmount,
+        amount: amount,
         code_bank: selectedProvider.code_bank,
       },
     });
