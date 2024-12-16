@@ -39,6 +39,7 @@ export default function VehicleList() {
 
   const handleScanRfid = async (id) => {
     try {
+      setIsLoading(true);
       if ("NDEFReader" in window) {
         const ndef = new NDEFReader();
         await ndef.scan();
@@ -48,28 +49,34 @@ export default function VehicleList() {
           const formattedRfid = serialNumber.replace(/:/g, "").toUpperCase();
           setRfidHex(formattedRfid);
           updateRfid(formattedRfid);
+          setIsLoading(false);
         });
       } else {
         setIsModalRfid(false);
         setIsModalError(true);
+        setIsLoading(false);
       }
     } catch (error) {
       setIsError(true);
       setIsModalError(true);
       setMessage("Failed to read RFID. Please try again.");
+      setIsLoading(false);
     }
   };
 
   const updateRfid = async (rfid) => {
     try {
+      setIsLoading(true);
       const selectedVehicleId = listVehicle[0]?.id; // Assuming you update the first vehicle
       if (selectedVehicleId) {
         const response = await vehicleAdd.udpatedRFID(idVehicle, rfid);
         if (response.status === 200) {
+          setIsLoading(false);
           fetchData(); // Refresh data after update
           setIsModal(true);
           setMessage(response.message);
         } else {
+          setIsLoading(false);
           setIsError(true);
           setIsModalError(true);
           setMessage("Failed to update RFID. Please try again.");
@@ -370,11 +377,11 @@ export default function VehicleList() {
       {isModalRfid && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={() => setIsModalRfid(false)} // Menutup modal jika klik di luar
+          onClick={() => setIsModalRfid(false)}
         >
           <div
             className="bg-white w-80 rounded-lg shadow-lg p-6 relative text-center"
-            onClick={(e) => e.stopPropagation()} // Mencegah modal menutup saat diklik
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center w-full">
               <h1 className="text-lg font-medium">Scan RFID</h1>

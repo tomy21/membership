@@ -43,7 +43,7 @@ export default function SliderComponent({ openModal, memberProducts }) {
   return (
     <div className="relative">
       {/* Indikator posisi slider */}
-      <div className="absolute top-2 right-4 bg-black text-white text-xs px-2 py-1 rounded">
+      <div className="absolute top-2 right-4 bg-transparent text-black text-xs px-2 py-1 rounded">
         {currentSlide + 1}/{memberProducts.length}
       </div>
 
