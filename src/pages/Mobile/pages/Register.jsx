@@ -126,22 +126,29 @@ export default function Register() {
           ...formData,
           referralUrl: siteUrl,
         };
-        await apiUsers.register(formDataWithUrl);
-        setFormErrors({});
-        setIsModalOpen(true);
-        setLoading(false);
-        setFormData({
-          fullname: "",
-          username: "",
-          address: "",
-          password: "",
-          passwordConfirm: "",
-          email: "",
-          phone_number: "",
-          pin: "",
-          gender: "",
-          dob: "",
-        });
+        const response = await apiUsers.register(formDataWithUrl);
+
+        if (response.status === "success") {
+          setLoading(false);
+          setFormErrors({});
+          setIsModalOpen(true);
+          setLoading(false);
+          setFormData({
+            fullname: "",
+            username: "",
+            address: "",
+            password: "",
+            passwordConfirm: "",
+            email: "",
+            phone_number: "",
+            pin: "",
+            gender: "",
+            dob: "",
+          });
+        } else {
+          setLoading(false);
+          toast.error(response.message);
+        }
       } catch (error) {
         setLoading(false);
         toast.error(error.message);
