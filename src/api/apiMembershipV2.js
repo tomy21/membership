@@ -190,3 +190,23 @@ export const Payment = {
     }
   },
 };
+
+export const LokasiMembership = {
+  getLocationMember: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/location-master/getAll",
+        {
+          params: {
+            page,
+            limit,
+            search,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

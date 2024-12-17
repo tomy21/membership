@@ -13,6 +13,7 @@ import HistoryPayment from "../components/HistoryPayment";
 import { HistoryPost } from "../../../api/apiProduct";
 import Skeleton from "react-loading-skeleton";
 import HistoryPostComponent from "../components/HistoryPost";
+import { Payment } from "../../../api/apiMembershipV2";
 
 function Riwayat() {
   const [data, setData] = useState([]);
@@ -35,7 +36,7 @@ function Riwayat() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const historyResponse = await historyMembers.getHistory();
+        const historyResponse = await Payment.getAllTransaction();
         setListRiwayat(historyResponse?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -115,7 +116,7 @@ function Riwayat() {
         <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
         <h1 className="text-lg font-semibold px-10">History</h1>
       </div>
-      <div className="p-4">
+      <div className="p-4 h-screen overflow-auto">
         <div className="flex border-b border-gray-300 mb-4">
           <button
             onClick={() => setActiveTab("tab1")}
@@ -162,7 +163,7 @@ function Riwayat() {
           </button>
         </div>
 
-        <div className="space-y-2 w-full max-h-[80%] overflow-auto">
+        <div className="space-y-2 w-full max-h-[70%] overflow-auto">
           <div className="">
             {activeTab === "tab1" && (
               <div>
@@ -178,7 +179,7 @@ function Riwayat() {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 h-full overflow-y-auto py-2">
                     {isLoading ? (
                       [...Array(5)].map((_, index) => (
                         <div
