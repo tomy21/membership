@@ -50,6 +50,7 @@ export default function VehicleList() {
           setRfidHex(formattedRfid);
           updateRfid(formattedRfid);
           setIsLoading(false);
+          setIsModalRfid(false);
         });
       } else {
         setIsModalRfid(false);
