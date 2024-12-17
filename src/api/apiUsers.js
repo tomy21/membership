@@ -24,7 +24,9 @@ export const apiUsers = {
       const response = await apiClient.get("/v01/member/api/auth/protected");
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 
@@ -49,7 +51,9 @@ export const apiUsers = {
 
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 
@@ -141,10 +145,11 @@ export const loginUsers = {
   login: async (userData) => {
     try {
       const response = await apiClient.post("/v1/auth/login", userData);
-
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 };

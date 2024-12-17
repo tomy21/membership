@@ -7,6 +7,8 @@ import { apiUsers } from "../../../api/apiUsers";
 import Modal from "react-modal";
 import Loading from "../components/Loading";
 import { BsPatchCheck } from "react-icons/bs";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { TiWarning } from "react-icons/ti";
 
 Modal.setAppElement("#root");
 
@@ -14,6 +16,7 @@ export default function Register() {
   const [captcha, setCaptcha] = useState("");
   const [inputCaptcha, setInputCaptcha] = useState("");
   const [valid, setValid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,6 +37,10 @@ export default function Register() {
   const [formErrors, setFormErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState("");
 
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,18 +60,15 @@ export default function Register() {
     }
 
     if (name === "phone_number") {
-      // Pastikan +62 tetap di awal
       let sanitizedValue = value.startsWith("+62") ? value : "+62" + value;
 
-      // Hapus spasi atau karakter tidak valid
-      sanitizedValue = sanitizedValue.replace(/[^0-9+]/g, "");
-
-      // Mencegah penghapusan +62
+      sanitizedValue = sanitizedValue.replace(/^\+62(.*)/, (_, rest) => {
+        return "+62" + rest.replace(/[^0-9]/g, "");
+      });
       if (!sanitizedValue.startsWith("+62")) {
         sanitizedValue = "+62";
       }
 
-      // Perbarui nilai input dan validasi
       setFormData((prevData) => ({
         ...prevData,
         [name]: sanitizedValue,
@@ -77,7 +81,7 @@ export default function Register() {
           : "",
       }));
     } else if (name === "pin") {
-      const formattedPin = sanitizedValue.replace(/[^0-9]/g, ""); // Hanya angka
+      const formattedPin = sanitizedValue.replace(/[^0-9]/g, "");
       if (formattedPin.length <= 6) {
         setFormData((prevData) => ({
           ...prevData,
@@ -94,6 +98,11 @@ export default function Register() {
         [name]: sanitizedValue,
       }));
     }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   // Validate form fields
@@ -116,6 +125,55 @@ export default function Register() {
     return Object.keys(errors).length === 0;
   };
 
+  const validateField = (field, value) => {
+    let error = "";
+
+    switch (field) {
+      case "fullname":
+        if (!value) error = "Nama Lengkap harus diisi";
+        break;
+      case "username":
+        if (!value) error = "Username harus diisi";
+        break;
+      case "address":
+        if (!value) error = "Alamat harus diisi";
+        break;
+      case "email":
+        if (!value) error = "Email harus diisi";
+        else if (!/\S+@\S+\.\S+/.test(value))
+          error = "Format email tidak valid";
+        break;
+      case "dob":
+        if (!value) error = "Tanggal lahir harus diisi";
+        break;
+      case "gender":
+        if (!value) error = "Jenis kelamin harus diisi";
+        break;
+      case "password":
+        if (!value) error = "Password harus diisi";
+        break;
+      case "passwordConfirm":
+        if (value !== formData.password) error = "Passwords tidak cocok";
+        break;
+      case "phone_number":
+        if (!value) error = "Nomor telepon harus diisi";
+        break;
+      case "pin":
+        if (!value) error = "PIN harus diisi";
+        break;
+      case "captcha":
+        if (value !== captcha) error = "Captcha tidak cocok";
+        break;
+      default:
+        break;
+    }
+
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: error,
+    }));
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,7 +188,6 @@ export default function Register() {
           referralUrl: siteUrl,
         };
         const response = await apiUsers.register(formDataWithUrl);
-        console.log(response);
 
         if (response.status === "success") {
           setLoading(false);
@@ -139,6 +196,8 @@ export default function Register() {
             "Akun anda berhasil dibuat, silahkan cek email untuk aktivasi"
           );
         } else {
+          setIsError(true);
+          setIsModalOpen(true);
           setLoading(false);
           setMessage(response.message);
         }
@@ -146,6 +205,7 @@ export default function Register() {
         setLoading(false);
         setIsError(true);
         toast.error(error.message);
+        setIsError(false);
       }
     }
   };
@@ -159,7 +219,7 @@ export default function Register() {
 
   // Check password strength
   const checkPasswordStrength = (password) => {
-    let strength = "Weak";
+    let strength = "zero";
     if (password.length > 8) strength = "Medium";
     if (
       password.length > 12 &&
@@ -172,21 +232,26 @@ export default function Register() {
 
   // Close modal
   const closeModal = () => {
-    setIsModalOpen(false);
-    setFormErrors({});
-    setFormData({
-      fullname: "",
-      username: "",
-      address: "",
-      password: "",
-      passwordConfirm: "",
-      email: "",
-      phone_number: "",
-      pin: "",
-      gender: "",
-      dob: "",
-    });
-    navigate("/");
+    if (isError) {
+      setIsError(false);
+      setIsModalOpen(false);
+    } else {
+      setIsModalOpen(false);
+      setFormErrors({});
+      setFormData({
+        fullname: "",
+        username: "",
+        address: "",
+        password: "",
+        passwordConfirm: "",
+        email: "",
+        phone_number: "",
+        pin: "",
+        gender: "",
+        dob: "",
+      });
+      navigate("/");
+    }
   };
 
   // Effect hooks
@@ -201,6 +266,8 @@ export default function Register() {
   // Get password progress bar color
   const getProgressBarColor = () => {
     switch (passwordStrength) {
+      case "zero":
+        return "bg-gray-500";
       case "Strong":
         return "bg-green-500";
       case "Medium":
@@ -214,6 +281,8 @@ export default function Register() {
   // Get password progress bar width
   const getProgressBarWidth = () => {
     switch (passwordStrength) {
+      case "zero":
+        return "w-0";
       case "Strong":
         return "w-full";
       case "Medium":
@@ -222,6 +291,10 @@ export default function Register() {
       default:
         return "w-1/3";
     }
+  };
+
+  const handleBack = () => {
+    navigate("/");
   };
 
   if (loading) {
@@ -262,6 +335,7 @@ export default function Register() {
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   placeholder="Masukkan nama lengkap"
                 />
@@ -283,6 +357,7 @@ export default function Register() {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan username"
                 />
@@ -304,6 +379,7 @@ export default function Register() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan email"
                 />
@@ -319,15 +395,26 @@ export default function Register() {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Masukkan password"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Masukkan password"
+                  />
+
+                  <button
+                    type="button"
+                    className="absolute right-5 top-3 text-gray-500"
+                    onClick={togglePassword}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {formErrors.password && (
                   <p className="text-red-500 text-xs">{formErrors.password}</p>
                 )}
@@ -345,15 +432,25 @@ export default function Register() {
                 >
                   Konfirmasi Password
                 </label>
-                <input
-                  type="password"
-                  id="passwordConfirm"
-                  name="passwordConfirm"
-                  value={formData.passwordConfirm}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Konfirmasi password"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="passwordConfirm"
+                    name="passwordConfirm"
+                    value={formData.passwordConfirm}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Konfirmasi password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-5 top-3 text-gray-500"
+                    onClick={togglePassword}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {formErrors.passwordConfirm && (
                   <p className="text-red-500 text-xs">
                     {formErrors.passwordConfirm}
@@ -373,6 +470,7 @@ export default function Register() {
                   id="address"
                   value={formData.address}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan alamat"
                   cols="30"
@@ -396,6 +494,7 @@ export default function Register() {
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nomor telepon"
                 />
@@ -450,6 +549,7 @@ export default function Register() {
                   name="dob"
                   value={formData.dob || ""}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {formErrors.dob && (
@@ -464,15 +564,25 @@ export default function Register() {
                 >
                   PIN
                 </label>
-                <input
-                  type="text"
-                  id="pin"
-                  name="pin"
-                  value={formData.pin}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Masukkan PIN (6 digit)"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="pin"
+                    name="pin"
+                    value={formData.pin}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Masukkan PIN (6 digit)"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-5 top-3 text-gray-500"
+                    onClick={togglePassword}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {formErrors.pin && (
                   <p className="text-red-500 text-xs">{formErrors.pin}</p>
                 )}
@@ -531,6 +641,13 @@ export default function Register() {
               >
                 Daftar
               </button>
+              <button
+                type="button"
+                onClick={handleBack}
+                className="w-full py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Kembali
+              </button>
             </form>
           </div>
         </div>
@@ -542,13 +659,19 @@ export default function Register() {
           <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto animate-fade-in flex flex-col justify-center items-center">
             {/* Header */}
             <div className="flex justify-center">
-              <div className="bg-green-100 text-green-600 rounded-full p-3">
-                <BsPatchCheck size={30} />
+              <div
+                className={`p-3 rounded-full ${
+                  isError
+                    ? "bg-red-100 text-red-600"
+                    : "bg-green-100 text-green-600"
+                }`}
+              >
+                {isError ? <TiWarning size={30} /> : <BsPatchCheck size={30} />}
               </div>
             </div>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-800">
-                {isError ? "Error" : "Success"}
+                {isError ? "Warning" : "Success"}
               </h2>
             </div>
 

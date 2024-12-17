@@ -6,12 +6,24 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
 import { Users } from "../../../api/apiMembershipV2";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { TiWarning } from "react-icons/ti";
+import { BsPatchCheck } from "react-icons/bs";
 
 export default function Login() {
   const [captcha, setCaptcha] = useState("");
   const [inputCaptcha, setInputCaptcha] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [message, setMessage] = useState("");
+  const [requestEmail, setRequestEmail] = useState(false);
   const navigate = useNavigate();
+
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const [formData, setFormData] = useState({
     username: "",
@@ -56,24 +68,74 @@ export default function Login() {
 
     try {
       const response = await Users.login(formData.username, formData.password);
-      localStorage.setItem("userToken", response.token); // Simpan token autentikasi
+      localStorage.setItem("userToken", response.token);
       localStorage.setItem("userData", JSON.stringify(response.user));
-      setFormErrors({});
-      setFormData({
-        username: "",
-        password: "",
-        rememberMe: false,
-      });
+      console.log(response);
 
-      setTimeout(() => {
-        navigate("/dashboard");
-        toast.success("Login successful!");
-      }, 500);
+      if (response.status === "success") {
+        setFormErrors({});
+        setFormData({
+          username: "",
+          password: "",
+          rememberMe: false,
+        });
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 500);
+      } else {
+        if (response.request === true) {
+          setRequestEmail(true);
+        }
+        setIsError(true);
+        setIsModalOpen(true);
+        setLoading(false);
+        setMessage(response.message);
+      }
 
       setLoading(false);
     } catch (error) {
       toast.error(error.message);
       setLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsError(false);
+    setMessage("");
+  };
+
+  const handleRequest = async () => {
+    const currentUrl = window.location.href;
+    const siteUrl = new URL(currentUrl).origin;
+    setLoading(true);
+    try {
+      const response = await Users.requestTokenAktivasion(
+        formData.username,
+        siteUrl
+      );
+      console.log(response.status);
+      // setIsModalOpen(false);
+      if (response.status === "success") {
+        closeModal();
+        setLoading(false);
+        setIsModalOpen(true);
+        setRequestEmail(false);
+        setMessage(
+          "Email aktifasi sudah dikirim, silahkan cek email untuk aktifasi"
+        );
+      } else {
+        setLoading(false);
+        setIsError(true);
+        setIsModalOpen(true);
+        setMessage(response.message);
+      }
+    } catch (error) {
+      setIsError(true);
+      setIsModalOpen(true);
+      setLoading(false);
+      setMessage(error.message);
     }
   };
 
@@ -114,15 +176,24 @@ export default function Login() {
               {formErrors.username && (
                 <p className="text-red-500 text-xs">{formErrors.username}</p>
               )}
-              <input
-                type="password"
-                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
-                placeholder="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-              />
+              <div className="relative w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
+                  placeholder="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="absolute right-5 top-4 text-gray-500"
+                  onClick={togglePassword}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
               {formErrors.password && (
                 <p className="text-red-500 text-xs">{formErrors.password}</p>
               )}
@@ -185,6 +256,52 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed bg-black bg-opacity-50 w-full inset-0 z-50 flex items-center justify-center p-5">
+          {/* Modal Container */}
+          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto animate-fade-in flex flex-col justify-center items-center">
+            {/* Header */}
+            <div className="flex justify-center">
+              <div
+                className={`p-3 rounded-full ${
+                  isError
+                    ? "bg-red-100 text-red-600"
+                    : "bg-green-100 text-green-600"
+                }`}
+              >
+                {isError ? <TiWarning size={30} /> : <BsPatchCheck size={30} />}
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-800">
+                {isError ? "Warning" : "Success"}
+              </h2>
+            </div>
+
+            {/* Body */}
+            <div className="mt-4 text-sm text-gray-600">{message}</div>
+
+            <div className="flex flex-row justify-end items-center gap-x-3">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 mt-7 text-white font-normal py-2 px-4 rounded"
+                onClick={closeModal}
+              >
+                Tutup
+              </button>
+
+              {requestEmail && (
+                <button
+                  className="bg-emerald-500 hover:bg-emerald-700 mt-7 text-white font-normal py-2 px-4 rounded"
+                  onClick={handleRequest}
+                >
+                  Request email aktifasi
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

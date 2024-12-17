@@ -37,7 +37,7 @@ const Accordion = () => {
         }
       />
       <AccordionItem
-        title="Cara Pembayaran via Online"
+        title="Cara Pembayaran via Mobile Banking"
         content={
           <ul className="list-disc pl-5 text-start">
             <li>Masuk ke aplikasi mobile banking Anda.</li>

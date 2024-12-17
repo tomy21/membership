@@ -20,7 +20,26 @@ export const Users = {
 
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
+    }
+  },
+
+  requestTokenAktivasion: async (email, referralUrl) => {
+    try {
+      const response = await apiClient.post(
+        `/v01/member/api/auth/request-email-verification`,
+        {
+          email,
+          referralUrl,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 
@@ -123,12 +142,15 @@ export const MembershipProduct = {
 export const Location = {
   getAll: async (page, limit) => {
     try {
-      const response = await apiClient.get(`/v01/member/api/location-master`, {
-        params: {
-          page,
-          limit,
-        },
-      });
+      const response = await apiClient.get(
+        `/v01/member/api/location-master/getAll`,
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       throw error.response.data;
