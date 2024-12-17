@@ -20,7 +20,7 @@ export default function VehicleList() {
   const [isModalError, setIsModalError] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const [isModal, setIsModal] = useState(false);
+  const [isModal, setIsModal] = useState(true);
   const [rfidHex, setRfidHex] = useState("");
   const [idVehicle, setIdVehicle] = useState("");
   const [formData, setFormData] = useState({
@@ -213,7 +213,7 @@ export default function VehicleList() {
 
       {isModalOpen && (
         <div
-          className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50"
+          className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-30"
           onClick={() => setIsModalOpen(false)} // Menutup modal jika klik di luar
         >
           <div
@@ -335,7 +335,7 @@ export default function VehicleList() {
       )}
 
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
           <div className="bg-white w-80 rounded-lg shadow-lg p-6 relative text-center">
             <div className="flex justify-center mb-4">
               <div className="bg-green-100 text-green-600 rounded-full p-3">
@@ -343,9 +343,7 @@ export default function VehicleList() {
               </div>
             </div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">Success!</h2>
-            <p className="text-gray-600 mb-4">
-              Your vehicle has been successfully added.
-            </p>
+            <p className="text-gray-600 mb-4">Kendaraan berhasil ditambahkan</p>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               onClick={() => setIsSuccessModalOpen(false)}
@@ -357,7 +355,7 @@ export default function VehicleList() {
       )}
 
       {isModalError && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
           <div className="bg-white w-80 rounded-lg shadow-lg p-6 relative text-center">
             <div className="flex justify-center mb-4">
               <div className="bg-red-100 text-red-600 rounded-full p-3">
@@ -366,13 +364,13 @@ export default function VehicleList() {
             </div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">Gagal !</h2>
             <p className="text-gray-600 mb-4">
-              Your device does not support NFC or permission is not granted.
+              Perangkat tidak mendukung pembacaan NFC
             </p>
             <button
               className="bg-blue-500 text-white px-4 py-2 w-full rounded-lg hover:bg-blue-600 transition"
               onClick={() => setIsModalError(false)}
             >
-              Close
+              Tutup
             </button>
           </div>
         </div>
@@ -380,7 +378,7 @@ export default function VehicleList() {
 
       {isModalRfid && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
           onClick={() => setIsModalRfid(false)}
         >
           <div
@@ -400,14 +398,14 @@ export default function VehicleList() {
 
             <div className="flex flex-col items-center">
               <p className="text-sm text-gray-600 mb-4">
-                Tap the RFID card on your phone to read the ID.
+                Tap RFID untuk memproses
               </p>
 
               <button
                 onClick={handleScanRfid}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               >
-                Start Scan
+                Mulai Scan
               </button>
 
               {rfidHex && (
@@ -424,22 +422,21 @@ export default function VehicleList() {
       )}
 
       {isModal && (
-        <div className="fixed bg-black bg-opacity-50 w-full inset-0 z-50 flex items-center justify-center">
-          {/* Modal Container */}
-          <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto animate-fade-in">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {isError ? "Error" : "Success"}
-              </h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+          <div className="bg-white w-80 rounded-lg shadow-lg p-6 relative text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 text-green-600 rounded-full p-3">
+                <BsPatchCheck size={30} />
+              </div>
             </div>
-
-            {/* Body */}
-            <div className="mt-4 text-sm text-gray-600">
-              {message || "This is a modern modal."}
-            </div>
-
-            {/* Footer */}
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Success!</h2>
+            <p className="text-gray-600 mb-4">RFID sudah di tambahkan</p>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              onClick={() => setIsModal(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
