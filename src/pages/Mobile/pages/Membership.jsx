@@ -167,8 +167,8 @@ export default function Membership() {
           <label className="text-gray-400">Lokasi Member</label>
           <ListComponent
             list={listLocation}
-            title={"Select Location"}
-            search={"Search Location"}
+            title={"Pilih lokasi"}
+            search={"Cari lokasi"}
             selected={selectedLocation}
             setSelected={setSelectedLocation}
           />
@@ -181,8 +181,8 @@ export default function Membership() {
           <label className="text-gray-400">Produk Membership</label>
           <ListComponent
             list={vehicleTypes}
-            title={"Select Product Membership"}
-            search={"Search Product Membership"}
+            title={"Pilih product"}
+            search={"Pilih product"}
             selected={selectedVehicleType}
             setSelected={setSelectedVehicleType}
           />
@@ -221,8 +221,8 @@ export default function Membership() {
           <label className="text-gray-400">Kendaraan</label>
           <ListComponent
             list={vehicleListData}
-            title={"Select your vehicle"}
-            search={"Search Vehicle"}
+            title={"Pilih Kendaraan"}
+            search={"Cari kendaraan"}
             selected={selectedVehicle}
             setSelected={setSelectedVehicle}
           />
@@ -233,7 +233,11 @@ export default function Membership() {
 
         <div className="px-3 flex flex-col justify-start items-start w-full mt-10">
           <button
-            className="flex items-center justify-center w-full bg-blue-500 text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5"
+            className={`flex items-center justify-center w-full bg-blue-500 text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5 ${
+              selectedLocation && selectedVehicleType && selectedVehicle
+                ? ""
+                : "bg-gray-500 cursor-not-allowed"
+            }`}
             onClick={handleProceed}
           >
             <span>Next</span>

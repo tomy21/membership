@@ -7,6 +7,8 @@ import Loading from "../components/Loading";
 import { getIdTrx } from "../../../api/apiTrxPayment";
 import { Users } from "../../../api/apiMembershipV2";
 import { format } from "date-fns";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -62,17 +64,18 @@ export default function PaymentProcess() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dataStatus, setDataStatus] = useState(null);
   const location = useLocation();
-  const formatAmount = formatNumber(
-    Math.floor(
-      location.state.response.data.price ?? location.state.response.price
-    )
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const amount = parseInt(location.state.response.data.transaction_data.price);
+  const totalAmount = amount + location.state.response.data.admin_fee;
+  const formatAmount = formatNumber(totalAmount);
+  const formattedDate = formatDate(
+    location.state.response.data.transaction_data.expired_date
   );
-  const formattedDate = formatDate(location.state.response.data.expired_date);
   const navigate = useNavigate();
-  console.log(location.state);
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
-      location.state.response.data.trxId
+      location.state.response.data.transaction_data.trxId
     );
 
     if (responseCek.statusCode === 200) {
@@ -102,11 +105,92 @@ export default function PaymentProcess() {
     navigate("/dashboard");
   };
 
+  const handleDownloadPDF = async (dataStatus) => {
+    try {
+      setIsGeneratingPDF(true);
+
+      const element = document.getElementById("pdf-content");
+      if (!element) {
+        console.error("Elemen dengan ID pdf-content tidak ditemukan");
+        return;
+      }
+
+      // Render ke canvas
+      const canvas = await html2canvas(element, {
+        scale: 0.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+      });
+
+      // Debugging: Log ukuran canvas
+      console.log("Canvas Width:", canvas.width);
+      console.log("Canvas Height:", canvas.height);
+
+      // Konversi canvas ke PNG
+      const imgData = canvas.toDataURL("image/png", 1.0);
+      console.log("Gambar PNG Data URL:", imgData);
+
+      // Validasi Data URL PNG
+      if (!imgData.startsWith("data:image/png;base64,")) {
+        throw new Error("Data URL PNG rusak atau tidak valid");
+      }
+
+      // Membuat PDF
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // Tambahkan gambar ke PDF
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`invoice_${dataStatus.invoice_id}.pdf`);
+    } catch (error) {
+      console.error("Error saat generate PDF:", error);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleSharePDF = async (dataStatus) => {
+    setIsGeneratingPDF(true);
+    const element = document.getElementById("pdf-content");
+
+    // Ambil snapshot elemen HTML
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    // Tambahkan gambar ke PDF
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+    // Konversi PDF ke Blob
+    const pdfBlob = pdf.output("blob");
+
+    // Bagikan file PDF menggunakan Web Share API
+    if (navigator.share) {
+      const file = new File([pdfBlob], `invoice_${dataStatus.invoice_id}.pdf`, {
+        type: "application/pdf",
+      });
+
+      navigator
+        .share({
+          files: [file],
+          title: "Invoice PDF",
+          text: "Detail pembayaran dalam format PDF",
+        })
+        .then(() => console.log("File shared successfully"))
+        .catch((error) => console.error("Error sharing file:", error));
+    } else {
+      alert("Fitur berbagi tidak didukung di perangkat ini.");
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
-
-  console.log(location.state);
 
   return (
     <div className="bg-gray-100 min-h-screen text-left">
@@ -126,11 +210,13 @@ export default function PaymentProcess() {
           </h2>
           <div className="flex justify-between items-center mt-2">
             <span className="text-lg font-semibold text-gray-800">
-              {location.state.response.data.virtual_account}
+              {location.state.response.data.transaction_data.virtual_account}
             </span>
             <button
               onClick={() =>
-                copyToClipboard(location.state.response.data.virtual_account)
+                copyToClipboard(
+                  location.state.response.data.transaction_data.virtual_account
+                )
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
@@ -150,7 +236,9 @@ export default function PaymentProcess() {
             </span>
             <button
               onClick={() =>
-                copyToClipboard(location.state.response.data.price)
+                copyToClipboard(
+                  location.state.response.data.transaction_data.price
+                )
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
             >
@@ -226,7 +314,7 @@ export default function PaymentProcess() {
               <div className="mb-4"></div>
             ) : (
               <h1 className="text-sm text-gray-500 mb-4 text-center">
-                <p>Rp. {parseInt(dataStatus.price).toLocaleString("id-ID")}</p>
+                <p>Rp. {formatAmount.toLocaleString("id-ID")}</p>
               </h1>
             )}
 
@@ -236,37 +324,116 @@ export default function PaymentProcess() {
             {/* Detail Informasi */}
             <div className="w-full text-xs text-gray-600 space-y-2">
               <div className="flex justify-between">
-                <p className="font-medium">ID Invoice</p>
+                <p className="font-semibold">No Invoice</p>
                 <p>{dataStatus.invoice_id}</p>
               </div>
               <div className="flex justify-between">
-                <p className="font-medium">Type Pembelian</p>
+                <p className="font-semibold">Produk</p>
                 <p>{dataStatus.purchase_type}</p>
               </div>
               <div className="flex justify-between">
-                <p className="font-medium">Metode </p>
+                <p className="font-semibold">Metode </p>
                 <p>{dataStatus.transactionType}</p>
               </div>
               <div className="flex justify-between">
-                <p className="font-medium">Tanggal</p>
+                <p className="font-semibold">Tanggal</p>
                 <p>{format(dataStatus.updatedAt, "dd MMMM yyyy HH:mm:ss")}</p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end w-full mt-6 space-x-3">
-              {/* <button
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                onClick={() => setIsModalOpen(false)}
+            <div className="flex justify-between w-full mt-6 space-x-3">
+              {/* Button Share */}
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                onClick={() => handleSharePDF(dataStatus)}
               >
-                Tutup
-              </button> */}
+                Share
+              </button>
+
+              {/* Button Download */}
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+                onClick={() => handleDownloadPDF(dataStatus)}
+              >
+                Download
+              </button>
+
+              {/* Button OK */}
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 onClick={() => setIsModalOpen(false)}
               >
                 OK
               </button>
+            </div>
+
+            <div id="pdf-content" className="hidden">
+              <h1>Hello World!</h1>
+              <p>This is a test content.</p>
+            </div>
+
+            <div
+              // id="pdf-content"
+              style={{
+                display: isGeneratingPDF ? "none" : "none", // Hanya tampil saat PDF dibuat
+              }}
+              className="bg-gradient-to-r from-blue-50 via-white to-blue-50 p-8 rounded-2xl shadow-lg max-w-lg mx-auto"
+            >
+              <div className="text-center mb-6">
+                <h1
+                  className={`text-2xl font-bold ${
+                    dataStatus.statusPayment === "PAID"
+                      ? "text-green-600"
+                      : dataStatus.statusPayment === "PENDING"
+                      ? "text-yellow-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {dataStatus.statusPayment === "PAID"
+                    ? "Pembayaran Berhasil"
+                    : dataStatus.statusPayment === "PENDING"
+                    ? "Pembayaran Tertunda"
+                    : "Pembayaran Gagal"}
+                </h1>
+                <p className="text-gray-500 mt-2">
+                  {dataStatus.statusPayment === "PAID"
+                    ? `Berhasil membayar sebesar`
+                    : "Silakan lakukan pembayaran."}
+                  <strong className="block text-xl text-gray-800 mt-1">
+                    Rp. {formatAmount.toLocaleString("id-ID")}
+                  </strong>
+                </p>
+              </div>
+              <div className="border-t border-gray-300 my-4"></div>
+              <div className="text-sm text-gray-700 space-y-4">
+                <div className="flex justify-between">
+                  <span className="font-medium">No Invoice:</span>
+                  <span>{dataStatus.invoice_id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Produk:</span>
+                  <span>{dataStatus.purchase_type}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Metode:</span>
+                  <span>{dataStatus.transactionType}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Tanggal:</span>
+                  <span>{dataStatus.updatedAt}</span>
+                </div>
+              </div>
+              <div className="text-center mt-6">
+                <p className="text-sm text-gray-500 italic">
+                  Terima kasih telah melakukan transaksi bersama kami!
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  {dataStatus.statusPayment === "PAID"
+                    ? "Simpan bukti pembayaran ini sebagai referensi."
+                    : "Segera lakukan pembayaran sebelum batas waktu."}
+                </p>
+              </div>
             </div>
           </div>
         </div>

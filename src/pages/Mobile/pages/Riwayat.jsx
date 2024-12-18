@@ -13,7 +13,7 @@ import HistoryPayment from "../components/HistoryPayment";
 import { HistoryPost } from "../../../api/apiProduct";
 import Skeleton from "react-loading-skeleton";
 import HistoryPostComponent from "../components/HistoryPost";
-import { Payment } from "../../../api/apiMembershipV2";
+import { historyParking, Payment } from "../../../api/apiMembershipV2";
 
 function Riwayat() {
   const [data, setData] = useState([]);
@@ -49,7 +49,7 @@ function Riwayat() {
       }
 
       try {
-        const historyPost = await HistoryPost.getById();
+        const historyPost = await historyParking.getHistoryByUserId();
         setHistoryPost(historyPost?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -220,7 +220,7 @@ function Riwayat() {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 h-full overflow-y-auto py-2">
                     {isLoading ? (
                       [...Array(5)].map((_, index) => (
                         <div

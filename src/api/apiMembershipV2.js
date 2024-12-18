@@ -232,3 +232,16 @@ export const LokasiMembership = {
     }
   },
 };
+
+export const historyParking = {
+  getHistoryByUserId: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/history-post`, {
+        params: { page, limit, search },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};

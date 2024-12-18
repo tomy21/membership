@@ -15,7 +15,7 @@ import {
 import { isMobile } from "react-device-detect";
 import HistoryPayment from "../components/HistoryPayment";
 import HistoryPostComponent from "../components/HistoryPost";
-import { Users } from "../../../api/apiMembershipV2";
+import { historyParking, Users } from "../../../api/apiMembershipV2";
 
 const items = [
   {
@@ -92,8 +92,18 @@ export default function Dashboard() {
       }
     };
 
+    const fetchHistoryParking = async () => {
+      try {
+        const response = await historyParking.getHistoryByUserId(1, 10);
+        setHistoryPost(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     fetchData();
     fetchDataHistoryPayment();
+    fetchHistoryParking();
   }, []);
 
   // Disable back navigation on mobile

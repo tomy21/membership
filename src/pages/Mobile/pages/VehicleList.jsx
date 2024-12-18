@@ -20,7 +20,7 @@ export default function VehicleList() {
   const [isModalError, setIsModalError] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const [isModal, setIsModal] = useState(true);
+  const [isModal, setIsModal] = useState(false);
   const [rfidHex, setRfidHex] = useState("");
   const [idVehicle, setIdVehicle] = useState("");
   const [formData, setFormData] = useState({
