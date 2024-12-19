@@ -34,7 +34,42 @@ export default function Login() {
   const [formErrors, setFormErrors] = useState({});
 
   const refreshString = () => {
-    setCaptcha(Math.random().toString(36).slice(2, 8));
+    const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+
+    // Gabungkan semua karakter yang ingin dimasukkan dalam captcha
+    const allCharacters = upperCaseLetters + lowerCaseLetters + numbers;
+
+    // Membuat captcha dengan memastikan ada huruf besar, huruf kecil, dan angka
+    const randomCaptcha = () => {
+      const captchaLength = 6; // panjang CAPTCHA yang diinginkan
+      let captcha = "";
+
+      // Memastikan ada karakter dari setiap jenis
+      captcha +=
+        upperCaseLetters[Math.floor(Math.random() * upperCaseLetters.length)];
+      captcha +=
+        lowerCaseLetters[Math.floor(Math.random() * lowerCaseLetters.length)];
+      captcha += numbers[Math.floor(Math.random() * numbers.length)];
+
+      // Menambahkan karakter acak sisanya
+      for (let i = 3; i < captchaLength; i++) {
+        captcha +=
+          allCharacters[Math.floor(Math.random() * allCharacters.length)];
+      }
+
+      // Acak urutan captcha
+      captcha = captcha
+        .split("")
+        .sort(() => 0.5 - Math.random())
+        .join("");
+
+      return captcha;
+    };
+
+    const newCaptcha = randomCaptcha();
+    setCaptcha(newCaptcha);
   };
 
   const handleChange = (e) => {
@@ -83,6 +118,7 @@ export default function Login() {
         setTimeout(() => {
           navigate("/dashboard");
         }, 500);
+        refreshString();
       } else {
         if (response.request === true) {
           setRequestEmail(true);
@@ -91,6 +127,7 @@ export default function Login() {
         setIsModalOpen(true);
         setLoading(false);
         setMessage(response.message);
+        refreshString();
       }
 
       setLoading(false);
@@ -115,7 +152,6 @@ export default function Login() {
         formData.username,
         siteUrl
       );
-      console.log(response.status);
       // setIsModalOpen(false);
       if (response.status === "success") {
         closeModal();
@@ -125,17 +161,20 @@ export default function Login() {
         setMessage(
           "Email aktifasi sudah dikirim, silahkan cek email untuk aktifasi"
         );
+        refreshString();
       } else {
         setLoading(false);
         setIsError(true);
         setIsModalOpen(true);
         setMessage(response.message);
+        refreshString();
       }
     } catch (error) {
       setIsError(true);
       setIsModalOpen(true);
       setLoading(false);
       setMessage(error.message);
+      refreshString();
     }
   };
 
@@ -198,29 +237,52 @@ export default function Login() {
                 <p className="text-red-500 text-xs">{formErrors.password}</p>
               )}
 
-              <div className="relative bg-black w-full select-none">
-                <div className="bg-black text-white font-semibold w-full h-[40px] px-1 rounded-md text-3xl tracking-[15px]">
-                  {captcha}
+              <div className="w-full">
+                <div className="flex items-center space-x-2">
+                  <span
+                    className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white font-bold rounded-md shadow-lg w-[70%] h-12 text-lg tracking-wide"
+                    style={{
+                      letterSpacing: "0.2em", // Tambahkan jarak antar karakter
+                      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)", // Efek bayangan
+                      transform: "rotate(-1deg)", // Miringkan sedikit teks secara global
+                    }}
+                  >
+                    {captcha.split("").map((char, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          transform: `rotate(${Math.random() * 20 - 10}deg)`, // Random rotasi per karakter
+                          margin: "0 2px", // Tambahkan margin antar angka
+                          color: idx % 2 === 0 ? "gold" : "white", // Variasi warna
+                          fontSize: `${Math.random() * 0.4 + 1.2}rem`, // Variasi ukuran font
+                        }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={refreshString}
+                    className="flex items-center px-3 py-2 text-blue-500 border border-amber-500 rounded-md shadow-md hover:bg-amber-500 hover:text-white transition-all duration-300"
+                  >
+                    <MdOutlineRefresh size={20} className="mr-1" />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="absolute text-white top-2 right-5"
-                  onClick={refreshString}
-                >
-                  <MdOutlineRefresh />
-                </button>
-              </div>
 
-              <input
-                type="text"
-                className="w-full p-3 border border-slate-300 bg-slate-100 rounded-lg"
-                placeholder="Captcha"
-                value={inputCaptcha}
-                onChange={(e) => setInputCaptcha(e.target.value)}
-              />
-              {formErrors.captcha && (
-                <p className="text-red-500 text-xs">{formErrors.captcha}</p>
-              )}
+                <input
+                  type="text"
+                  id="captcha"
+                  name="captcha"
+                  value={inputCaptcha}
+                  onChange={(e) => setInputCaptcha(e.target.value)}
+                  className="w-full p-3 mt-4 border border-slate-300 bg-slate-100 rounded-lg"
+                  placeholder="Masukkan captcha"
+                />
+                {formErrors.captcha && (
+                  <p className="text-red-500 text-xs">{formErrors.captcha}</p>
+                )}
+              </div>
 
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-row space-x-2 justify-center items-center">

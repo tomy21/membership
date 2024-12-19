@@ -100,8 +100,6 @@ function PaymentMember() {
     });
   };
 
-  console.log(selectedProvider);
-
   const currentPeriod = getMonthlyPeriod();
 
   return (
@@ -127,11 +125,11 @@ function PaymentMember() {
         <h1 className="text-lg font-semibold px-2">Details Transaksi</h1>
       </div>
 
-      <div className="container px-3">
-        <div className="flex flex-col items-start justify-start mt-2 w-full border border-gray-400 rounded-lg">
+      <div className="px-3">
+        <div className="flex flex-col items-start justify-start mt-2 w-full border border-gray-400 rounded-lg max-h-[30vh] p-3">
           <div className="px-3 flex flex-col justify-start items-start w-full">
-            <div className="flex flex-col justify-start items-start border-dashed border-b border-gray-400 w-full pb-2">
-              <p className="text-lg pt-2 font-semibold">Information Member</p>
+            <div className="flex flex-col justify-start items-start border-dashed border-b border-gray-400 w-full">
+              <p className="text-lg font-semibold">Informasi Member</p>
               <p className="text-gray-400">
                 {location.state ? location.state.plateNumber : "-"}
               </p>

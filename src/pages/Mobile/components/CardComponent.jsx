@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 export default function CardComponent({ openModal, product }) {
   return (
-    <div className="relative" onClick={() => openModal(product)}>
+    <div
+      className="relative w-full max-w-sm mx-auto cursor-pointer"
+      onClick={() => openModal(product)}
+    >
       <img
         src={
           product.vehicle_type === "MOBIL"
@@ -12,9 +15,14 @@ export default function CardComponent({ openModal, product }) {
         alt={product?.rfid || "Product Image"}
         className="w-64 m-auto "
       />
-      <div className="absolute bottom-0 left-[4rem] text-white flex flex-row justify-center items-center space-x-2 mb-4 w-32 text-start">
-        {product?.rfid}
-      </div>
+      {product?.rfid && (
+        <div
+          className="absolute bottom-[5%] left-[20%] sm:top-6 sm:left-6 text-white text-xs sm:text-sm px-3 py-2 rounded-full"
+          style={{ whiteSpace: "nowrap" }}
+        >
+          {product?.rfid}
+        </div>
+      )}
     </div>
   );
 }

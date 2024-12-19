@@ -121,10 +121,10 @@ export const MembershipProduct = {
       throw error.response.data;
     }
   },
-  getByLocationCode: async (locationCode, page, limit) => {
+  getByLocationCode: async (locationCode, type, page, limit) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/product-byLocation/${locationCode}`,
+        `/v01/member/api/product-byLocation/${locationCode}/${type}`,
         {
           params: {
             page,
@@ -132,6 +132,55 @@ export const MembershipProduct = {
           },
         }
       );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+  getVehicleType: async (codeLocation, page, limit) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/product-byLocation/${codeLocation}`,
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getPeriode: async (vehicleType, locationCode, page, limit) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/product-byVehicle/${vehicleType}/${locationCode}`,
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+  getProduct: async (periode, locationCode, type, page, limit) => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/product-periode`, {
+        params: {
+          periode,
+          locationCode,
+          type,
+          page,
+          limit,
+        },
+      });
       return response.data;
     } catch (error) {
       throw error.response.data;

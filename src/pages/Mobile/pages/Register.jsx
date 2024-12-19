@@ -15,7 +15,6 @@ Modal.setAppElement("#root");
 export default function Register() {
   const [captcha, setCaptcha] = useState("");
   const [inputCaptcha, setInputCaptcha] = useState("");
-  const [valid, setValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -131,15 +130,29 @@ export default function Register() {
     switch (field) {
       case "fullname":
         if (!value) error = "Nama Lengkap harus diisi";
+        else if (value.length > 50)
+          error = "Nama Lengkap tidak boleh lebih dari 50 karakter";
+        else if (value.length < 3)
+          error = "Nama Lengkap tidak boleh kurang dari 3 karakter";
         break;
       case "username":
         if (!value) error = "Username harus diisi";
+        else if (value.length > 50)
+          error = "Username tidak boleh lebih dari 50 karakter";
+        else if (value.length < 5)
+          error = "Username tidak boleh kurang dari 5 karakter";
         break;
       case "address":
         if (!value) error = "Alamat harus diisi";
+        else if (value.length < 10)
+          error = "Alamat tidak boleh kurang dari 10 karakter";
         break;
       case "email":
         if (!value) error = "Email harus diisi";
+        else if (value.length > 50)
+          error = "Email tidak boleh lebih dari 50 karakter";
+        else if (value.length < 5)
+          error = "Email tidak boleh kurang dari 5 karakter";
         else if (!/\S+@\S+\.\S+/.test(value))
           error = "Format email tidak valid";
         break;
@@ -151,6 +164,10 @@ export default function Register() {
         break;
       case "password":
         if (!value) error = "Password harus diisi";
+        else if (value.length > 50)
+          error = "Password tidak boleh lebih dari 50 karakter";
+        else if (value.length < 3)
+          error = "Password tidak boleh kurang dari 5 karakter";
         break;
       case "passwordConfirm":
         if (value !== formData.password) error = "Passwords tidak cocok";
@@ -200,21 +217,57 @@ export default function Register() {
           setIsModalOpen(true);
           setLoading(false);
           setMessage(response.message);
+          refreshCaptcha();
         }
       } catch (error) {
         setLoading(false);
         setIsError(true);
         toast.error(error.message);
         setIsError(false);
+        refreshCaptcha();
       }
     }
   };
 
   // Refresh captcha
   const refreshCaptcha = () => {
-    const newCaptcha = Math.random().toString(36).slice(2, 8);
+    // Membuat karakter acak
+    const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+
+    // Gabungkan semua karakter yang ingin dimasukkan dalam captcha
+    const allCharacters = upperCaseLetters + lowerCaseLetters + numbers;
+
+    // Membuat captcha dengan memastikan ada huruf besar, huruf kecil, dan angka
+    const randomCaptcha = () => {
+      const captchaLength = 6; // panjang CAPTCHA yang diinginkan
+      let captcha = "";
+
+      // Memastikan ada karakter dari setiap jenis
+      captcha +=
+        upperCaseLetters[Math.floor(Math.random() * upperCaseLetters.length)];
+      captcha +=
+        lowerCaseLetters[Math.floor(Math.random() * lowerCaseLetters.length)];
+      captcha += numbers[Math.floor(Math.random() * numbers.length)];
+
+      // Menambahkan karakter acak sisanya
+      for (let i = 3; i < captchaLength; i++) {
+        captcha +=
+          allCharacters[Math.floor(Math.random() * allCharacters.length)];
+      }
+
+      // Acak urutan captcha
+      captcha = captcha
+        .split("")
+        .sort(() => 0.5 - Math.random())
+        .join("");
+
+      return captcha;
+    };
+
+    const newCaptcha = randomCaptcha();
     setCaptcha(newCaptcha);
-    setValid(false);
   };
 
   // Check password strength
@@ -517,6 +570,7 @@ export default function Register() {
                       value="Male"
                       onChange={handleChange}
                       className="mr-2"
+                      onBlur={handleBlur}
                     />
                     Male
                   </label>
@@ -527,6 +581,7 @@ export default function Register() {
                       value="Female"
                       onChange={handleChange}
                       className="mr-2"
+                      onBlur={handleBlur}
                     />
                     Female
                   </label>

@@ -10,21 +10,23 @@ import {
 
 export default function Membership() {
   const [location, setLocation] = useState([]);
+  const [vehicleList, setVehicleList] = useState([]);
+  const [periodeList, setPeriodeList] = useState([]);
+  const [ProductList, setProductList] = useState([]);
+  const [vehicleListData, setVehicleListData] = useState([]);
   const [tariff, setTariff] = useState(0);
-  const [dataLocation, setDataLocation] = useState([]);
-  const [productId, setProductId] = useState(0);
+
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedVehicleType, setSelectedVehicleType] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedTypeVehicle, setSelectedTypeVehicle] = useState("");
+  const [selectedPeriode, setSelectedPeriode] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState("");
   const [errors, setErrors] = useState({});
-  const [vehicleList, setVehicleList] = useState([]);
-  const [periodeId, setPeriodId] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const navigate = useNavigate();
 
-  // Fetch Product by Location
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -34,26 +36,12 @@ export default function Membership() {
         console.error("Failed to fetch location data:", error);
       }
     };
-    const fetchProduct = async () => {
+
+    const fetchVehicleType = async () => {
       const locationCode = selectedLocation.Code;
       if (selectedLocation) {
         try {
-          const response = await MembershipProduct.getByLocationCode(
-            locationCode
-          );
-          setDataLocation(response.data);
-        } catch (error) {
-          console.error("Failed to fetch product data:", error);
-        }
-      }
-    };
-
-    const fetchVehicle = async () => {
-      const typeVehicle = selectedVehicleType.Vehicle;
-      if (selectedLocation) {
-        try {
-          const response = await Users.getVehicleByType(typeVehicle);
-          console.log(response.data);
+          const response = await MembershipProduct.getVehicleType(locationCode);
           setVehicleList(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
@@ -61,32 +49,66 @@ export default function Membership() {
       }
     };
 
-    if (selectedVehicleType) {
-      setTariff(selectedVehicleType.Tariff);
-      setStartDate(selectedVehicleType.StartDate);
-      setEndDate(selectedVehicleType.EndDate);
+    const fetchPeriode = async () => {
+      const type = selectedTypeVehicle.Name;
+      const locationCode = selectedLocation.Code;
+      if (selectedTypeVehicle) {
+        try {
+          const response = await MembershipProduct.getPeriode(
+            type,
+            locationCode
+          );
+          setPeriodeList(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    const fetchProduct = async () => {
+      const locationCode = selectedLocation.Code;
+      const type = selectedTypeVehicle.Name;
+      const periode = selectedPeriode.Name;
+      if (selectedPeriode) {
+        try {
+          const response = await MembershipProduct.getProduct(
+            periode,
+            locationCode,
+            type
+          );
+          setProductList(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    const fetchPlateUser = async () => {
+      const type = selectedTypeVehicle.Name;
+      if (selectedTypeVehicle) {
+        try {
+          const response = await Users.getVehicleByType(type);
+          setVehicleListData(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    if (selectedProduct) {
+      setTariff(selectedProduct.Price);
+      setStartDate(selectedProduct.StartDate);
+      setEndDate(selectedProduct.EndDate);
     }
 
-    fetchVehicle();
     fetchLocation();
+    fetchVehicleType();
+    fetchPeriode();
     fetchProduct();
-  }, [selectedLocation, selectedVehicleType]);
+    fetchPlateUser();
+  }, [selectedLocation, selectedTypeVehicle, selectedPeriode, selectedProduct]);
 
-  // Vehicle Types List
-  const vehicleTypes = Array.isArray(dataLocation)
-    ? [
-        ...new Set(
-          dataLocation.map((item) => ({
-            Code: item.id,
-            Name: item.product_name,
-            Vehicle: item.vehicle_type,
-            Tariff: item.price,
-            StartDate: item.start_date,
-            EndDate: item.end_date,
-          }))
-        ),
-      ]
-    : [];
+  // console.log("data", selectedTypeVehicle);
 
   const listLocation = Array.isArray(location)
     ? [
@@ -99,11 +121,47 @@ export default function Membership() {
       ]
     : [];
 
-  const vehicleListData = Array.isArray(vehicleList)
+  const vehicleTypes = Array.isArray(vehicleList)
     ? [
         ...new Set(
           vehicleList.map((item) => ({
+            Code: item.vehicle_type,
+            Name: item.vehicle_type,
+          }))
+        ),
+      ]
+    : [];
+
+  const periodData = Array.isArray(periodeList)
+    ? [
+        ...new Set(
+          periodeList.map((item) => ({
+            Code: item.periode,
+            Name: item.periode,
+          }))
+        ),
+      ]
+    : [];
+
+  const productData = Array.isArray(ProductList)
+    ? [
+        ...new Set(
+          ProductList.map((item) => ({
             Code: item.id,
+            Name: item.product_name,
+            StartDate: item.start_date,
+            EndDate: item.end_date,
+            Price: item.price,
+          }))
+        ),
+      ]
+    : [];
+
+  const plateUsers = Array.isArray(vehicleListData)
+    ? [
+        ...new Set(
+          vehicleListData.map((item) => ({
+            Code: item.plate_number,
             Name: item.plate_number,
           }))
         ),
@@ -113,11 +171,15 @@ export default function Membership() {
   const handleProceed = () => {
     const newErrors = {};
     if (!selectedLocation)
-      newErrors.selectedLocation = "Location must be select";
-    if (!selectedVehicleType)
-      newErrors.selectedVehicleType = "Vehicle type must be select";
+      newErrors.selectedLocation = "Pilih lokasi terlebih dahulu";
+    if (!selectedTypeVehicle)
+      newErrors.selectedTypeVehicle = "Pilih tipe kendaraan terlebih dahulu";
+    if (!selectedPeriode)
+      newErrors.selectedPeriode = "Pilih periode terlebih dahulu";
+    if (!selectedProduct)
+      newErrors.selectedProduct = "Pilih produk terlebih dahulu";
     if (!selectedVehicle)
-      newErrors.selectedVehicle = "Vehicle number must be select";
+      newErrors.selectedVehicle = "Pilih nomor kendaraan terlebih dahulu";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -126,11 +188,11 @@ export default function Membership() {
       const data = {
         type: "Member",
         // periodId: periodeId,
-        productId: selectedVehicleType.Code,
+        productId: selectedProduct.Code,
         location: selectedLocation.Name,
         locationCode: selectedLocation.Code,
         plateNumber: selectedVehicle.Name,
-        vehicleType: selectedVehicleType.Vehicle,
+        vehicleType: selectedTypeVehicle.Name,
         tariff: tariff,
         startDate: startDate,
         endDate: endDate,
@@ -147,7 +209,7 @@ export default function Membership() {
 
   return (
     <>
-      <div className="container overflow-auto  min-h-screen">
+      <div className="h-screen flex flex-col">
         <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
           <FaArrowLeftLong
             className="pl-3 w-10 cursor-pointer"
@@ -156,92 +218,142 @@ export default function Membership() {
           <h1 className="text-lg font-semibold px-3">Pembelian Produk</h1>
         </div>
 
-        <div className="w-full flex flex-col items-start justify-start px-3 py-3 font-medium border-b border-gray-300">
-          <h1 className="text-xl">Paket Membership</h1>
-          <p className="text-sm text-gray-400">
-            Pilih paket yang kamu inginkan.{" "}
-          </p>
-        </div>
-
-        <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Lokasi Member</label>
-          <ListComponent
-            list={listLocation}
-            title={"Pilih lokasi"}
-            search={"Cari lokasi"}
-            selected={selectedLocation}
-            setSelected={setSelectedLocation}
-          />
-          {errors.selectedLocation && (
-            <p className="text-red-500">{errors.selectedLocation}</p>
-          )}
-        </div>
-
-        <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Produk Membership</label>
-          <ListComponent
-            list={vehicleTypes}
-            title={"Pilih product"}
-            search={"Pilih product"}
-            selected={selectedVehicleType}
-            setSelected={setSelectedVehicleType}
-          />
-          {errors.selectedVehicleType && (
-            <p className="text-red-500">{errors.selectedVehicleType}</p>
-          )}
-        </div>
-
-        <div className="px-4 mt-4 text-left">
-          <label
-            htmlFor="price"
-            className="text-gray-600 font-medium mb-2 block"
-          >
-            Harga
-          </label>
-          <div className="relative bg-gray-100 rounded-lg shadow-inner p-3">
-            <div className="absolute inset-y-0 left-4 flex items-center">
-              <span className="text-gray-500 font-medium">IDR</span>
-            </div>
-            <input
-              id="price"
-              name="price"
-              type="text"
-              disabled
-              value={
-                tariff !== 0
-                  ? `${parseInt(tariff).toLocaleString("id-ID")}`
-                  : "0"
-              }
-              className="w-full bg-transparent pl-16 text-gray-800 text-lg font-medium outline-none"
-            />
+        <div className="overflow-y-auto max-h-full px-3 pb-10">
+          <div className="w-full flex flex-col items-start justify-start py-3 font-medium border-b border-gray-300">
+            <h1 className="text-xl">Paket Membership</h1>
+            <p className="text-sm text-gray-400">
+              Pilih paket yang kamu inginkan.
+            </p>
           </div>
-        </div>
 
-        <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-          <label className="text-gray-400">Kendaraan</label>
-          <ListComponent
-            list={vehicleListData}
-            title={"Pilih Kendaraan"}
-            search={"Cari kendaraan"}
-            selected={selectedVehicle}
-            setSelected={setSelectedVehicle}
-          />
-          {errors.selectedVehicle && (
-            <p className="text-red-500">{errors.selectedVehicle}</p>
-          )}
-        </div>
+          {/* Lokasi Member */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Lokasi Member</label>
+            <ListComponent
+              list={listLocation}
+              title={"Pilih lokasi"}
+              search={"Cari lokasi"}
+              selected={selectedLocation}
+              setSelected={setSelectedLocation}
+            />
+            {errors.selectedLocation && (
+              <p className="text-red-500">{errors.selectedLocation}</p>
+            )}
+          </div>
 
-        <div className="px-3 flex flex-col justify-start items-start w-full mt-10">
-          <button
-            className={`flex items-center justify-center w-full bg-blue-500 text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5 ${
-              selectedLocation && selectedVehicleType && selectedVehicle
-                ? ""
-                : "bg-gray-500 cursor-not-allowed"
-            }`}
-            onClick={handleProceed}
-          >
-            <span>Next</span>
-          </button>
+          {/* Type Kendaraan */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Type Kendaraan</label>
+            <ListComponent
+              list={vehicleTypes}
+              title={"Pilih type kendaraan"}
+              search={"Cari type kendaraan"}
+              selected={selectedTypeVehicle}
+              setSelected={setSelectedTypeVehicle}
+            />
+            {errors.selectedTypeVehicle && (
+              <p className="text-red-500">{errors.selectedTypeVehicle}</p>
+            )}
+          </div>
+
+          {/* Periode Membership */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Periode Membership</label>
+            <ListComponent
+              list={periodData}
+              title={"Pilih periode"}
+              search={"Cari periode"}
+              selected={selectedPeriode}
+              setSelected={setSelectedPeriode}
+            />
+            {errors.selectedPeriode && (
+              <p className="text-red-500">{errors.selectedPeriode}</p>
+            )}
+          </div>
+
+          {/* Produk Membership */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Produk Membership</label>
+            <ListComponent
+              list={productData}
+              title={"Pilih product"}
+              search={"Cari product"}
+              selected={selectedProduct}
+              setSelected={setSelectedProduct}
+            />
+            {errors.selectedProduct && (
+              <p className="text-red-500">{errors.selectedProduct}</p>
+            )}
+          </div>
+
+          {/* Harga */}
+          <div className=" mt-4 text-left">
+            <label
+              htmlFor="price"
+              className="text-gray-600 font-medium mb-2 block"
+            >
+              Harga
+            </label>
+            <div className="relative bg-gray-100 rounded-lg shadow-inner p-3">
+              <div className="absolute inset-y-0 left-4 flex items-center">
+                <span className="text-gray-500 font-medium">IDR</span>
+              </div>
+              <input
+                id="price"
+                name="price"
+                type="text"
+                disabled
+                value={
+                  tariff !== 0
+                    ? `${parseInt(tariff).toLocaleString("id-ID")}`
+                    : "0"
+                }
+                className="w-full bg-transparent pl-16 text-gray-800 text-lg font-medium outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Kendaraan */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Kendaraan</label>
+            <ListComponent
+              list={plateUsers}
+              title={"Pilih Kendaraan"}
+              search={"Cari kendaraan"}
+              selected={selectedVehicle}
+              setSelected={setSelectedVehicle}
+            />
+            {errors.selectedVehicle && (
+              <p className="text-red-500">{errors.selectedVehicle}</p>
+            )}
+          </div>
+
+          {/* Tombol Next */}
+          <div className="flex flex-col w-full mt-10">
+            <button
+              className={`w-full text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5  ${
+                selectedLocation &&
+                selectedTypeVehicle &&
+                selectedPeriode &&
+                selectedProduct &&
+                selectedVehicle
+                  ? "bg-blue-500"
+                  : "bg-gray-500"
+              }`}
+              onClick={handleProceed}
+              disabled={
+                !(
+                  selectedLocation &&
+                  selectedTypeVehicle &&
+                  selectedPeriode &&
+                  selectedProduct &&
+                  selectedVehicle
+                )
+              }
+            >
+              <span>Next</span>
+            </button>
+          </div>
         </div>
       </div>
     </>

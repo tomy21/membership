@@ -7,8 +7,10 @@ import Loading from "../components/Loading";
 import { getIdTrx } from "../../../api/apiTrxPayment";
 import { Users } from "../../../api/apiMembershipV2";
 import { format } from "date-fns";
+import { IoShareSocialSharp } from "react-icons/io5";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { CgClose } from "react-icons/cg";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const formatNumber = (number) => {
   return number.toLocaleString("en-US", {
@@ -66,16 +68,23 @@ export default function PaymentProcess() {
   const location = useLocation();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const amount = parseInt(location.state.response.data.transaction_data.price);
-  const totalAmount = amount + location.state.response.data.admin_fee;
+  const amount = parseInt(
+    location.state.response.data.transaction_data?.price ??
+      location.state.response.data.price
+  );
+
+  const adminFee = parseInt(location.state.response.data.admin_fee ?? 0);
+  const totalAmount = amount + adminFee;
   const formatAmount = formatNumber(totalAmount);
   const formattedDate = formatDate(
-    location.state.response.data.transaction_data.expired_date
+    location.state.response.data.transaction_data?.expired_date ??
+      location.state.response.data.expired_date
   );
   const navigate = useNavigate();
   const handleCekStatus = async () => {
     const responseCek = await getIdTrx.getIdStatus(
-      location.state.response.data.transaction_data.trxId
+      location.state.response.data.transaction_data?.trxId ??
+        location.state.response.data.trxId
     );
 
     if (responseCek.statusCode === 200) {
@@ -105,87 +114,228 @@ export default function PaymentProcess() {
     navigate("/dashboard");
   };
 
-  const handleDownloadPDF = async (dataStatus) => {
-    try {
-      setIsGeneratingPDF(true);
+  const handleDownloadPDF = (dataStatus) => {
+    setIsGeneratingPDF(true);
 
-      const element = document.getElementById("pdf-content");
-      if (!element) {
-        console.error("Elemen dengan ID pdf-content tidak ditemukan");
-        return;
+    // Membuat objek jsPDF
+    const pdf = new jsPDF("p", "pt", "letter");
+
+    // Warna dan gaya
+    const headerBgColor = [255, 165, 0]; // Warna oranye untuk header
+    const textColor = [33, 37, 41]; // Warna teks hitam
+    const greyColor = [128, 128, 128]; // Warna abu-abu
+    const successColor = [0, 128, 0]; // Hijau
+    const warningColor = [255, 165, 0]; // Oranye
+    const dangerColor = [255, 0, 0]; // Merah
+
+    pdf.setGState(new pdf.GState({ opacity: 0.5 })); // Transparansi 50%
+    pdf.setFontSize(50);
+    pdf.setTextColor(200, 200, 200); // Warna abu-abu
+    pdf.text("PT SKY PARKING UTAMA", 350, 450, {
+      align: "center",
+      angle: 30, // Rotasi watermark
+    });
+    pdf.setGState(new pdf.GState({ opacity: 1 }));
+
+    // Header
+    pdf.setFillColor(...headerBgColor);
+    pdf.rect(0, 0, 612, 100, "F"); // Header background
+    pdf.setFont("poppins", "bold");
+    pdf.setFontSize(24);
+    pdf.setTextColor(255, 255, 255); // Warna putih untuk teks di header
+    pdf.text("Invoice Pembayaran", 300, 60, { align: "center" });
+
+    // Menambahkan gambar logo
+    const logoUrl = "./assets/logo.png";
+    pdf.addImage(logoUrl, "PNG", 30, 25, 50, 50, "", "FAST");
+
+    // Status
+    const statusText =
+      dataStatus.statusPayment === "PAID"
+        ? "Sudah Dibayarkan"
+        : dataStatus.statusPayment === "PENDING"
+        ? "Belum Dibayarkan"
+        : "Pembayaran Gagal";
+
+    const statusColor =
+      dataStatus.statusPayment === "PAID"
+        ? successColor
+        : dataStatus.statusPayment === "PENDING"
+        ? warningColor
+        : dangerColor;
+
+    pdf.setFontSize(16);
+    pdf.setTextColor(...statusColor);
+    pdf.text(statusText, 300, 130, { align: "center" });
+
+    // Detail konten
+    const content = [
+      { label: "Nomor Invoice", value: dataStatus.invoice_id },
+      { label: "Jumlah", value: `Rp. ${formatAmount.toLocaleString("id-ID")}` },
+      { label: "Produk", value: dataStatus.purchase_type },
+      {
+        label: "Metode Pembayaran",
+        value: dataStatus.transactionType.replace(/_/g, " "),
+      },
+      { label: "Tanggal", value: formatDate(dataStatus.updatedAt) },
+    ];
+
+    let yPosition = 200; // Posisi awal untuk tabel
+
+    // Tabel
+    pdf.setFont("poppins", "normal");
+    pdf.setFontSize(12);
+    content.forEach((item, index) => {
+      pdf.setTextColor(...textColor);
+      pdf.text(item.label, 100, yPosition);
+      pdf.setTextColor(...greyColor);
+      pdf.text(item.value, 300, yPosition);
+      yPosition += 25; // Menambahkan jarak antar baris
+
+      // Garis pemisah di setiap baris
+      if (index < content.length - 1) {
+        pdf.setDrawColor(200, 200, 200); // Warna garis abu-abu
+        pdf.line(80, yPosition, 520, yPosition); // Garis horizontal
+        yPosition += 25;
       }
+    });
 
-      // Render ke canvas
-      const canvas = await html2canvas(element, {
-        scale: 0.5,
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-      });
+    // Footer
+    yPosition += 40; // Tambahkan jarak sebelum footer
+    pdf.setFontSize(10);
+    pdf.setTextColor(...greyColor);
+    pdf.text(
+      "Terima kasih telah melakukan transaksi bersama kami!",
+      300,
+      yPosition,
+      { align: "center" }
+    );
 
-      // Debugging: Log ukuran canvas
-      console.log("Canvas Width:", canvas.width);
-      console.log("Canvas Height:", canvas.height);
+    // Branding footer
+    yPosition += 20;
+    pdf.setTextColor(...textColor);
+    pdf.text("PT. SKY PARKING UTAMA", 300, yPosition, {
+      align: "center",
+    });
 
-      // Konversi canvas ke PNG
-      const imgData = canvas.toDataURL("image/png", 1.0);
-      console.log("Gambar PNG Data URL:", imgData);
+    // Simpan PDF
+    pdf.save(`invoice_${dataStatus.invoice_id}.pdf`);
 
-      // Validasi Data URL PNG
-      if (!imgData.startsWith("data:image/png;base64,")) {
-        throw new Error("Data URL PNG rusak atau tidak valid");
-      }
-
-      // Membuat PDF
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // Tambahkan gambar ke PDF
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`invoice_${dataStatus.invoice_id}.pdf`);
-    } catch (error) {
-      console.error("Error saat generate PDF:", error);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
+    setIsGeneratingPDF(false);
   };
 
-  const handleSharePDF = async (dataStatus) => {
+  const handleSharePDF = (dataStatus) => {
     setIsGeneratingPDF(true);
-    const element = document.getElementById("pdf-content");
 
-    // Ambil snapshot elemen HTML
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL("image/png");
+    // Membuat objek jsPDF
+    const pdf = new jsPDF("p", "pt", "letter");
 
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    // Warna dan gaya
+    const headerBgColor = [255, 165, 0];
+    const textColor = [33, 37, 41];
+    const greyColor = [128, 128, 128];
+    const successColor = [0, 128, 0];
+    const warningColor = [255, 165, 0];
+    const dangerColor = [255, 0, 0];
 
-    // Tambahkan gambar ke PDF
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.setGState(new pdf.GState({ opacity: 0.5 })); // Transparansi 50%
+    pdf.setFontSize(50);
+    pdf.setTextColor(200, 200, 200); // Warna abu-abu
+    pdf.text("PT SKY PARKING UTAMA", 350, 450, {
+      align: "center",
+      angle: 30, // Rotasi watermark
+    });
+    pdf.setGState(new pdf.GState({ opacity: 1 }));
 
-    // Konversi PDF ke Blob
+    // Header
+    pdf.setFillColor(...headerBgColor);
+    pdf.rect(0, 0, 612, 100, "F");
+    pdf.setFont("poppins", "bold");
+    pdf.setFontSize(24);
+    pdf.setTextColor(255, 255, 255);
+    pdf.text("Invoice Pembayaran", 300, 60, { align: "center" });
+
+    const logoUrl = "./assets/logo.png";
+    pdf.addImage(logoUrl, "PNG", 30, 25, 50, 50, "", "FAST");
+
+    // Status
+    const statusText =
+      dataStatus.statusPayment === "PAID"
+        ? "Sudah Dibayarkan"
+        : dataStatus.statusPayment === "PENDING"
+        ? "Belum Dibayarkan"
+        : "Pembayaran Gagal";
+    const statusColor =
+      dataStatus.statusPayment === "PAID"
+        ? successColor
+        : dataStatus.statusPayment === "PENDING"
+        ? warningColor
+        : dangerColor;
+
+    pdf.setFontSize(16);
+    pdf.setTextColor(...statusColor);
+    pdf.text(statusText, 300, 130, { align: "center" });
+
+    // Detail konten
+    const content = [
+      { label: "Nomor Invoice", value: dataStatus.invoice_id },
+      { label: "Jumlah", value: `Rp. ${formatAmount.toLocaleString("id-ID")}` },
+      { label: "Produk", value: dataStatus.purchase_type },
+      {
+        label: "Metode Pembayaran",
+        value: dataStatus.transactionType.replace(/_/g, " "),
+      },
+      { label: "Tanggal", value: formatDate(dataStatus.updatedAt) },
+    ];
+
+    let yPosition = 200;
+    pdf.setFont("poppins", "normal");
+    pdf.setFontSize(12);
+    content.forEach((item) => {
+      pdf.setTextColor(...textColor);
+      pdf.text(item.label, 100, yPosition);
+      pdf.setTextColor(...greyColor);
+      pdf.text(item.value, 300, yPosition);
+      yPosition += 25;
+    });
+
+    yPosition += 40;
+    pdf.setFontSize(10);
+    pdf.setTextColor(...greyColor);
+    pdf.text(
+      "Terima kasih telah melakukan transaksi bersama kami!",
+      300,
+      yPosition,
+      { align: "center" }
+    );
+    yPosition += 20;
+    pdf.setTextColor(...textColor);
+    pdf.text("PT. SKY PARKING UTAMA", 300, yPosition, { align: "center" });
+
+    // Konversi PDF ke blob
     const pdfBlob = pdf.output("blob");
 
-    // Bagikan file PDF menggunakan Web Share API
-    if (navigator.share) {
-      const file = new File([pdfBlob], `invoice_${dataStatus.invoice_id}.pdf`, {
-        type: "application/pdf",
-      });
-
-      navigator
-        .share({
+    // Membagikan PDF
+    try {
+      if (navigator.share) {
+        const file = new File(
+          [pdfBlob],
+          `invoice_${dataStatus.invoice_id}.pdf`,
+          { type: "application/pdf" }
+        );
+        navigator.share({
+          title: "Invoice Pembayaran",
+          text: "Berikut adalah invoice pembayaran Anda.",
           files: [file],
-          title: "Invoice PDF",
-          text: "Detail pembayaran dalam format PDF",
-        })
-        .then(() => console.log("File shared successfully"))
-        .catch((error) => console.error("Error sharing file:", error));
-    } else {
-      alert("Fitur berbagi tidak didukung di perangkat ini.");
+        });
+      } else {
+        alert("Fitur berbagi tidak didukung di perangkat ini.");
+      }
+    } catch (error) {
+      console.error("Gagal membagikan dokumen:", error);
     }
+
+    setIsGeneratingPDF(false);
   };
 
   if (loading) {
@@ -210,12 +360,15 @@ export default function PaymentProcess() {
           </h2>
           <div className="flex justify-between items-center mt-2">
             <span className="text-lg font-semibold text-gray-800">
-              {location.state.response.data.transaction_data.virtual_account}
+              {location.state.response.data.transaction_data?.virtual_account ??
+                location.state.response.data.virtual_account}
             </span>
             <button
               onClick={() =>
                 copyToClipboard(
-                  location.state.response.data.transaction_data.virtual_account
+                  location.state.response.data.transaction_data
+                    ?.virtual_account ??
+                    location.state.response.data.virtual_account
                 )
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
@@ -237,7 +390,8 @@ export default function PaymentProcess() {
             <button
               onClick={() =>
                 copyToClipboard(
-                  location.state.response.data.transaction_data.price
+                  location.state.response.data.transaction_data?.price ??
+                    location.state.response.data.price
                 )
               }
               className="text-sm text-blue-600 border border-blue-600 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
@@ -270,6 +424,12 @@ export default function PaymentProcess() {
       {isModalOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex items-center justify-center z-50 animate-fade-in">
           <div className="relative bg-white p-6 rounded-2xl shadow-2xl flex flex-col justify-center items-center w-[90%] max-w-md">
+            <h1
+              className="absolute top-4 right-4 text-2xl cursor-pointer"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <CgClose />
+            </h1>
             {/* Icon Status */}
             {dataStatus.statusPayment === "PAID" ? (
               <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center shadow-md mb-4">
@@ -341,101 +501,33 @@ export default function PaymentProcess() {
               </div>
             </div>
 
+            <div className="border-b border-slate-300 w-full my-7"></div>
+
             {/* Action Buttons */}
-            <div className="flex justify-between w-full mt-6 space-x-3">
-              {/* Button Share */}
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-                onClick={() => handleSharePDF(dataStatus)}
-              >
-                Share
-              </button>
+            {dataStatus.statusPayment === "PAID" && (
+              <div className="flex justify-end items-center w-full space-x-5 ">
+                <IoShareSocialSharp
+                  size={25}
+                  onClick={() => handleSharePDF(dataStatus)}
+                  className="cursor-pointer text-slate-400 text-lg"
+                />
 
-              {/* Button Download */}
-              <button
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
-                onClick={() => handleDownloadPDF(dataStatus)}
-              >
-                Download
-              </button>
+                <div className="border-l border-slate-300 h-8"></div>
 
-              {/* Button OK */}
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                onClick={() => setIsModalOpen(false)}
-              >
-                OK
-              </button>
-            </div>
-
-            <div id="pdf-content" className="hidden">
-              <h1>Hello World!</h1>
-              <p>This is a test content.</p>
-            </div>
-
-            <div
-              // id="pdf-content"
-              style={{
-                display: isGeneratingPDF ? "none" : "none", // Hanya tampil saat PDF dibuat
-              }}
-              className="bg-gradient-to-r from-blue-50 via-white to-blue-50 p-8 rounded-2xl shadow-lg max-w-lg mx-auto"
-            >
-              <div className="text-center mb-6">
-                <h1
-                  className={`text-2xl font-bold ${
-                    dataStatus.statusPayment === "PAID"
-                      ? "text-green-600"
-                      : dataStatus.statusPayment === "PENDING"
-                      ? "text-yellow-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {dataStatus.statusPayment === "PAID"
-                    ? "Pembayaran Berhasil"
-                    : dataStatus.statusPayment === "PENDING"
-                    ? "Pembayaran Tertunda"
-                    : "Pembayaran Gagal"}
-                </h1>
-                <p className="text-gray-500 mt-2">
-                  {dataStatus.statusPayment === "PAID"
-                    ? `Berhasil membayar sebesar`
-                    : "Silakan lakukan pembayaran."}
-                  <strong className="block text-xl text-gray-800 mt-1">
-                    Rp. {formatAmount.toLocaleString("id-ID")}
-                  </strong>
-                </p>
+                <MdOutlineFileDownload
+                  size={25}
+                  onClick={() => handleDownloadPDF(dataStatus)}
+                  className="cursor-pointer text-slate-400 text-lg"
+                />
               </div>
-              <div className="border-t border-gray-300 my-4"></div>
-              <div className="text-sm text-gray-700 space-y-4">
-                <div className="flex justify-between">
-                  <span className="font-medium">No Invoice:</span>
-                  <span>{dataStatus.invoice_id}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Produk:</span>
-                  <span>{dataStatus.purchase_type}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Metode:</span>
-                  <span>{dataStatus.transactionType}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Tanggal:</span>
-                  <span>{dataStatus.updatedAt}</span>
-                </div>
-              </div>
-              <div className="text-center mt-6">
-                <p className="text-sm text-gray-500 italic">
-                  Terima kasih telah melakukan transaksi bersama kami!
-                </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  {dataStatus.statusPayment === "PAID"
-                    ? "Simpan bukti pembayaran ini sebagai referensi."
-                    : "Segera lakukan pembayaran sebelum batas waktu."}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
+        </div>
+      )}
+
+      {isGeneratingPDF && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex items-center justify-center z-50 animate-fade-in">
+          Loading .....
         </div>
       )}
     </div>

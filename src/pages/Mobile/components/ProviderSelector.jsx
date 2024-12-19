@@ -7,6 +7,8 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
+  console.log("selectedProvider", selectedProvider);
+
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>
@@ -14,11 +16,15 @@ const ProviderSelector = ({
           <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 flex flex-row justify-start items-center gap-x-3">
             {selectedProvider ? (
               <>
-                {/* <img
-                  src={`/assets/payment/${selectedProvider?.LogoUrl}`}
+                <img
+                  src={`${
+                    selectedProvider.code_bank === "BCA"
+                      ? "/assets/payment/bca_logo.png"
+                      : "/assets/payment/nobu_logo.png"
+                  }`}
                   className="w-7"
                   alt={selectedProvider?.code_bank}
-                /> */}
+                />
                 <span className="block truncate">
                   {selectedProvider?.code_bank}
                 </span>
@@ -46,11 +52,15 @@ const ProviderSelector = ({
               >
                 {({ selected, active }) => (
                   <>
-                    {/* <img
-                      src={`/assets/payment/${provider.LogoUrl}`}
-                      className="w-10"
-                      alt=""
-                    /> */}
+                    <img
+                      src={`${
+                        provider.code_bank === "BCA"
+                          ? "/assets/payment/bca_logo.png"
+                          : "/assets/payment/nobu_logo.png"
+                      }`}
+                      className="w-7"
+                      alt={provider?.code_bank}
+                    />
                     <span
                       className={`block truncate ${
                         selected ? "font-semibold" : "font-normal"
