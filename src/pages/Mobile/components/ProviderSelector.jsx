@@ -66,7 +66,9 @@ const ProviderSelector = ({
                         selected ? "font-semibold" : "font-normal"
                       }`}
                     >
-                      {provider.code_bank}
+                      {provider.code_bank === "NATIONALNOBU"
+                        ? "Nobu"
+                        : provider.code_bank}
                     </span>
                     {selected ? (
                       <span
