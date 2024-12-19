@@ -351,7 +351,7 @@ export default function Membership() {
                 )
               }
             >
-              <span>Next</span>
+              <span>Lanjutkan</span>
             </button>
           </div>
         </div>
