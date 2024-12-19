@@ -207,6 +207,59 @@ export default function Membership() {
     navigate(-1);
   };
 
+  useEffect(() => {
+    // Reset semua field di bawah lokasi
+    if (selectedLocation) {
+      setSelectedTypeVehicle("");
+      setSelectedPeriode("");
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setVehicleList([]);
+      setPeriodeList([]);
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    // Reset semua field di bawah tipe kendaraan
+    if (selectedTypeVehicle) {
+      setSelectedPeriode("");
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setPeriodeList([]);
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedTypeVehicle]);
+
+  useEffect(() => {
+    // Reset semua field di bawah periode
+    if (selectedPeriode) {
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedPeriode]);
+
+  useEffect(() => {
+    // Reset kendaraan
+    if (selectedProduct) {
+      setSelectedVehicle("");
+      setVehicleListData([]);
+    }
+  }, [selectedProduct]);
+
   return (
     <>
       <div className="h-screen flex flex-col">
@@ -230,6 +283,8 @@ export default function Membership() {
           <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Lokasi Member</label>
             <ListComponent
+              id={"lokasi-select"}
+              name={"lokasi"}
               list={listLocation}
               title={"Pilih lokasi"}
               search={"Cari lokasi"}
@@ -245,6 +300,8 @@ export default function Membership() {
           <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Type Kendaraan</label>
             <ListComponent
+              id={"vehicle-select"}
+              name={"vehicleTypes"}
               list={vehicleTypes}
               title={"Pilih type kendaraan"}
               search={"Cari type kendaraan"}
@@ -260,6 +317,8 @@ export default function Membership() {
           <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Periode Membership</label>
             <ListComponent
+              id="periode-select"
+              name={"periode"}
               list={periodData}
               title={"Pilih periode"}
               search={"Cari periode"}
@@ -275,6 +334,8 @@ export default function Membership() {
           <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Produk Membership</label>
             <ListComponent
+              id="product-select"
+              name="product"
               list={productData}
               title={"Pilih product"}
               search={"Cari product"}
@@ -317,6 +378,8 @@ export default function Membership() {
           <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Kendaraan</label>
             <ListComponent
+              id="vehicle-select"
+              name="plateUsers"
               list={plateUsers}
               title={"Pilih Kendaraan"}
               search={"Cari kendaraan"}
@@ -329,7 +392,7 @@ export default function Membership() {
           </div>
 
           {/* Tombol Next */}
-          <div className="flex flex-col w-full mt-10">
+          <div className="flex flex-col w-full mt-5 mb-10">
             <button
               className={`w-full text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5  ${
                 selectedLocation &&

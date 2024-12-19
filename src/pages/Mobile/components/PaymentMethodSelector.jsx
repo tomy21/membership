@@ -11,15 +11,11 @@ const PaymentMethodSelector = ({
 
   useEffect(() => {
     if (typePayment === "topup") {
-      const data = [
-        { label: "Virtual Account", value: "VIRTUAL_ACCOUNT" },
-        { label: "E-Wallet", value: "E_WALLET" },
-      ];
+      const data = [{ label: "Virtual Account", value: "VIRTUAL_ACCOUNT" }];
       setPaymentChannel(data);
     } else {
       const data = [
         { label: "Virtual Account", value: "VIRTUAL_ACCOUNT" },
-        { label: "E-Wallet", value: "E_WALLET" },
         { label: "Point", value: "POINT" },
       ];
       setPaymentChannel(data);

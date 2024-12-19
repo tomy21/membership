@@ -102,6 +102,13 @@ function PaymentMember() {
 
   const currentPeriod = getMonthlyPeriod();
 
+  useEffect(() => {
+    // Reset semua field di bawah lokasi
+    if (selectedType) {
+      setSelectedProvider("");
+    }
+  }, [selectedType]);
+
   return (
     <div>
       <ErrorModal
@@ -134,7 +141,7 @@ function PaymentMember() {
                 {location.state ? location.state.plateNumber : "-"}
               </p>
               <p className="text-gray-400">{location.state.vehicleType}</p>
-              <div className="flex flex-row justify-start items-center space-x-5 mt-2">
+              <div className="flex flex-row justify-start items-center space-x-5 my-2">
                 <FaLocationDot size={20} className="text-blue-600" />
                 <p className="text-gray-400">
                   {location.state ? location.state.location : "-"}

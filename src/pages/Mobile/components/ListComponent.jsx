@@ -7,7 +7,15 @@ import {
 } from "@headlessui/react";
 import { HiChevronUpDown } from "react-icons/hi2";
 
-function ListComponent({ list, title, search, selected, setSelected }) {
+function ListComponent({
+  id,
+  name,
+  list,
+  title,
+  search,
+  selected,
+  setSelected,
+}) {
   const [query, setQuery] = useState("");
 
   const filteredPeople = list.filter((person) =>
@@ -40,6 +48,8 @@ function ListComponent({ list, title, search, selected, setSelected }) {
             <div className="px-3 py-2">
               <input
                 type="text"
+                id={id}
+                name={name}
                 placeholder={search}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={query}
@@ -52,6 +62,7 @@ function ListComponent({ list, title, search, selected, setSelected }) {
                   <ListboxOption
                     key={index}
                     value={person}
+                    name={name}
                     className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white max-h-52 overflow-y-auto"
                   >
                     <div className="flex items-center">

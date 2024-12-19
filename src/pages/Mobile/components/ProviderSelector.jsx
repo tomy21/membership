@@ -18,8 +18,10 @@ const ProviderSelector = ({
               <>
                 <img
                   src={`${
-                    selectedProvider.code_bank === "BCA"
+                    selectedProvider.code_bank === "NATIONALNOBU"
                       ? "/assets/payment/bca_logo.png"
+                      : selectedProvider.code_bank === "SKYPOINTS"
+                      ? "/assets/payment/logo.svg"
                       : "/assets/payment/nobu_logo.png"
                   }`}
                   className="w-7"
@@ -54,8 +56,10 @@ const ProviderSelector = ({
                   <>
                     <img
                       src={`${
-                        provider.code_bank === "BCA"
+                        provider.code_bank === "NATIONALNOBU"
                           ? "/assets/payment/bca_logo.png"
+                          : provider.code_bank === "SKYPOINTS"
+                          ? "/assets/payment/logo.svg"
                           : "/assets/payment/nobu_logo.png"
                       }`}
                       className="w-7"
@@ -68,6 +72,8 @@ const ProviderSelector = ({
                     >
                       {provider.code_bank === "NATIONALNOBU"
                         ? "Nobu"
+                        : provider.code_bank === "SKYPOINTS"
+                        ? "SKY POINTS"
                         : provider.code_bank}
                     </span>
                     {selected ? (
