@@ -5,17 +5,11 @@ import { Link, useNavigate } from "react-router-dom";
 import NavbarMobile from "../components/NavbarMobile";
 import SliderComponent from "../components/Slider";
 import QRCode from "qrcode.react";
-import { apiUsers, historyMembers } from "../../../api/apiUsers";
 import Skeleton from "react-loading-skeleton";
-import {
-  getMemberByUserId,
-  History,
-  HistoryPost,
-} from "../../../api/apiProduct";
 import { isMobile } from "react-device-detect";
 import HistoryPayment from "../components/HistoryPayment";
 import HistoryPostComponent from "../components/HistoryPost";
-import { historyParking, Users } from "../../../api/apiMembershipV2";
+import { historyParking, Payment, Users } from "../../../api/apiMembershipV2";
 
 const items = [
   {
@@ -83,7 +77,7 @@ export default function Dashboard() {
     const fetchDataHistoryPayment = async () => {
       setIsLoading(true);
       try {
-        const response = await History.getAll();
+        const response = await Payment.getAllTransaction();
         setListRiwayat(response.data);
       } catch (error) {
         console.error(error);

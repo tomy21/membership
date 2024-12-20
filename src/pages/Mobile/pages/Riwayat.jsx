@@ -69,35 +69,63 @@ function Riwayat() {
   };
 
   const handleExport = () => {
-    // Data yang akan diekspor ke Excel
-    const excelData = data.map((row) => ({
-      Id: row.Id,
-      Activity: row.Activity,
-      Price: row.Price,
-      Status: row.Status,
-      CreatedAt: row.CreatedAt,
-    }));
+    try {
+      let data = [];
 
-    // Membuat worksheet
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
+      // Tentukan data berdasarkan tab aktif
+      if (activeTab === "tab1") {
+        data = listRiwayat;
+      } else if (activeTab === "tab2") {
+        data = historyPost;
+      }
 
-    // Membuat workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+      // Validasi jika data kosong
+      if (!data || data.length === 0) {
+        alert("Tidak ada data untuk diekspor.");
+        return;
+      }
 
-    // Konversi ke binary dan simpan
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+      // Map data untuk diubah menjadi format yang sesuai untuk Excel
+      const excelData = data.map((row, index) => ({
+        Id: index + 1,
+        Invoice: row.invoice_id || "-",
+        Virtual_Account: parseInt(row.virtual_account).toFixed() || "-",
+        Product: row.product_name || "-",
+        Price: row.price || 0,
+        Status: row.statusPayment || "-",
+        CreatedAt: row.createAt
+          ? format(new Date(row.createAt), "dd MMM yyyy HH:mm:ss")
+          : "-",
+      }));
 
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `${tabs[currentTab].replace(" ", "_")}.xlsx`);
+      // Membuat worksheet dari data
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Membuat workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+      // Konversi workbook ke buffer binary
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      // Membuat blob untuk file Excel
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      // Simpan file menggunakan nama file dinamis berdasarkan tab aktif
+      const fileName = `${
+        tabs[currentTab]?.replace(" ", "_") || "Exported_Data"
+      }.xlsx`;
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Gagal mengekspor data:", error);
+      alert("Terjadi kesalahan saat mengekspor data. Silakan coba lagi.");
+    }
   };
-
-  const filteredData = data.filter((item) =>
-    item.Activity.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const loadMore = () => {
     if (currentPage < totalPages) {

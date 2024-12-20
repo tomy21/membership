@@ -247,14 +247,16 @@ export const Payment = {
 
   getAllTransaction: async (page, limit, search) => {
     try {
-      const response = await apiClient.get(`/v01/member/api/history/payments`, {
-        params: {
-          page,
-          limit,
-          search,
-        },
-      });
-      console.log(response.data);
+      const response = await apiClient.get(
+        `/v01/member/api/history/payments-byuser`,
+        {
+          params: {
+            page,
+            limit,
+            search,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.log(error);

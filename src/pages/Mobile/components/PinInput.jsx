@@ -48,8 +48,6 @@ function PinInput() {
             dataFormTopUp
           );
 
-          console.log(responseBayarind);
-
           if (responseBayarind.status === 200) {
             const data = {
               bankProvider: location.state,

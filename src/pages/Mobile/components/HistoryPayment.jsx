@@ -1,7 +1,9 @@
 import React from "react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 export default function HistoryPayment({ listRiwayat }) {
+  const navigate = useNavigate();
   const formatCurrency = (amount) => {
     return amount.toLocaleString("id-ID", {
       style: "currency",
@@ -10,12 +12,27 @@ export default function HistoryPayment({ listRiwayat }) {
     });
   };
 
+  const handleDetail = (dataList) => {
+    const data = {
+      response: {
+        data: {
+          price: dataList.price,
+          expired_date: dataList.expired_date,
+          trxId: dataList.trxId,
+          virtual_account: dataList.virtual_account,
+        },
+      },
+    };
+    navigate("/payment_process", { state: data });
+  };
+
   return (
     <>
       {listRiwayat.map((items, index) => (
         <div
           key={index}
-          className="bg-white shadow-md w-full rounded-lg border border-slate-300 text-xs relative max-h-60"
+          className="bg-white shadow-md w-full rounded-lg border border-slate-300 text-xs relative max-h-60 hover:bg-slate-100"
+          onClick={() => handleDetail(items)}
         >
           <div className="absolute bg-white rounded-full h-6 w-6 -left-4 top-7 border-r border-slate-300"></div>
           <div className="absolute bg-white rounded-full h-6 w-6 -right-4 top-7 border-l border-slate-300"></div>

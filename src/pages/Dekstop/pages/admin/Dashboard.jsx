@@ -3,7 +3,7 @@ import NavbarClient from "../../components/NavbarClient";
 import { MdOutlineTrendingDown, MdOutlineTrendingUp } from "react-icons/md";
 import DashboardChart from "../../components/DashboardChart";
 import Information from "../../components/Information";
-import HeaderTitle from "../../components/HeaderTitle";
+import HeaderTitle from "./components/HeaderTitle";
 
 function Dashboard() {
   return (

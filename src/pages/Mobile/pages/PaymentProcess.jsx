@@ -376,9 +376,11 @@ export default function PaymentProcess() {
               Salin
             </button>
           </div>
-          <p className="text-sm text-gray-600 mt-1">
-            Bank {location.state.bankProvider.code_bank} a/n {name}
-          </p>
+          {location.state.bankProvider && (
+            <p className="text-sm text-gray-600 mt-1">
+              Bank {location.state.bankProvider.code_bank ?? "-"} a/n {name}
+            </p>
+          )}
         </div>
 
         <div>

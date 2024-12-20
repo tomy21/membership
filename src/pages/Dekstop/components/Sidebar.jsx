@@ -86,7 +86,7 @@ const Sidebar = () => {
           <div key={index}>
             <Link
               to={menu.link}
-              className={`flex text-base items-center py-2 px-4 rounded-md 
+              className={`flex text-base items-center py-2 px-4 rounded-md gap-y-3
                 ${
                   location.pathname === menu.link
                     ? "text-slate-100 bg-yellow-500"
