@@ -39,7 +39,7 @@ const ProviderSelector = ({
               />
             </span>
           </Listbox.Button>
-          <Listbox.Options className="absolute z-20 mt-12 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {filteredProviders.map((provider) => (
               <Listbox.Option
                 key={provider.id}
