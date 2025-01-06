@@ -15,6 +15,7 @@ function ListComponent({
   search,
   selected,
   setSelected,
+  bottom,
 }) {
   const [query, setQuery] = useState("");
 
@@ -43,7 +44,9 @@ function ListComponent({
 
           <ListboxOptions
             transition
-            className="absolute z-10 mt-14 max-h-56 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            className={`absolute z-10 mt-2 max-h-56 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm ${
+              bottom === true ? "-top-40" : "top-12"
+            } `}
           >
             <div className="px-3 py-2">
               <input
@@ -56,7 +59,9 @@ function ListComponent({
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            <div className="max-h-40 overflow-auto">
+            <div
+              className={`${bottom ? "max-h-20" : "max-h-40"} overflow-auto`}
+            >
               {filteredPeople.length > 0 ? (
                 filteredPeople.map((person, index) => (
                   <ListboxOption

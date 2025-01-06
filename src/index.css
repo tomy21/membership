@@ -83,4 +83,11 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-
+.bottom-full {
+  /* top: auto; */
+  bottom: 20%;
+}
+.top-full {
+  /* bottom: auto; */
+  top: 100%;
+}

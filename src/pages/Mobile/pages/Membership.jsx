@@ -290,6 +290,7 @@ export default function Membership() {
               search={"Cari lokasi"}
               selected={selectedLocation}
               setSelected={setSelectedLocation}
+              bottom={false}
             />
             {errors.selectedLocation && (
               <p className="text-red-500">{errors.selectedLocation}</p>
@@ -307,6 +308,7 @@ export default function Membership() {
               search={"Cari type kendaraan"}
               selected={selectedTypeVehicle}
               setSelected={setSelectedTypeVehicle}
+              bottom={false}
             />
             {errors.selectedTypeVehicle && (
               <p className="text-red-500">{errors.selectedTypeVehicle}</p>
@@ -324,6 +326,7 @@ export default function Membership() {
               search={"Cari periode"}
               selected={selectedPeriode}
               setSelected={setSelectedPeriode}
+              bottom={false}
             />
             {errors.selectedPeriode && (
               <p className="text-red-500">{errors.selectedPeriode}</p>
@@ -341,6 +344,7 @@ export default function Membership() {
               search={"Cari product"}
               selected={selectedProduct}
               setSelected={setSelectedProduct}
+              bottom={false}
             />
             {errors.selectedProduct && (
               <p className="text-red-500">{errors.selectedProduct}</p>
@@ -385,6 +389,7 @@ export default function Membership() {
               search={"Cari kendaraan"}
               selected={selectedVehicle}
               setSelected={setSelectedVehicle}
+              bottom={true}
             />
             {errors.selectedVehicle && (
               <p className="text-red-500">{errors.selectedVehicle}</p>
