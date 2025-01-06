@@ -25,12 +25,12 @@ export default function Sidebar() {
         {
           name: "Transaction",
           icon: <GoDot className="mr-2" />,
-          link: "/dashboard/transaction",
+          link: "/dashboard/history-transaction",
         },
         {
           name: "Payment",
           icon: <GoDot className="mr-2" />,
-          link: "/dashboard/transaction",
+          link: "/dashboard/history-payment",
         },
       ],
     },
@@ -62,6 +62,11 @@ export default function Sidebar() {
           name: "Roles",
           icon: <GoDot className="mr-2" />,
           link: "/dashboard/roles",
+        },
+        {
+          name: "Menu",
+          icon: <GoDot className="mr-2" />,
+          link: "/dashboard/menu",
         },
       ],
     },

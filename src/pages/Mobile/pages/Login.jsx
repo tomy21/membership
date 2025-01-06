@@ -105,7 +105,6 @@ export default function Login() {
       const response = await Users.login(formData.username, formData.password);
       localStorage.setItem("userToken", response.token);
       localStorage.setItem("userData", JSON.stringify(response.user));
-      console.log(response);
 
       if (response.status === "success") {
         setFormErrors({});

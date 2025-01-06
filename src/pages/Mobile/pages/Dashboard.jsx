@@ -77,7 +77,7 @@ export default function Dashboard() {
     const fetchDataHistoryPayment = async () => {
       setIsLoading(true);
       try {
-        const response = await Payment.getAllTransaction();
+        const response = await Payment.getAllTransactionByUser();
         setListRiwayat(response.data);
       } catch (error) {
         console.error(error);
@@ -298,7 +298,8 @@ export default function Dashboard() {
             <div className="border-b border-slate-400 w-full h-1 mb-8"></div>
 
             <div className="flex flex-col justify-center items-center w-full space-y-10">
-              <QRCode value={selectedProduct.CardId} size={150} />
+              <QRCode value={selectedProduct.rfid} size={150} />
+              {console.log(selectedProduct)}
               <div className="flex flex-col justify-center items-center space-y-2 w-full">
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded w-full"
@@ -308,7 +309,7 @@ export default function Dashboard() {
                 </button>
                 <button
                   className="bg-sky-500 text-white px-4 py-2 rounded w-full"
-                  onClick={() => handleDetailLocation(selectedProduct.Id)}
+                  onClick={() => handleDetailLocation(selectedProduct.id)}
                 >
                   Detail Lokasi
                 </button>

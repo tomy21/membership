@@ -56,7 +56,6 @@ function PinInput() {
 
             navigate("/payment_process", { state: data });
           } else {
-            console.log(responseBayarind.data.message);
             setErrorMessage(responseBayarind.data.message);
             setPin(Array(6).fill(""));
             setErrorShowModal(true);
@@ -98,7 +97,6 @@ function PinInput() {
             dataFormTopUp
           );
 
-          console.log(responseBayarind);
           if (responseBayarind.status === true) {
             const data = {
               bankProvider: location.state,

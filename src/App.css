@@ -37,3 +37,7 @@
     transform: rotate(360deg);
   }
 }
+
+.clip-path-tab {
+  clip-path: polygon(0% 100%, 10% 0%, 90% 0%, 100% 100%);
+}

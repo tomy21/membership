@@ -26,6 +26,21 @@ export const Users = {
     }
   },
 
+  getAllUser: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/auth/user`, {
+        params: {
+          page,
+          limit,
+          search,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   requestTokenAktivasion: async (email, referralUrl) => {
     try {
       const response = await apiClient.post(
@@ -46,6 +61,15 @@ export const Users = {
   getByUserId: async () => {
     try {
       const response = await apiClient.get(`/v01/member/api/auth/userById`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getByUserIdCMS: async () => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/auth/cms-userById`);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -245,10 +269,10 @@ export const Payment = {
     }
   },
 
-  getAllTransaction: async (page, limit, search) => {
+  getAllTransactionByUser: async (page, limit, search) => {
     try {
       const response = await apiClient.get(
-        `/v01/member/api/history/payments-byuser`,
+        `/v01/member/api/history/transaction-byuser`,
         {
           params: {
             page,
@@ -257,6 +281,41 @@ export const Payment = {
           },
         }
       );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getAllTransaction: async (page, limit, status, search) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/history/transaction`,
+        {
+          params: {
+            page,
+            limit,
+            status,
+            search,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  getAllPayment: async (page, limit, status, search) => {
+    try {
+      const response = await apiClient.get(`/v01/member/api/history/payments`, {
+        params: {
+          page,
+          limit,
+          status,
+          search,
+        },
+      });
       return response.data;
     } catch (error) {
       console.log(error);
@@ -290,6 +349,104 @@ export const historyParking = {
       const response = await apiClient.get(`/v01/member/api/history-post`, {
         params: { page, limit, search },
       });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const userCMS = {
+  login: async (identifier, password) => {
+    try {
+      const response = await apiClient.post("/v01/cms/api/auth/login-cms", {
+        identifier,
+        password,
+      });
+
+      return response.data;
+    } catch (error) {
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
+    }
+  },
+
+  getByIdUsers: async () => {
+    try {
+      const response = await apiClient.get(`/v01/cms/api/auth/cms-userById`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getAllusers: async (page, limit, search) => {
+    try {
+      const response = await apiClient.get(`/v01/cms/api/auth/all-data-users`, {
+        params: { page, limit, search },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  addNewUsers: async (formData) => {
+    try {
+      const response = await apiClient.post(
+        `/v01/cms/api/auth/register-cms`,
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  deleteUsers: async (id) => {
+    try {
+      const response = await apiClient.delete(
+        `/v01/cms/api/auth/delete-user/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getRolesAll: async () => {
+    try {
+      const response = await apiClient.get(`/v01/cms/api/auth/getAll-role`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getPermissionsById: async (id) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/cms/api/auth/menu-role-permission/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  getMenu: async () => {
+    try {
+      const response = await apiClient.get(`/v01/cms/api/auth/menu-all`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
+  logoutCMS: async () => {
+    try {
+      const response = await apiClient.get(`/v01/cms/api/auth/logout-cms`);
       return response.data;
     } catch (error) {
       throw error.response.data;

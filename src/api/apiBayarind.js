@@ -154,4 +154,38 @@ export const vehicleAdd = {
       throw error.response.data;
     }
   },
+
+  getDetailVehicle: async (id) => {
+    const token = await getToken();
+    try {
+      const response = await apiSkyBayarind.get(
+        `/v1/customer/members-vehicle/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token.token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const Product = {
+  addProduct: async (data) => {
+    try {
+      // const token = await getToken();
+
+      const response = await apiSkyBayarind.post(
+        `/v1/product/membership-product`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 };

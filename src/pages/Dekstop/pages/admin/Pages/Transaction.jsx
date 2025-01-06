@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import TransactionTable from "./Table/TransactionTable";
-import TapTable from "../../components/TapTable";
-import HeaderTitle from "./components/HeaderTitle";
+import TransactionTable from "../Table/TransactionTable";
+import TapTable from "../../../components/TapTable";
+import HeaderTitle from "../components/HeaderTitle";
 
 export default function Transaction() {
   const [activeTab, setActiveTab] = useState("All");
+  const [tabValue, setTabValue] = useState("");
   const listTab = [
-    { name: "All", id: 1 },
-    { name: "Success", id: 2 },
-    { name: "Pending", id: 3 },
-    { name: "Failed", id: 34 },
+    { name: "All", value: "all", id: 1 },
+    { name: "Success", value: "PAID", id: 2 },
+    { name: "Pending", value: "PENDING", id: 3 },
+    { name: "Failed", value: "FAILED", id: 4 },
   ];
   return (
     <>
@@ -20,10 +21,11 @@ export default function Transaction() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         tabPage={true}
-        tabName={"All"}
+        tabValue={tabValue}
+        setTabValue={setTabValue}
       />
       <div className="w-full bg-white rounded-md flex flex-col justify-start items-center">
-        <TransactionTable />
+        <TransactionTable tab={tabValue} />
       </div>
     </>
   );

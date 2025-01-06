@@ -111,7 +111,7 @@ export default function Topup() {
   const handleBack = () => {
     navigate("/dashboard");
   };
-  console.log(selectedProvider);
+
   return (
     <>
       <ToastContainer />

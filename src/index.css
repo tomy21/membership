@@ -70,3 +70,17 @@ body {
   border: 2px solid red; /* Tambahkan border untuk memastikan elemen dapat terlihat */
   background-color: white; /* Pastikan latar belakangnya putih */
 }
+
+/* Untuk browser berbasis Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Untuk Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+

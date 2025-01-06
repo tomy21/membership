@@ -1,10 +1,14 @@
 import React from "react";
-import MembershipTable from "./Table/MembershipTable";
+import MembershipTable from "../Table/MembershipTable";
+import HeaderTitle from "../components/HeaderTitle";
 
 export default function Membership() {
   return (
     <>
-      <div className="text-lg mb-5">Membership</div>
+      <HeaderTitle
+        title={"Customer"}
+        subtitle={"View All customer membership"}
+      />
 
       <div className="w-full bg-white rounded-md flex flex-col justify-start items-center">
         <MembershipTable />

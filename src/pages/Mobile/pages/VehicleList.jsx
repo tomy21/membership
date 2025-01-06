@@ -23,6 +23,7 @@ export default function VehicleList() {
   const [isModal, setIsModal] = useState(false);
   const [rfidHex, setRfidHex] = useState("");
   const [idVehicle, setIdVehicle] = useState("");
+  const [manualRfid, setManualRfid] = useState("");
   const [formData, setFormData] = useState({
     vehicle_type: "",
     plate_number: "",
@@ -32,9 +33,44 @@ export default function VehicleList() {
   // const location = useLocation();
   const navigate = useNavigate();
 
-  const handleModalRfid = (id) => {
+  const handleModalRfid = async (id) => {
     setIdVehicle(id);
-    setIsModalRfid(true);
+
+    if ("NDEFReader" in window) {
+      const ndef = new NDEFReader();
+      await ndef.scan();
+
+      setIsModalRfid(true);
+    } else {
+      setIsModalRfid(false);
+      setIsModalError(true);
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateManual = async (id) => {
+    try {
+      setIsLoading(true);
+      const response = await vehicleAdd.udpatedRFID(id, manualRfid);
+      if (response.status === true) {
+        setIsLoading(false);
+        fetchData();
+        setIsModalRfid(false);
+        setIsModal(true);
+        setMessage("RFID berhasil diperbarui.");
+        setManualRfid("");
+      } else {
+        setIsLoading(false);
+        setIsError(true);
+        setIsModalError(true);
+        setMessage("Gagal memperbarui RFID. Silakan coba lagi.");
+      }
+    } catch (error) {
+      console.error("Error updating RFID:", error);
+      setIsLoading(false);
+      setIsModalError(true);
+      setMessage("Terjadi kesalahan saat memperbarui RFID.");
+    }
   };
 
   const handleScanRfid = async (id) => {
@@ -141,6 +177,17 @@ export default function VehicleList() {
       console.error("Error:", error.response || error.message);
     }
   };
+
+  const handleCloseModal = () => {
+    setIsModalError(false);
+    setManualRfid("");
+  };
+
+  const handleCloseModalSuccess = () => {
+    setIsModalError(false);
+    setIsModal(false);
+  };
+
   return (
     <>
       <div className="w-full bg-amber-400 px-5 py-3 flex flex-row justify-start items-center space-x-28">
@@ -363,16 +410,54 @@ export default function VehicleList() {
                 <TbFaceIdError size={30} />
               </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Gagal !</h2>
+
             <p className="text-gray-600 mb-4">
               Perangkat tidak mendukung pembacaan NFC
             </p>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 w-full rounded-lg hover:bg-blue-600 transition"
-              onClick={() => setIsModalError(false)}
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleUpdateManual(idVehicle);
+              }}
             >
-              Tutup
-            </button>
+              <div className="mb-4 w-full text-start">
+                <label
+                  htmlFor="manual_rfid"
+                  className="block text-sm font-medium mb-2"
+                >
+                  Nomor RFID
+                </label>
+                <input
+                  type="text"
+                  id="manual_rfid"
+                  name="manual_rfid"
+                  value={manualRfid}
+                  onChange={(e) => setManualRfid(e.target.value.toUpperCase())}
+                  placeholder="Masukkan Nomor RFID"
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end items-center mt-5 space-x-3">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 w-full rounded-lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Loading..." : "Simpan"}
+                </button>
+
+                <button
+                  type="button"
+                  className="bg-red-500 text-white px-4 py-2 w-full rounded-lg hover:bg-red-600 transition"
+                  onClick={handleCloseModal}
+                >
+                  Tutup
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -434,7 +519,7 @@ export default function VehicleList() {
             <p className="text-gray-600 mb-4">RFID sudah di tambahkan</p>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-              onClick={() => setIsModal(false)}
+              onClick={handleCloseModalSuccess}
             >
               Close
             </button>

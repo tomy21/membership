@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { MdFilterList, MdSearch } from "react-icons/md";
 import { TbColumns3 } from "react-icons/tb";
-import { GoDownload } from "react-icons/go";
+import { GoDownload, GoPlus } from "react-icons/go";
 
-function TapTable({ listTab, activeTab, setActiveTab, tabPage, tabName }) {
-  console.log(activeTab);
+function TapTable({
+  listTab,
+  activeTab,
+  setActiveTab,
+  tabPage,
+  tabValue,
+  setTabValue,
+  add,
+  addAction,
+}) {
   return (
     <>
       <div className="flex justify-between items-center w-full border-b mt-5">
@@ -17,7 +25,7 @@ function TapTable({ listTab, activeTab, setActiveTab, tabPage, tabName }) {
                   ? "text-amber-600 border-b-2 border-amber-600"
                   : "text-gray-500"
               }`}
-              onClick={() => setActiveTab(tab.name)}
+              onClick={() => [setActiveTab(tab.name), setTabValue(tab.value)]}
             >
               {tab.name}
             </button>
@@ -37,16 +45,20 @@ function TapTable({ listTab, activeTab, setActiveTab, tabPage, tabName }) {
             <h1 className="text-sm">Columns</h1>
           </button>
           <div className="border-r border-slate-300 h-7"></div>
-          {tabPage === true && activeTab === "Tenants" && (
-            <button className="flex items-center bg-gradient-to-t from-green-300 to-green-500 text-white rounded-md p-2 hover:opacity-80 shadow-inner shadow-green-500">
-              <GoDownload className="mr-2" />
-              <h1 className="text-sm"> Add {activeTab} </h1>
-            </button>
-          )}
+
           <button className="flex items-center bg-gradient-to-t from-blue-300 to-blue-500 text-white rounded-md p-2 hover:opacity-80 shadow-inner shadow-blue-500">
             <GoDownload className="mr-2" />
             <h1 className="text-sm"> Export</h1>
           </button>
+          {add && (
+            <button
+              className="flex items-center bg-gradient-to-t from-amber-300 to-amber-500 text-white rounded-md p-2 hover:opacity-80 shadow-inner shadow-amber-500"
+              onClick={addAction}
+            >
+              <GoPlus className="mr-2" />
+              <h1 className="text-sm"> Add New</h1>
+            </button>
+          )}
         </div>
       </div>
     </>

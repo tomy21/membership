@@ -3,7 +3,7 @@ import { Payment } from "../../../../../api/apiMembershipV2";
 import Pagination from "../components/Pagination";
 import { format } from "date-fns";
 
-export default function TransactionTable() {
+export default function TransactionTable({ tab }) {
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -12,7 +12,12 @@ export default function TransactionTable() {
 
   const fetchData = async () => {
     try {
-      const response = await Payment.getAllTransaction(currentPage, LimitData);
+      const response = await Payment.getAllTransaction(
+        currentPage,
+        LimitData,
+        tab === "all" ? "" : tab
+      );
+
       setOrders(response.data || []);
       setTotalPages(response.pagination?.totalPages || 1);
       setTotalItems(response.pagination?.total || 1);
@@ -24,7 +29,7 @@ export default function TransactionTable() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, LimitData]);
+  }, [currentPage, LimitData, tab]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("id-ID", {
@@ -48,6 +53,9 @@ export default function TransactionTable() {
               </th>
               <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
                 Transaction Date
+              </th>
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                Product
               </th>
               <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
                 Payment Method
@@ -77,6 +85,9 @@ export default function TransactionTable() {
                     new Date(order.createdAt),
                     "dd-MMM-yyyy HH:mm:ss:SSS"
                   )}
+                </td>
+                <td className="px-5 py-3 border-b border-gray-200">
+                  {order.product_name}
                 </td>
                 <td className="px-5 py-3 border-b border-gray-200">
                   {order.transactionType}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import TenantTable from "./Table/TenantTable";
-import HeaderTitle from "../../components/HeaderTitle";
-import TapTable from "../../components/TapTable";
-import MembershipTable from "./Table/MembershipTable";
+import TenantTable from "../Table/TenantTable";
+import TapTable from "../../../components/TapTable";
+import MembershipTable from "../Table/MembershipTable";
+import HeaderTitle from "../components/HeaderTitle";
 
 export default function Tenants() {
   const [activeTab, setActiveTab] = useState("Personals");

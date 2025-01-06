@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { BsPatchCheck } from "react-icons/bs";
+import { TiWarning } from "react-icons/ti";
 import Pagination from "../components/Pagination";
-// import { format } from "date-fns";
-import { userCMS } from "../../../../../api/apiMembershipV2";
-import { format } from "date-fns";
 import { IoTrashOutline } from "react-icons/io5";
 import { MdEditDocument } from "react-icons/md";
-import { TiWarning } from "react-icons/ti";
+import { format } from "date-fns";
+import { userCMS } from "../../../../../api/apiMembershipV2";
 import Loading from "../../../components/Loading";
-import { BsPatchCheck } from "react-icons/bs";
+import AddRolesPermission from "./modal/EditRolePermission";
+import EditRolePermission from "./modal/EditRolePermission";
 
-export default function TableUsers({ addSuccess, resetSuccess }) {
+export default function TableRoles({ addSuccess, resetSuccess }) {
   const [dataUser, setDataUser] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,10 +21,13 @@ export default function TableUsers({ addSuccess, resetSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [selectedRoleId, setSelectedRoleId] = useState(null);
+
+  const [isEditRoles, setIsEditRoles] = useState(false);
 
   const fetchData = async () => {
     try {
-      const response = await userCMS.getAllusers(currentPage, LimitData);
+      const response = await userCMS.getRolesAll(currentPage, LimitData);
       setDataUser(response.data);
       setTotalPages(response.totalPages);
       setTotalItems(response.totalItems);
@@ -47,6 +51,11 @@ export default function TableUsers({ addSuccess, resetSuccess }) {
   const handleConfirmation = (data) => {
     setModalConfirmation(true);
     setSelectedData(data);
+  };
+
+  const handleEdit = (id) => {
+    setSelectedRoleId(id);
+    setIsEditRoles(true);
   };
 
   const handleDelete = async (id) => {
@@ -83,80 +92,50 @@ export default function TableUsers({ addSuccess, resetSuccess }) {
     setSelectedData(null);
   };
 
+  const handleCloseEdit = () => {
+    setIsEditRoles(false);
+  };
+
   return (
     <div className="w-full px-3 py-4">
       <div className="bg-white rounded-lg shadow-lg">
         <table className="min-w-full leading-normal">
           <thead>
             <tr>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-base font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
                 #
               </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                Profil
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-base font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                Name
               </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                Contact
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-base font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                Created By
               </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                Role
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-base font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                Created At
               </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                Last Login
-              </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                Status
-              </th>
-              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tr-lg"></th>
+              <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-base font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tr-lg"></th>
             </tr>
           </thead>
           <tbody>
             {dataUser.map((items, index) => (
-              <tr key={index} className="text-sm">
+              <tr key={index} className="text-base">
                 <td className="px-5 py-3 border-b border-gray-200">
                   {index + 1}
                 </td>
                 <td className="px-5 py-3 border-b border-gray-200">
-                  <div className="flex flex-col justify-start items-start">
-                    <p className="text-gray-900 whitespace-no-wrap font-semibold">
-                      {items.fullname}
-                    </p>
-                    <p className="whitespace-no-wrap text-slate-400">
-                      {items.username}
-                    </p>
-                  </div>
+                  {items.name}
                 </td>
                 <td className="px-5 py-3 border-b border-gray-200">
-                  <div className="flex flex-col justify-start items-start">
-                    <p className="text-gray-900 whitespace-no-wrap font-semibold">
-                      {items.email}
-                    </p>
-                    <p className="whitespace-no-wrap text-slate-400">
-                      {items.phone_number}
-                    </p>
-                  </div>
+                  {items.created_by}
                 </td>
                 <td className="px-5 py-3 border-b border-gray-200">
-                  {items.membershipRole?.name}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {items.last_login
+                  {items.created_at
                     ? format(
-                        new Date(items.last_login),
+                        new Date(items.created_at),
                         "dd MMM yyyy HH:mm:ss:SSS"
                       )
                     : "-"}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  <span
-                    className={`px-4 py-2 rounded-full text-xs ${
-                      items.is_active === 1
-                        ? "bg-green-200 text-green-800"
-                        : "bg-red-200 text-red-800"
-                    }`}
-                  >
-                    {items.is_active === 1 ? "Active" : "Inactive"}
-                  </span>
                 </td>
                 <td className="px-5 py-3 border-b border-gray-200">
                   <div className="flex flex-row justify-center items-center w-full gap-x-3 cursor-pointer">
@@ -169,6 +148,7 @@ export default function TableUsers({ addSuccess, resetSuccess }) {
                     <MdEditDocument
                       size={25}
                       className="text-blue-500 hover:text-blue-600"
+                      onClick={() => handleEdit(items.id)}
                     />
                   </div>
                 </td>
@@ -252,6 +232,13 @@ export default function TableUsers({ addSuccess, resetSuccess }) {
             </div>
           </div>
         </div>
+      )}
+
+      {isEditRoles && (
+        <EditRolePermission
+          idData={selectedRoleId}
+          closeModal={handleCloseEdit}
+        />
       )}
 
       {isLoading && (

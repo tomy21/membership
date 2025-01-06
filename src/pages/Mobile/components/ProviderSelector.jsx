@@ -7,8 +7,6 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
-  console.log("selectedProvider", selectedProvider);
-
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>
@@ -19,10 +17,10 @@ const ProviderSelector = ({
                 <img
                   src={`${
                     selectedProvider.code_bank === "NATIONALNOBU"
-                      ? "/assets/payment/bca_logo.png"
+                      ? "/assets/payment/nobu_logo.png"
                       : selectedProvider.code_bank === "SKYPOINTS"
                       ? "/assets/payment/logo.svg"
-                      : "/assets/payment/nobu_logo.png"
+                      : "/assets/payment/bca_logo.png"
                   }`}
                   className="w-7"
                   alt={selectedProvider?.code_bank}
@@ -57,10 +55,10 @@ const ProviderSelector = ({
                     <img
                       src={`${
                         provider.code_bank === "NATIONALNOBU"
-                          ? "/assets/payment/bca_logo.png"
+                          ? "/assets/payment/nobu_logo.png"
                           : provider.code_bank === "SKYPOINTS"
                           ? "/assets/payment/logo.svg"
-                          : "/assets/payment/nobu_logo.png"
+                          : "/assets/payment/bca_logo.png"
                       }`}
                       className="w-7"
                       alt={provider?.code_bank}
