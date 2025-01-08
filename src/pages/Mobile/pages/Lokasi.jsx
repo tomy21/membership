@@ -35,10 +35,10 @@ function Lokasi() {
       <div className="container">
         {/* <NavbarMobile /> */}
         <div className="flex flex-col items-start justify-start min-h-full w-full">
-          <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
+          <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
             <FaArrowLeftLong
-              className="pl-3 w-10"
-              onClick={() => handleBack()}
+              className="pl-3 w-10 cursor-pointer"
+              onClick={handleBack}
             />
             <h1 className="text-lg font-semibold px-3">Lokasi Member</h1>
           </div>

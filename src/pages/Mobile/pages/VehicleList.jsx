@@ -190,9 +190,12 @@ export default function VehicleList() {
 
   return (
     <>
-      <div className="w-full bg-amber-400 px-5 py-3 flex flex-row justify-start items-center space-x-28">
-        <FaArrowLeftLong onClick={handleBack} />
-        <h1>Vehicle List</h1>
+      <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
+        <FaArrowLeftLong
+          className="pl-3 w-10 cursor-pointer"
+          onClick={handleBack}
+        />
+        <h1 className="text-lg font-semibold px-3">List Kendaraan</h1>
       </div>
 
       <div className="max-h-screen min-h-screen w-full p-3 overflow-y-auto relative">

@@ -52,13 +52,13 @@ export const apiBayarindTopUp = {
     } catch (error) {
       if (error.response) {
         console.error("Error response:", error.response);
-        throw error.response.data;
+        return error.response.data;
       } else if (error.request) {
         console.error("Error request:", error.request);
-        throw new Error("No response received from server");
+        return new Error("No response received from server");
       } else {
         console.error("Error message:", error.message);
-        throw new Error("Error occurred during request setup");
+        return new Error("Error occurred during request setup");
       }
     }
   },
@@ -88,13 +88,16 @@ export const apiBarindCekstatus = {
 };
 
 export const apiBayarindExtend = {
-  extend: async (userProductId, productId, periodeId, partnerId) => {
+  extend: async (productId, plateNumber, bankId) => {
     try {
-      const token = getToken();
-
-      const response = await apiSkyBayarind.put(
-        `/api/v1.0/transfer-va/extendmember?userProductId=${userProductId}&productId=${productId}&periodeId=${periodeId}&partnerId=${partnerId}`,
-        {},
+      const token = await apiUsers.getToken();
+      // console.log(token);
+      const response = await apiSkyBayarind.post(
+        `/v1/productPurchase/extend-membership/${productId}`,
+        {
+          plate_number: plateNumber,
+          bank_id: bankId,
+        },
         {
           headers: {
             Authorization: `Bearer ${token.token}`,
@@ -105,7 +108,8 @@ export const apiBayarindExtend = {
       console.log(response);
       return response;
     } catch (error) {
-      throw error.response.data;
+      console.log(error.response.data);
+      return error.response;
     }
   },
 };

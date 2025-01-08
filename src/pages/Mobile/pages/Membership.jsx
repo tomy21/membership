@@ -85,9 +85,13 @@ export default function Membership() {
 
     const fetchPlateUser = async () => {
       const type = selectedTypeVehicle.Name;
+      const locationCode = selectedLocation.Code;
       if (selectedTypeVehicle) {
         try {
-          const response = await Users.getVehicleByType(type);
+          const response = await Users.getVehicleUnActiveLocation(
+            type,
+            locationCode
+          );
           setVehicleListData(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);

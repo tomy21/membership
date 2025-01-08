@@ -59,9 +59,7 @@ function ListComponent({
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            <div
-              className={`${bottom ? "max-h-20" : "max-h-40"} overflow-auto`}
-            >
+            <div className={`${bottom ? "h-20" : "h-20"} overflow-auto`}>
               {filteredPeople.length > 0 ? (
                 filteredPeople.map((person, index) => (
                   <ListboxOption

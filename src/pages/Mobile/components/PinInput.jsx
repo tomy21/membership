@@ -62,31 +62,22 @@ function PinInput() {
           }
         } else if (location.state.type === "Extend") {
           const responseBayarind = await apiBayarindExtend.extend(
-            location.state.userProductId,
             location.state.productId,
-            location.state.periodId,
+            location.state.plateNumber,
             location.state.providerId
           );
 
-          if (responseBayarind.data.responseCode === "2002700") {
+          console.log(responseBayarind);
+          if (responseBayarind.status === 200) {
             const data = {
-              periodId: location.state.periodId,
-              bankProvider: location.state.providerName,
-              virtualAccountNomor:
-                responseBayarind.data.virtualAccountData.virtualAccountNo,
-              amount:
-                responseBayarind.data.virtualAccountData.totalAmount.value,
+              bankProvider: location.state,
               response: responseBayarind.data,
             };
             navigate("/payment_process", { state: data });
-          } else if (responseBayarind.data.responseCode === "400") {
-            setErrorMessage(responseBayarind.data.responseMessage);
+          } else {
+            setErrorMessage(responseBayarind.data.message);
             setPin(Array(6).fill(""));
             setErrorShowModal(true);
-          } else {
-            setErrorMessage(responseBayarind.data.responseMessage);
-            setPin(Array(6).fill(""));
-            setShowModal(true);
           }
         } else if (location.state.type === "topup") {
           const dataFormTopUp = {
@@ -202,10 +193,10 @@ function PinInput() {
           handleSuccessClose={handleCloseModalSuccess}
           message={errorMessage}
         />
-        <div className="text-center mb-4 text-lg font-semibold mt-5">
+        <div className="text-center text-lg font-semibold mt-5">
           Masukkan 6 digit PIN Kamu
         </div>
-        <div className="flex justify-center space-x-2 mb-4 mt-8">
+        <div className="flex justify-center space-x-5 mt-6">
           {Array(6)
             .fill(0)
             .map((_, index) => (
@@ -213,7 +204,7 @@ function PinInput() {
                 key={index}
                 type="password" // Menggunakan type tel untuk fokus pada input numerik
                 maxLength="1"
-                className="w-10 h-10 border border-gray-300 rounded-full text-center text-xl"
+                className="w-5 h-5 border border-gray-300 rounded-full text-center text-xl"
                 autoFocus={index === 0}
                 onChange={(e) => handleInput(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
@@ -227,7 +218,7 @@ function PinInput() {
             ))}
         </div>
         {/* <button className="mb-6 text-blue-600">Lupa PIN?</button> */}
-        <div className="grid grid-cols-3 gap-10 mt-20">
+        <div className="grid grid-cols-3 gap-10 mt-16">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num, idx) => (
             <button
               key={idx}

@@ -18,7 +18,6 @@ export default function CardComponent({ openModal, product }) {
       console.log("error");
     }
   };
-  console.log(listLocationCard.length);
   return (
     <div
       className="relative w-full max-w-sm mx-auto cursor-pointer"

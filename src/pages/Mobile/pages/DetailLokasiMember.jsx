@@ -5,6 +5,8 @@ import { vehicleAdd } from "../../../api/apiBayarind";
 import { format } from "date-fns";
 import { MembershipProduct } from "../../../api/apiMembershipV2";
 import ListComponent from "../components/ListComponent";
+import { FaCarAlt } from "react-icons/fa";
+import { RiEBikeFill } from "react-icons/ri";
 
 export default function DetailLokasiMember() {
   const location = useLocation();
@@ -81,9 +83,7 @@ export default function DetailLokasiMember() {
       setListLocationCard(data);
 
       // Hitung jumlah is_active true dan false
-      const activeCount = data.membership.filter(
-        (item) => item.is_active
-      ).length;
+      const activeCount = data.membership.length;
       const expiredCount = data.membership.filter(
         (item) => !item.is_active
       ).length;
@@ -167,36 +167,38 @@ export default function DetailLokasiMember() {
 
       <div className="min-h-screen w-full p-3">
         <div className="flex flex-col justify-start items-start w-full">
-          <h1 className="text-xl font-semibold ">
-            {listLocationCard.plate_number}
-          </h1>
-          <p className="text-xs text-gray-400">{listLocationCard.rfid}</p>
-          <p className="text-sm font-semibold mt-10 text-start">
-            Total Lokasi Member
-          </p>
+          <div className="flex justify-between items-center w-full bg-gradient-to-r from-gray-800 via-gray-900 to-black p-6 rounded-lg shadow-lg">
+            <div className="flex flex-col justify-start items-start">
+              <h1 className="text-2xl font-bold text-white">
+                {listLocationCard.plate_number}
+              </h1>
+              <p className="text-sm text-gray-400 mt-1">
+                {listLocationCard.rfid}
+              </p>
 
-          <div className="flex justify-between items-center w-full space-x-3 mt-2">
-            <div className="rounded-md w-full bg-gradient-to-tr from-emerald-500 to-emerald-200 h-20 px-3 py-2 shadow-md border border-slate-200">
-              <h1 className="text-sm text-start font-medium text-slate-500">
-                Total Aktif
-              </h1>
-              <h1 className="text-start text-2xl font-semibold mt-2">
-                {countActive}
-              </h1>
+              <div className="flex flex-col justify-start items-start mt-10">
+                <h1 className="text-base text-start font-medium text-teal-500">
+                  Total Lokasi Member
+                </h1>
+                <h1 className="text-center text-xl text-white font-semibold mt-2">
+                  {countActive}
+                </h1>
+              </div>
             </div>
-            <div className="rounded-md w-full bg-gradient-to-t from-red-500 to-red-200 h-20 px-3 py-2 shadow-md border border-slate-200">
-              <h1 className="text-sm text-start font-medium text-slate-500">
-                Total Expired
-              </h1>
-              <h1 className="text-start text-2xl font-semibold mt-2">
-                {countExpired}
-              </h1>
+            <div className="flex items-center justify-center bg-teal-500 p-4 rounded-full shadow-md">
+              {listLocationCard.vehicle_type === "MOBIL" ? (
+                <FaCarAlt size={40} className="text-white" />
+              ) : (
+                <RiEBikeFill size={40} className="text-white" />
+              )}
             </div>
           </div>
 
-          <h1 className="text-sm font-semibold mt-10 text-start">
+          <h1 className="text-xl font-semibold mt-10 text-start">
             List Lokasi Members
           </h1>
+
+          <div className="border-b border-slate w-full py-2"></div>
 
           {listLocationCard.membership &&
             listLocationCard.membership.map((item, index) => (
@@ -204,49 +206,51 @@ export default function DetailLokasiMember() {
                 className="flex flex-col justify-start items-start w-full"
                 key={index}
               >
-                <div className="min-w-60 max-w-full bg-yellow-400 h-10 mt-3 rounded-t-lg text-start px-3 py-2">
-                  <p className="text-xs">{item.location_name}</p>
+                <div className="min-w-60 max-w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-slate-700 h-12 mt-4 rounded-t-lg text-start px-4 py-3">
+                  <p className="text-sm text-white font-semibold">
+                    {item.location_name}
+                  </p>
                 </div>
 
-                <div className="w-full flex justify-between items-start bg-yellow-400 h-36 text-start px-3 py-2 rounded-b-lg rounded-r-lg shadow-md ">
-                  <div className="">
-                    <div className="flex flex-col">
-                      <h1 className="text-sm font-normal text-white">
+                <div className="w-full flex justify-between items-start bg-white h-40 text-start px-4 py-3 rounded-b-lg rounded-tr-lg shadow-lg border border-gray-200">
+                  <div>
+                    <div className="flex flex-col mb-4">
+                      <h1 className="text-sm font-medium text-gray-500">
                         Tanggal Active
                       </h1>
-                      <h1 className="text-sm font-semibold">
+                      <h1 className="text-sm font-semibold text-gray-900">
                         {format(new Date(item.start_date), "dd MMM yyyy HH:mm")}
                       </h1>
                     </div>
                     <div className="flex flex-col">
-                      <h1 className="text-sm font-normal text-white">
+                      <h1 className="text-sm font-medium text-gray-500">
                         Tanggal Expired
                       </h1>
-                      <h1 className="text-sm font-semibold">
+                      <h1 className="text-sm font-semibold text-gray-900">
                         {format(new Date(item.end_date), "dd MMM yyyy HH:mm")}
                       </h1>
                     </div>
                   </div>
 
                   <div className="flex flex-col justify-between items-end h-full">
-                    <h1
+                    <span
                       className={`${
                         new Date(item.end_date) < new Date()
-                          ? "bg-red-200 text-red-600"
+                          ? "bg-red-100 text-red-600"
                           : item.is_active
-                          ? "bg-green-200 text-green-600"
-                          : "bg-red-200 text-red-600"
-                      } py-2 w-24 text-center text-xs rounded-full font-normal`}
+                          ? "bg-green-100 text-green-600"
+                          : "bg-yellow-100 text-yellow-600"
+                      } px-4 py-2 text-xs rounded-full font-medium shadow-sm`}
                     >
                       {new Date(item.end_date) < new Date()
                         ? "Expired"
                         : item.is_active
                         ? "Aktif"
                         : "Belum Aktif"}
-                    </h1>
+                    </span>
                     {new Date(item.end_date) < new Date() && (
                       <button
-                        className="mt-2 flex justify-between items-center bg-blue-400 h-10 px-3 py-2 text-xs rounded-md text-white shadow-md"
+                        className="mt-2 flex justify-center items-center bg-gradient-to-r from-blue-500 to-cyan-500 h-10 px-4 py-2 text-xs rounded-lg text-white font-semibold shadow-md hover:scale-105 transition-transform duration-200"
                         onClick={() => handlePerpanjang(item)}
                       >
                         Perpanjang

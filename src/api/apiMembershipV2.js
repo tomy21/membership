@@ -111,6 +111,31 @@ export const Users = {
       throw error.response.data;
     }
   },
+  getVehicleUnActiveLocation: async (
+    type,
+    locationCode,
+    page,
+    limit,
+    search
+  ) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/vehicle-list/by-userid/vehicle-unactive`,
+        {
+          params: {
+            page,
+            limit,
+            search,
+            locationCode,
+            type,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
 
   getCardLocation: async () => {
     try {
