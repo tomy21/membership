@@ -15,6 +15,7 @@ import Login from "../pages/Dekstop/pages/Login";
 import Dashboard from "../pages/Dekstop/pages/admin/Pages/Dashboard";
 import ProtectedRoute from "../pages/Mobile/components/ProtectedRoute";
 import Menu from "../pages/Dekstop/pages/admin/Pages/Menu";
+import CardList from "../pages/Dekstop/pages/admin/Pages/CardList";
 
 export default function DekstopAdmin() {
   return (
@@ -34,6 +35,7 @@ export default function DekstopAdmin() {
           <Route path="product" element={<MasterProduct />} />
           <Route path="membership" element={<Membership />} />
           <Route path="menu" element={<Menu />} />
+          <Route path="card-list" element={<CardList />} />
           <Route path="history-transaction" element={<Transaction />} />
           <Route path="location" element={<Location />} />
           <Route path="users" element={<Users />} />

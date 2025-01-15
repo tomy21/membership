@@ -122,9 +122,12 @@ export default function Topup() {
         {isTermsVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
         )}
-        <div className="flex space-x-20 justify-start items-center w-full py-3 bg-amber-300">
-          <FaArrowLeftLong className="pl-3 w-10" onClick={handleBack} />
-          <h1 className="text-lg font-bold px-3">Top up Point</h1>
+        <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
+          <FaArrowLeftLong
+            className="pl-3 w-10 cursor-pointer"
+            onClick={handleBack}
+          />
+          <h1 className="text-lg font-semibold px-3">Topup Point</h1>
         </div>
 
         <div className="flex flex-col items-center justify-start px-5 bg-white">

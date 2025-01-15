@@ -73,48 +73,59 @@ export default function MasterProductTable() {
             </tr>
           </thead>
           <tbody>
-            {product.map((items, index) => (
-              <tr key={index} className="text-sm">
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {index + 1}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {items.location_area?.location_name}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {items.product_code}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {items.product_name}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  <span
-                    className={`px-4 py-2 rounded-full text-xs ${
-                      items.vehicle_type === "MOBIL"
-                        ? "bg-green-200 text-green-800"
-                        : "bg-red-200 text-red-800"
-                    }`}
-                  >
-                    {items.vehicle_type}
-                  </span>
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {format(new Date(items.start_date), "dd-MMM-yyyy")}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {format(new Date(items.end_date), "dd-MMM-yyyy")}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {formatCurrency(items.price ?? 0)}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {formatCurrency(items.Fee ?? 0)}
-                </td>
-                <td className="px-5 py-3 border-b border-gray-200">
-                  {items.periode}
+            {product.length > 0 ? (
+              product.map((items, index) => (
+                <tr key={index} className="text-sm">
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {index + 1}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {items.location_area?.location_name}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {items.product_code}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {items.product_name}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    <span
+                      className={`px-4 py-2 rounded-full text-xs ${
+                        items.vehicle_type === "MOBIL"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {items.vehicle_type}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {format(new Date(items.start_date), "dd-MMM-yyyy")}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {format(new Date(items.end_date), "dd-MMM-yyyy")}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {formatCurrency(items.price ?? 0)}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {formatCurrency(items.Fee ?? 0)}
+                  </td>
+                  <td className="px-5 py-3 border-b border-gray-200">
+                    {items.periode}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr className="text-sm">
+                <td
+                  className="px-5 py-3 border-b border-gray-200 justify-center items-center text-center"
+                  colSpan="10"
+                >
+                  Data not found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

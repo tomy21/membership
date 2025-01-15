@@ -35,7 +35,7 @@ function PaymentMember() {
           selectedType.value,
           location.state.locationCode
         );
-
+        console.log("dataresponse", response);
         setProviders(response);
       } catch (error) {
         console.error("Error fetching providers:", error);

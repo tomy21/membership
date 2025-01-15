@@ -68,6 +68,11 @@ export default function Sidebar() {
           icon: <GoDot className="mr-2" />,
           link: "/dashboard/menu",
         },
+        {
+          name: "Card List",
+          icon: <GoDot className="mr-2" />,
+          link: "/dashboard/card-list",
+        },
       ],
     },
 

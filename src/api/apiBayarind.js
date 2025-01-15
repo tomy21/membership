@@ -187,9 +187,35 @@ export const Product = {
         `/v1/product/membership-product`,
         data
       );
+      console.log(response.status);
+      return response;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const Card = {
+  getAllCard: async () => {
+    try {
+      const response = await apiSkyBayarind.get("/v1/card/get-master-card");
       return response.data;
     } catch (error) {
       throw error.response.data;
+    }
+  },
+
+  createNewCard: async (data) => {
+    try {
+      const response = await apiSkyBayarind.post(
+        "/v1/card/create-master-card",
+        {
+          no_card: data,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return error.response.data;
     }
   },
 };

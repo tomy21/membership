@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import Loading from "../../../../../Dekstop/components/Loading";
 import { startOfMonth, endOfMonth, addMonths } from "date-fns";
-import {
-  Location,
-  userCMS,
-  Users,
-} from "../../../../../../api/apiMembershipV2";
+import { Location, userCMS } from "../../../../../../api/apiMembershipV2";
 import ListComponent from "../../../../../Mobile/components/ListComponent";
 import { Product } from "../../../../../../api/apiBayarind";
-import { PiSealCheckDuotone } from "react-icons/pi";
+import { BsPatchCheck } from "react-icons/bs";
 
 const monthNames = [
   { value: "Januari", label: "Januari" },
@@ -47,9 +43,12 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(false);
+  const [message, setMessage] = useState("");
   const [locationOptions, setLocationOptions] = useState([]);
   const [dataUser, setDataUser] = useState([]);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [progress, setProgress] = useState(false);
 
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -60,23 +59,6 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await userCMS.getByIdUsers();
-        setDataUser(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchProduct = async () => {
-      try {
-        const response = await Location.getAll();
-        setLocationOptions(response.data);
-      } catch (error) {
-        return null;
-      }
-    };
-
     if (monthsDuration > 0 && selectedMonth) {
       calculateDates(monthsDuration, selectedMonth.Code);
     }
@@ -85,6 +67,23 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, formProduct.Type, monthsDuration, selectedMonth]);
+
+  const fetchData = async () => {
+    try {
+      const response = await userCMS.getByIdUsers();
+      setDataUser(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchProduct = async () => {
+    try {
+      const response = await Location.getAll();
+      setLocationOptions(response.data);
+    } catch (error) {
+      return null;
+    }
+  };
 
   const TypeVehicle = [
     { id: 1, name: "Motor", value: "MOTOR" },
@@ -174,6 +173,9 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
   };
 
   const formatCurrency = (value) => {
+    if (value === undefined || value === null) {
+      return "0"; // Default nilai jika value tidak valid
+    }
     const parts = value.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(",");
@@ -229,14 +231,28 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
       };
 
       const response = await Product.addProduct(payload);
-      console.log(response);
-      setSuccessMessage("Created successfully!");
 
-      // if (payload) {
-      // } else {
-      //   const response = await productBundleAll.storeProduct(payload);
-      //   setSuccessMessage(response.message);
-      // }
+      if (response.status === 201) {
+        setIsSuccessModalOpen(true);
+        setMessage("Created successfully!");
+        const interval = setInterval(() => {
+          setProgress((prev) => {
+            if (prev >= 100) {
+              clearInterval(interval); // Hentikan progress
+              setIsSuccessModalOpen(false);
+              onClose();
+            }
+            return prev + 10; // Tambahkan progress
+          });
+        }, 300);
+        setProgress(0);
+        setFormProduct("");
+        // onClose();
+        fetchProduct();
+      } else {
+        setIsError(true);
+        setMessage(response.message);
+      }
 
       setLoading(false);
       setShowSuccessModal(true);
@@ -250,11 +266,6 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
     const [date, time] = dateString.split(", ");
     const [day, month, year] = date.split("/");
     return `${year}-${month}-${day} ${time}`;
-  };
-
-  const handleCloseSuccessModal = () => {
-    setShowSuccessModal(false);
-    onClose();
   };
 
   const handleClose = () => {
@@ -281,19 +292,26 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
       <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-40">
         {loading ? (
           <Loading />
-        ) : showSuccessModal ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-              <div className="flex flex-col justify-center items-center space-y-3 mb-10">
-                <PiSealCheckDuotone size={50} className="text-green-600" />
-                <h3 className="text-lg">{successMessage}</h3>
+        ) : isSuccessModalOpen ? (
+          <div
+            className="fixed top-4 right-4 z-50 animate-slide-in" // Animasi untuk modal
+            style={{ animationDuration: "0.5s" }} // Durasi animasi
+          >
+            <div className="relative bg-white border border-green-50 shadow-inner rounded-lg p-4 w-72">
+              <div className="flex flex-row justify-start items-center space-x-2">
+                <BsPatchCheck size={30} className="text-green-500" />
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Success ... !
+                </h2>
               </div>
-              <button
-                className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300"
-                onClick={handleCloseSuccessModal}
-              >
-                Close
-              </button>
+
+              {/* Progress Bar */}
+              <div className="mt-4 w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                <div
+                  className="bg-green-500 h-1 rounded-full transition-all duration-300" // Animasi progress bar
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
             </div>
           </div>
         ) : (
@@ -320,7 +338,10 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
               <div className="grid grid-cols-3 md:grid-cols-3 gap-4 text-start">
                 <div>
-                  <label className="block mb-2 font-semibold text-sm text-gray-600">
+                  <label
+                    htmlFor="product_name"
+                    className="block mb-2 font-semibold text-sm text-gray-600"
+                  >
                     Product Name
                   </label>
                   <div className="py-1">
@@ -374,7 +395,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
                     <input
                       type="text"
                       name="price"
-                      value={formatCurrency(formProduct.price)}
+                      value={formatCurrency(formProduct.price) || 0}
                       onChange={handleCurrencyChange}
                       className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
@@ -403,7 +424,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
                 <div>
                   <label
-                    for="Fee"
+                    htmlFor="Fee"
                     className="block mb-1 font-semibold text-sm text-gray-600"
                   >
                     Fee
@@ -430,7 +451,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
               <div className="grid grid-cols-3 gap-4 text-start w-full">
                 <div>
                   <label
-                    for="monthsDuration"
+                    htmlFor="monthsDuration"
                     className="block mb-1 font-semibold text-sm text-gray-600"
                   >
                     Duration Members
@@ -474,7 +495,7 @@ export default function AddMasterProduct({ isOpen, onClose, data }) {
 
                 <div>
                   <label
-                    for="selectedMonth"
+                    htmlFor="selectedMonth"
                     className="block mb-1 font-semibold text-sm text-gray-600"
                   >
                     Selected Month
