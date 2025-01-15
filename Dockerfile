@@ -1,16 +1,26 @@
-# Stage 1: Build
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm cache clean --force
-RUN rm -rf node_modules && npm install
-COPY . .
-RUN npm run build
+# Menggunakan image Node.js dari Alpine Linux sebagai base image
+FROM node:20-alpine
 
-# Stage 2: Serve
-FROM node:18-alpine
+# Menetapkan direktori kerja di dalam container
 WORKDIR /app
-COPY --from=build /app/build ./build
-RUN npm install -g http-server
+
+# Menyalin file package.json dan yarn.lock ke dalam direktori kerja
+COPY package.json yarn.lock ./
+
+# Menginstall dependencies aplikasi menggunakan Yarn
+RUN yarn install
+
+# Menyalin sisa file aplikasi ke dalam direktori kerja
+COPY . .
+
+# Membangun aplikasi React untuk produksi
+RUN yarn build
+
+# Menginstall global dependency untuk serve
+RUN yarn global add serve
+
+# Mengekspos port yang akan digunakan
 EXPOSE 4002
-CMD ["http-server", "build", "-p", "4002"]
+
+# Menetapkan perintah untuk menjalankan aplikasi di dalam container
+CMD ["serve", "-s", "build"]
