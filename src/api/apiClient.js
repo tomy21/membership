@@ -11,6 +11,6 @@ export const apiClient = axios.create({
 });
 
 export const apiSkyBayarind = axios.create({
-    baseURL: 'https://apimembershipservice.skyparking.online',
+    baseURL: 'https://apimembership.skyparking.online',
     withCredentials: true,
 });
