@@ -4,6 +4,7 @@ import { IoMdNotifications } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { apiUsers, logoutUsers } from "../../../api/apiUsers";
 import Loading from "./Loading";
+import { Users } from "../../../api/apiMembershipV2";
 
 const userNavigation = [
   { name: "Profil", href: "/profil" },
@@ -20,9 +21,9 @@ export default function NavbarMobile() {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        const response = await apiUsers.getUserId();
-        setName(response.data.UserName);
-        setEmail(response.data.Email);
+        const response = await Users.getByUserId();
+        setName(response.data.fullname);
+        setEmail(response.data.email);
         setLoading(false);
       } catch (error) {
         console.log(error);

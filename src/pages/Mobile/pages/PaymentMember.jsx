@@ -3,33 +3,56 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { endOfMonth, format } from "date-fns";
 import { motion } from "framer-motion";
 import { TbExclamationMark } from "react-icons/tb";
-import { getAllProvider, getProviderById } from "../../../api/apiProvider";
-import PaymentMethodSelector from "../components/PaymentMethodSelector";
-import ProviderSelector from "../components/ProviderSelector";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaLocationDot } from "react-icons/fa6";
 import ErrorModal from "../components/ErrorModal";
 import TermsAndCondition from "../components/TermAndCondition";
+import { Provider } from "../../../api/apiMembershipV2";
+import PaymentMethodSelector from "../components/PaymentMethodSelector";
+import ProviderSelector from "../components/ProviderSelector";
 
 function PaymentMember() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [providers, setProviders] = useState([]);
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedType, setSelectedType] = useState(null);
   const [filteredProviders, setFilteredProviders] = useState([]);
-  const [selectedProvider, setSelectedProvider] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isTermsVisible, setIsTermsVisible] = useState(false);
-  const [typePayment, setTypePayment] = useState("buyMember");
   const navigate = useNavigate();
   const location = useLocation();
 
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
   useEffect(() => {
-    if (selectedType) {
-      const filtered = providers.filter(
-        (provider) => provider.Type === selectedType
+    const fetchProvider = async () => {
+      if (!selectedType) return;
+
+      try {
+        const response = await Provider.getAllByType(
+          selectedType.value,
+          location.state.locationCode
+        );
+        console.log("dataresponse", response);
+        setProviders(response);
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+        setProviders([]);
+      }
+    };
+
+    fetchProvider();
+  }, [selectedType, location.state.locationCode]);
+
+  useEffect(() => {
+    if (selectedType && Array.isArray(providers)) {
+      setFilteredProviders(
+        providers.filter(
+          (provider) => provider.code_bank === selectedType.value
+        )
       );
-      setFilteredProviders(filtered);
-      setTypePayment("buyMember");
     } else {
       setFilteredProviders([]);
     }
@@ -45,40 +68,18 @@ function PaymentMember() {
       setIsModalVisible(true);
     } else {
       setShowModal(true);
-      // alert("Pilih metode pembayaran terlebih dahulu.");
     }
   };
 
-  useEffect(() => {
-    const fetchProvider = async () => {
-      const response = await getAllProvider.getProvider();
-      // Tambahkan provider manual ke dalam array yang didapat dari API
-      const manualProvider = {
-        Id: 0,
-        ProviderName: "Point SKY Parking",
-        Type: "Point",
-        LogoUrl: "logo.svg",
-      };
-      // Menggabungkan provider dari API dengan provider manual
-      const providersWithManual = [...response.data, manualProvider];
+  const handleProceedCancel = () => navigate("/dashboard");
 
-      setProviders(providersWithManual);
-    };
-
-    fetchProvider();
-  }, []);
-
-  const handleProceedCancel = () => {
-    navigate("/dashboard");
-  };
-
-  const getMonthlyPeriod = (date) => {
+  const getMonthlyPeriod = () => {
     const start = location.state.startDate
       ? new Date(location.state.startDate)
       : new Date();
     const end = location.state.endDate
       ? new Date(location.state.endDate)
-      : endOfMonth(date);
+      : endOfMonth(start);
 
     return {
       start: format(start, "dd MMM yyyy"),
@@ -91,138 +92,119 @@ function PaymentMember() {
     navigate("/verifikasi", {
       state: {
         type: location.state.type,
-        userProductId: location.state.userProductId,
-        providerName: selectedProvider.ProviderName,
-        providerId: selectedProvider.Id,
+        providerId: selectedProvider.id,
+        code_bank: selectedProvider.code_bank,
         productId: location.state.productId,
-        plateNumber: location.state.platNomor,
-        periodId: location.state.periodId,
-        data: {
-          location,
-        },
+        plateNumber: location.state.plateNumber,
       },
     });
   };
 
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
+  const currentPeriod = getMonthlyPeriod();
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const onShowTerms = () => {
-    setIsTermsVisible(true);
-  };
-
-  const handleCloseTerms = () => {
-    setIsTermsVisible(false);
-    setIsTermsAccepted(true);
-  };
-
-  const currentPeriod = getMonthlyPeriod(new Date());
+  useEffect(() => {
+    // Reset semua field di bawah lokasi
+    if (selectedType) {
+      setSelectedProvider("");
+    }
+  }, [selectedType]);
 
   return (
-    <>
-      <div>
-        <ErrorModal
-          showModal={showModal}
-          handleClose={handleCloseModal}
-          message={
-            !isTermsAccepted
-              ? "Anda harus menyetujui syarat dan ketentuan."
-              : "Pilih metode pembayaran terlebih dahulu."
-          }
+    <div>
+      <ErrorModal
+        showModal={showModal}
+        handleClose={() => setShowModal(false)}
+        message={
+          !isTermsAccepted
+            ? "Anda harus menyetujui syarat dan ketentuan."
+            : "Pilih metode pembayaran terlebih dahulu."
+        }
+      />
+      {isModalVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+      )}
+      {isTermsVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+      )}
+
+      <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
+        <FaArrowLeftLong
+          className="pl-3 w-10 cursor-pointer"
+          onClick={() => navigate(-1)}
         />
-        {isModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
-        )}
-        {isTermsVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
-        )}
-        <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
-          <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
-          <h1 className="text-lg font-semibold px-2">Details Transaksi</h1>
-        </div>
-        <div className="container px-3">
-          <div className="flex flex-col items-start justify-start mt-2 w-full border border-gray-400 rounded-lg">
-            <div className="px-3 flex flex-col justify-start items-start w-full">
-              <div className="flex flex-col justify-start items-start border-b border-gray-400 w-full pb-2">
-                <p className="text-lg pt-2 font-semibold">Informasi Member</p>
-                <p className="text-gray-400">
-                  {location.state ? location.state.platNomor : "-"}
-                </p>
-                <p className="text-gray-400">{location.state.vehicleType}</p>
-                <p className="text-gray-400">
+        <h1 className="text-lg font-semibold px-3">Detail Transaksi</h1>
+      </div>
+
+      <div className="px-3">
+        <div className="flex flex-col items-start justify-start mt-2 w-full border border-gray-400 rounded-lg max-h-[30vh] p-3">
+          <div className="px-3 flex flex-col justify-start items-start w-full">
+            <div className="flex flex-col justify-start items-start border-dashed border-b border-gray-400 w-full">
+              <p className="text-lg font-semibold">Informasi Member</p>
+              <p className="text-gray-400">
+                {location.state ? location.state.plateNumber : "-"}
+              </p>
+              <p className="text-gray-400">{location.state.vehicleType}</p>
+              <div className="flex flex-row justify-start items-center space-x-3 my-2">
+                <FaLocationDot size={20} className="text-blue-600" />
+                <p className="text-gray-400 text-sm font-medium">
                   {location.state ? location.state.location : "-"}
                 </p>
               </div>
-
-              <p className="text-lg pt-2 font-semibold">Periode</p>
-              <p className="font-semibol text-gray-400 ">
-                {`${format(location.state.startDate, "dd MMM yyyy")} - ${format(
-                  location.state.endDate,
-                  "dd MMM yyyy"
-                )}`}
-              </p>
-              <p className="text-gray-400 pb-2">
-                {location.state.tariff
-                  ? `IDR ${parseInt(location.state.tariff).toLocaleString(
-                      "id-ID"
-                    )}`
-                  : "-"}
-              </p>
             </div>
+            <p className="text-lg pt-2 font-semibold">Periode</p>
+            <p className="font-semibold text-gray-400">
+              {currentPeriod.start} - {currentPeriod.end}
+            </p>
           </div>
-          <p className="flex items-start text-md font-medium mb-3 mt-3">
-            Pilih metode pembayaran
-          </p>
-          <PaymentMethodSelector
-            selectedType={selectedType}
-            setSelectedType={setSelectedType}
-            typePayment={typePayment}
-          />
-          {selectedType && (
-            <ProviderSelector
-              selectedProvider={selectedProvider}
-              setSelectedProvider={setSelectedProvider}
-              filteredProviders={filteredProviders}
-            />
-          )}
-
-          {/* Checkbox untuk Syarat dan Ketentuan */}
-          <div className="mt-5 flex items-center space-x-3">
-            <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 text-blue-600"
-              checked={isTermsAccepted}
-              onChange={() => setIsTermsAccepted(!isTermsAccepted)}
-            />
-            <span className="text-gray-700 text-sm" onClick={onShowTerms}>
-              Saya menyetujui syarat dan ketentuan.
-            </span>
-          </div>
-
-          <button
-            className={`flex items-center justify-center w-full py-3 rounded-lg shadow-md cursor-pointer mt-10 ${
-              isTermsAccepted ? "bg-blue-500 text-white" : "bg-gray-400"
-            }`}
-            onClick={handleProceed}
-          >
-            <span>Lanjutkan</span>
-          </button>
-          <button
-            className="flex items-center justify-center w-full bg-red-500 text-white py-3 rounded-lg shadow-md cursor-pointer mt-2"
-            onClick={handleProceedCancel}
-          >
-            <span>Batal</span>
-          </button>
         </div>
+
+        <p className="flex items-start text-md font-medium mb-3 mt-3">
+          Pilih metode pembayaran
+        </p>
+
+        <PaymentMethodSelector
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+        />
+
+        {selectedType && (
+          <ProviderSelector
+            selectedProvider={selectedProvider}
+            setSelectedProvider={setSelectedProvider}
+            filteredProviders={providers}
+          />
+        )}
+
+        <div className="mt-5 flex items-center space-x-3">
+          <input
+            type="checkbox"
+            className="form-checkbox h-5 w-5 text-blue-600"
+            checked={isTermsAccepted}
+            onChange={() => setIsTermsAccepted(!isTermsAccepted)}
+          />
+          <span
+            className="text-gray-700 text-sm cursor-pointer"
+            onClick={() => setIsTermsVisible(true)}
+          >
+            Saya menyetujui syarat dan ketentuan.
+          </span>
+        </div>
+
+        <button
+          className={`flex items-center justify-center w-full py-3 rounded-lg shadow-md cursor-pointer mt-10 ${
+            isTermsAccepted ? "bg-blue-500 text-white" : "bg-gray-400"
+          }`}
+          onClick={handleProceed}
+        >
+          <span>Lanjutkan</span>
+        </button>
+
+        <button
+          className="flex items-center justify-center w-full bg-red-500 text-white py-3 rounded-lg shadow-md cursor-pointer mt-2"
+          onClick={handleProceedCancel}
+        >
+          <span>Batal</span>
+        </button>
       </div>
 
       {isModalVisible && (
@@ -237,27 +219,14 @@ function PaymentMember() {
           </h2>
           <h1 className="text-4xl font-medium">
             <span className="font-semibold">IDR</span>{" "}
-            {location.state.tariff
-              ? `${parseInt(
-                  parseInt(location.state.tariff) + 5000
-                ).toLocaleString("id-ID")}`
-              : "-"}
+            {(location.state.tariff + 5000).toLocaleString("id-ID")}
           </h1>
 
           <div className="flex justify-between items-center mt-5 border-b border-gray-300 pb-2 pt-3">
             <div className="text-base text-gray-400">Metode pembayaran</div>
             <p className="font-semibold">
-              {`${selectedProvider.ProviderName} ${
-                selectedProvider.Type === "Virtual Account" ? "VA" : ""
-              }`}
-            </p>
-          </div>
-
-          <div className="flex justify-between items-center border-b border-gray-300 pb-2 pt-3">
-            <div className="text-base text-gray-400">Biaya member</div>
-            <p className="font-semibold">
-              <span className="font-semibold">IDR</span>{" "}
-              {parseInt(location.state.tariff).toLocaleString("id-ID")}
+              {selectedProvider.code_bank}{" "}
+              {selectedType.value === "VIRTUAL_ACCOUNT" ? "VA" : "E-Wallet"}
             </p>
           </div>
 
@@ -303,14 +272,12 @@ function PaymentMember() {
       )}
 
       {isTermsVisible && (
-        <>
-          <TermsAndCondition
-            isVisible={isTermsVisible}
-            onClose={handleCloseTerms}
-          />
-        </>
+        <TermsAndCondition
+          isVisible={isTermsVisible}
+          onClose={() => setIsTermsVisible(false)}
+        />
       )}
-    </>
+    </div>
   );
 }
 

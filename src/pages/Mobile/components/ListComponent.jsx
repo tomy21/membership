@@ -7,7 +7,16 @@ import {
 } from "@headlessui/react";
 import { HiChevronUpDown } from "react-icons/hi2";
 
-function ListComponent({ list, title, search, selected, setSelected }) {
+function ListComponent({
+  id,
+  name,
+  list,
+  title,
+  search,
+  selected,
+  setSelected,
+  bottom,
+}) {
   const [query, setQuery] = useState("");
 
   const filteredPeople = list.filter((person) =>
@@ -35,27 +44,32 @@ function ListComponent({ list, title, search, selected, setSelected }) {
 
           <ListboxOptions
             transition
-            className="absolute z-10 mt-14 max-h-56 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            className={`absolute z-10 mt-2 max-h-56 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm ${
+              bottom === true ? "-top-40" : "top-12"
+            } `}
           >
             <div className="px-3 py-2">
               <input
                 type="text"
+                id={id}
+                name={name}
                 placeholder={search}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            <div className="max-h-40 overflow-auto">
+            <div className={`${bottom ? "h-20" : "h-20"} overflow-auto`}>
               {filteredPeople.length > 0 ? (
                 filteredPeople.map((person, index) => (
                   <ListboxOption
                     key={index}
                     value={person}
+                    name={name}
                     className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white max-h-52 overflow-y-auto"
                   >
                     <div className="flex items-center">
-                      <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
+                      <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold text-sm">
                         {person.Name}{" "}
                         {person.Vehicle ? `(${person.Vehicle})` : ""}
                       </span>

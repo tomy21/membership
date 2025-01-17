@@ -3,7 +3,7 @@ import { apiClient } from "./apiClient";
 export const apiUsers = {
   getUserId: async () => {
     try {
-      const response = await apiClient.get(`/v01/member/api/auth/userById`);
+      const response = await apiClient.get(`/v01/member/api/auth/user/byId`);
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -24,7 +24,9 @@ export const apiUsers = {
       const response = await apiClient.get("/v01/member/api/auth/protected");
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 
@@ -49,7 +51,9 @@ export const apiUsers = {
 
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 
@@ -128,10 +132,11 @@ export const verifikasiUsers = {
       const response = await apiClient.post(`/v01/member/api/auth/verifikasi`, {
         Pin: pinVerifikasi,
       });
+
       return response.data;
     } catch (error) {
       console.error("API error:", error.response ? error.response.data : error);
-      throw error.response ? error.response.data : error;
+      return error.response.data;
     }
   },
 };
@@ -139,14 +144,12 @@ export const verifikasiUsers = {
 export const loginUsers = {
   login: async (userData) => {
     try {
-      const response = await apiClient.post(
-        "/v01/member/api/auth/login",
-        userData
-      );
-
+      const response = await apiClient.post("/v1/auth/login", userData);
       return response.data;
     } catch (error) {
-      throw error.response.data;
+      const serverError = error.response?.data || { message: "Unknown error" };
+      console.warn("Server validation error:", serverError);
+      return serverError;
     }
   },
 };

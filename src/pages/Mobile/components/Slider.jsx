@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CardComponent from "./CardComponent";
 
 export default function SliderComponent({ openModal, memberProducts }) {
+  const [currentSlide, setCurrentSlide] = useState(0); // State untuk melacak slide saat ini
+
   const settings = {
     dots: false,
     infinite: true,
@@ -14,6 +16,7 @@ export default function SliderComponent({ openModal, memberProducts }) {
     autoplay: true,
     autoplaySpeed: 8000,
     arrows: false,
+    beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex), // Update state saat slide berubah
   };
 
   if (memberProducts.length === 0) {
@@ -38,10 +41,18 @@ export default function SliderComponent({ openModal, memberProducts }) {
   }
 
   return (
-    <Slider {...settings}>
-      {memberProducts.map((product, index) => (
-        <CardComponent key={index} product={product} openModal={openModal} />
-      ))}
-    </Slider>
+    <div className="relative">
+      {/* Indikator posisi slider */}
+      <div className="absolute top-2 right-4 bg-transparent text-black text-xs px-2 py-1 rounded">
+        {currentSlide + 1}/{memberProducts.length}
+      </div>
+
+      {/* Slider */}
+      <Slider {...settings}>
+        {memberProducts.map((product, index) => (
+          <CardComponent key={index} product={product} openModal={openModal} />
+        ))}
+      </Slider>
+    </div>
   );
 }

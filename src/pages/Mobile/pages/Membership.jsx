@@ -2,138 +2,188 @@ import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import ListComponent from "../components/ListComponent";
-import { HiPhoto } from "react-icons/hi2";
-import Cookies from "js-cookie";
-import { apiLocations } from "../../../api/apiLocations";
 import {
-  getBundleById,
-  getBundleByType,
-  getProductAll,
-  getProductById,
-  getProductByLocation,
-  productBundleAll,
-  verifikasiPlate,
-} from "../../../api/apiProduct";
+  Location,
+  MembershipProduct,
+  Users,
+} from "../../../api/apiMembershipV2";
 
 export default function Membership() {
   const [location, setLocation] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const [vehicleList, setVehicleList] = useState([]);
+  const [periodeList, setPeriodeList] = useState([]);
+  const [ProductList, setProductList] = useState([]);
+  const [vehicleListData, setVehicleListData] = useState([]);
   const [tariff, setTariff] = useState(0);
-  const [dataLocation, setDataLocation] = useState([]);
-  const [platNomor, setPlatNomor] = useState("");
-  const [productId, setProductId] = useState(0);
-  const [selectedVehicleType, setSelectedVehicleType] = useState("");
-  const [message, setMessage] = useState("");
-  const [preview, setPreview] = useState(null);
-  const [file, setFile] = useState(null);
-  const [dataFileStnk, setFileSTNK] = useState(null);
+
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedTypeVehicle, setSelectedTypeVehicle] = useState("");
+  const [selectedPeriode, setSelectedPeriode] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState("");
   const [errors, setErrors] = useState({});
-  const [productBundle, setProductBundle] = useState([]);
-  const [selectBundleProduct, setSelectBundleProduct] = useState("");
-  const [periodeId, setPeriodId] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [loadingPlate, setLoadingPlate] = useState(false);
-  const [editEnabled, setEditEnabled] = useState(false); // State untuk mengontrol tombol edit
-  const [showPopup, setShowPopup] = useState(false); // State untuk mengontrol popup edit
-  const [timeoutId, setTimeoutId] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const navigate = useNavigate();
 
-  // Fetch Locations
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const response = await getProductAll.getAll();
-        if (response.data && Array.isArray(response.data.products)) {
-          setLocation(response.data.products);
-        } else {
-          console.error("Invalid response format");
-        }
+        const response = await Location.getAll();
+        setLocation(response.data);
       } catch (error) {
         console.error("Failed to fetch location data:", error);
       }
     };
-    fetchLocation();
-  }, [navigate]);
 
-  // Fetch Product by Location
-  useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchVehicleType = async () => {
+      const locationCode = selectedLocation.Code;
       if (selectedLocation) {
         try {
-          const response = await productBundleAll.getByIdProduct(
-            selectedLocation.IdProduct
-          );
-          const responseQuota = await productBundleAll.getProductQuote(
-            selectedLocation.IdProduct
-          );
-          setPeriodId(responseQuota.data[0].Id ?? responseQuota.data.Id);
-          setDataLocation(response.data);
+          const response = await MembershipProduct.getVehicleType(locationCode);
+          setVehicleList(response.data);
         } catch (error) {
           console.error("Failed to fetch product data:", error);
         }
       }
     };
-    fetchProduct();
-  }, [selectedLocation]);
 
-  // Vehicle Types List
-  const vehicleTypes = Array.isArray(dataLocation)
-    ? [
-        ...new Set(
-          dataLocation.map((item) => ({
-            Code: item.id,
-            Name: item.Name,
-            Vehicle: item.Type,
-          }))
-        ),
-      ]
-    : [];
+    const fetchPeriode = async () => {
+      const type = selectedTypeVehicle.Name;
+      const locationCode = selectedLocation.Code;
+      if (selectedTypeVehicle) {
+        try {
+          const response = await MembershipProduct.getPeriode(
+            type,
+            locationCode
+          );
+          setPeriodeList(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    const fetchProduct = async () => {
+      const locationCode = selectedLocation.Code;
+      const type = selectedTypeVehicle.Name;
+      const periode = selectedPeriode.Name;
+      if (selectedPeriode) {
+        try {
+          const response = await MembershipProduct.getProduct(
+            periode,
+            locationCode,
+            type
+          );
+          setProductList(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    const fetchPlateUser = async () => {
+      const type = selectedTypeVehicle.Name;
+      const locationCode = selectedLocation.Code;
+      if (selectedTypeVehicle) {
+        try {
+          const response = await Users.getVehicleUnActiveLocation(
+            type,
+            locationCode
+          );
+          setVehicleListData(response.data);
+        } catch (error) {
+          console.error("Failed to fetch product data:", error);
+        }
+      }
+    };
+
+    if (selectedProduct) {
+      setTariff(selectedProduct.Price);
+      setStartDate(selectedProduct.StartDate);
+      setEndDate(selectedProduct.EndDate);
+    }
+
+    fetchLocation();
+    fetchVehicleType();
+    fetchPeriode();
+    fetchProduct();
+    fetchPlateUser();
+  }, [selectedLocation, selectedTypeVehicle, selectedPeriode, selectedProduct]);
+
+  // console.log("data", selectedTypeVehicle);
 
   const listLocation = Array.isArray(location)
     ? [
         ...new Set(
           location.map((item) => ({
-            Code: item.LocationCode,
-            Name: item.LocationName,
-            IdProduct: item.Id,
+            Code: item.location_code,
+            Name: item.location_name,
           }))
         ),
       ]
     : [];
 
-  // Fetch Member by Vehicle Type
-  useEffect(() => {
-    const fetchMemberById = async () => {
-      if (selectedVehicleType.Code) {
-        try {
-          const responseBundle = await productBundleAll.getById(
-            selectedVehicleType.Code
-          );
+  const vehicleTypes = Array.isArray(vehicleList)
+    ? [
+        ...new Set(
+          vehicleList.map((item) => ({
+            Code: item.vehicle_type,
+            Name: item.vehicle_type,
+          }))
+        ),
+      ]
+    : [];
 
-          setTariff(responseBundle.data.Price);
-          setProductBundle(responseBundle?.data);
-          setProductId(responseBundle.data.MemberProductId);
-          setStartDate(responseBundle.data?.StartDate);
-          setEndDate(responseBundle.data?.EndDate);
-        } catch (error) {
-          console.error("Failed to fetch member data:", error);
-        }
-      }
-    };
-    fetchMemberById();
-  }, [selectedVehicleType, selectBundleProduct]);
+  const periodData = Array.isArray(periodeList)
+    ? [
+        ...new Set(
+          periodeList.map((item) => ({
+            Code: item.periode,
+            Name: item.periode,
+          }))
+        ),
+      ]
+    : [];
 
-  // Handle Proceed to Next Step
+  const productData = Array.isArray(ProductList)
+    ? [
+        ...new Set(
+          ProductList.map((item) => ({
+            Code: item.id,
+            Name: item.product_name,
+            StartDate: item.start_date,
+            EndDate: item.end_date,
+            Price: item.price,
+          }))
+        ),
+      ]
+    : [];
+
+  const plateUsers = Array.isArray(vehicleListData)
+    ? [
+        ...new Set(
+          vehicleListData.map((item) => ({
+            Code: item.plate_number,
+            Name: item.plate_number,
+          }))
+        ),
+      ]
+    : [];
+
   const handleProceed = () => {
     const newErrors = {};
-    if (!selectedLocation) newErrors.selectedLocation = "Lokasi harus dipilih";
-    if (!selectedVehicleType)
-      newErrors.selectedVehicleType = "Tipe kendaraan harus dipilih";
-    if (!platNomor) newErrors.platNomor = "Plat nomor harus diisi";
-    if (!file) newErrors.file = "Foto STNK harus diunggah";
+    if (!selectedLocation)
+      newErrors.selectedLocation = "Pilih lokasi terlebih dahulu";
+    if (!selectedTypeVehicle)
+      newErrors.selectedTypeVehicle = "Pilih tipe kendaraan terlebih dahulu";
+    if (!selectedPeriode)
+      newErrors.selectedPeriode = "Pilih periode terlebih dahulu";
+    if (!selectedProduct)
+      newErrors.selectedProduct = "Pilih produk terlebih dahulu";
+    if (!selectedVehicle)
+      newErrors.selectedVehicle = "Pilih nomor kendaraan terlebih dahulu";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -141,13 +191,13 @@ export default function Membership() {
       setErrors({});
       const data = {
         type: "Member",
-        periodId: periodeId,
-        productId: productId,
+        // periodId: periodeId,
+        productId: selectedProduct.Code,
         location: selectedLocation.Name,
-        vehicleType: selectedVehicleType.Name,
+        locationCode: selectedLocation.Code,
+        plateNumber: selectedVehicle.Name,
+        vehicleType: selectedTypeVehicle.Name,
         tariff: tariff,
-        platNomor: platNomor,
-        file: file,
         startDate: startDate,
         endDate: endDate,
       };
@@ -157,282 +207,227 @@ export default function Membership() {
     }
   };
 
-  // File Upload Handler
-  const handleFileUpload = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  // File Change Handler with Preview
-  const handleFileChange = (event) => {
-    setLoading(true);
-    const fileStnk = event.target.files[0];
-    if (fileStnk) {
-      const fileUrl = URL.createObjectURL(fileStnk);
-      setPreview(fileUrl);
-      setFileSTNK(fileStnk);
-      setLoading(false);
-    }
-  };
-
-  // Fetch Plate Number from Image
-  useEffect(() => {
-    if (file) {
-      const fetchPlateNumber = async () => {
-        setLoadingPlate(true);
-        const cameraId = selectedLocation.Code + "-Membership";
-        const formData = new FormData();
-        formData.append("upload", file);
-        formData.append("camera_id", cameraId);
-        const apiToken = "2ee83fb34e74d1bd32772ac11129862e8f8161e1";
-        try {
-          const response = await fetch(
-            "https://api.platerecognizer.com/v1/plate-reader/",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Token ${apiToken}`,
-              },
-              body: formData,
-            }
-          );
-
-          const result = await response.json();
-          if (result.results && result.results.length > 0) {
-            setPlatNomor(result.results[0].plate.toUpperCase());
-          } else {
-            setEditEnabled(true); // Jika tidak terdeteksi, izinkan edit
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          setEditEnabled(true); // Jika terjadi error, izinkan edit
-        } finally {
-          setLoadingPlate(false);
-        }
-      };
-      fetchPlateNumber();
-
-      // Timeout untuk edit
-      const timeout = setTimeout(() => {
-        setEditEnabled(true);
-      }, 3000); // Tunggu 3 detik sebelum mengizinkan edit
-
-      setTimeoutId(timeout);
-    }
-  }, [file]);
-
-  const handleChange = (e) => {
-    if (editEnabled) {
-      const formattedValue = e.target.value.replace(/\s+/g, "").toUpperCase();
-      setPlatNomor(formattedValue);
-    }
-  };
-
-  const handleEdit = () => {
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
 
+  useEffect(() => {
+    // Reset semua field di bawah lokasi
+    if (selectedLocation) {
+      setSelectedTypeVehicle("");
+      setSelectedPeriode("");
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setVehicleList([]);
+      setPeriodeList([]);
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    // Reset semua field di bawah tipe kendaraan
+    if (selectedTypeVehicle) {
+      setSelectedPeriode("");
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setPeriodeList([]);
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedTypeVehicle]);
+
+  useEffect(() => {
+    // Reset semua field di bawah periode
+    if (selectedPeriode) {
+      setSelectedProduct("");
+      setSelectedVehicle("");
+      setProductList([]);
+      setVehicleListData([]);
+      setTariff(0);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [selectedPeriode]);
+
+  useEffect(() => {
+    // Reset kendaraan
+    if (selectedProduct) {
+      setSelectedVehicle("");
+      setVehicleListData([]);
+    }
+  }, [selectedProduct]);
+
   return (
     <>
-      <div className="container overflow-auto">
-        <div className="flex flex-col items-start justify-start min-h-[60vh] w-full">
-          <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
-            <FaArrowLeftLong
-              className="pl-3 w-10 cursor-pointer"
-              onClick={handleBack}
-            />
-            <h1 className="text-lg font-semibold px-3">Membership</h1>
-          </div>
+      <div className="h-screen flex flex-col">
+        <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
+          <FaArrowLeftLong
+            className="pl-3 w-10 cursor-pointer"
+            onClick={handleBack}
+          />
+          <h1 className="text-lg font-semibold px-3">Pembelian Produk</h1>
+        </div>
 
-          <div className="w-full flex flex-col items-start justify-start px-3 py-3 font-medium border-b border-gray-300">
-            <h1 className="text-xl">Paket Member</h1>
+        <div className="overflow-y-auto max-h-full px-3 pb-10">
+          <div className="w-full flex flex-col items-start justify-start py-3 font-medium border-b border-gray-300">
+            <h1 className="text-xl">Paket Membership</h1>
             <p className="text-sm text-gray-400">
-              Pilih paket yang anda inginkan
+              Pilih paket yang kamu inginkan.
             </p>
           </div>
 
-          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
+          {/* Lokasi Member */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
             <label className="text-gray-400">Lokasi Member</label>
             <ListComponent
+              id={"lokasi-select"}
+              name={"lokasi"}
               list={listLocation}
-              title={"Pilih Lokasi"}
-              search={"Cari Lokasi"}
+              title={"Pilih lokasi"}
+              search={"Cari lokasi"}
               selected={selectedLocation}
               setSelected={setSelectedLocation}
+              bottom={false}
             />
             {errors.selectedLocation && (
               <p className="text-red-500">{errors.selectedLocation}</p>
             )}
           </div>
 
-          <div className="flex flex-col w-full justify-start items-start m-auto px-3 mt-2">
-            <label className="text-gray-400">Product Membership</label>
+          {/* Type Kendaraan */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Type Kendaraan</label>
             <ListComponent
+              id={"vehicle-select"}
+              name={"vehicleTypes"}
               list={vehicleTypes}
-              title={"Pilih Product Membership"}
-              search={"Cari Product Membership"}
-              selected={selectedVehicleType}
-              setSelected={setSelectedVehicleType}
+              title={"Pilih type kendaraan"}
+              search={"Cari type kendaraan"}
+              selected={selectedTypeVehicle}
+              setSelected={setSelectedTypeVehicle}
+              bottom={false}
             />
-            {errors.selectedVehicleType && (
-              <p className="text-red-500">{errors.selectedVehicleType}</p>
+            {errors.selectedTypeVehicle && (
+              <p className="text-red-500">{errors.selectedTypeVehicle}</p>
             )}
           </div>
 
-          <div className="px-3 flex flex-col justify-start items-start w-full mt-3">
-            <label htmlFor="price" className="text-gray-400">
+          {/* Periode Membership */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Periode Membership</label>
+            <ListComponent
+              id="periode-select"
+              name={"periode"}
+              list={periodData}
+              title={"Pilih periode"}
+              search={"Cari periode"}
+              selected={selectedPeriode}
+              setSelected={setSelectedPeriode}
+              bottom={false}
+            />
+            {errors.selectedPeriode && (
+              <p className="text-red-500">{errors.selectedPeriode}</p>
+            )}
+          </div>
+
+          {/* Produk Membership */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Produk Membership</label>
+            <ListComponent
+              id="product-select"
+              name="product"
+              list={productData}
+              title={"Pilih product"}
+              search={"Cari product"}
+              selected={selectedProduct}
+              setSelected={setSelectedProduct}
+              bottom={false}
+            />
+            {errors.selectedProduct && (
+              <p className="text-red-500">{errors.selectedProduct}</p>
+            )}
+          </div>
+
+          {/* Harga */}
+          <div className=" mt-4 text-left">
+            <label
+              htmlFor="price"
+              className="text-gray-600 font-medium mb-2 block"
+            >
               Harga
             </label>
-            <div className="relative rounded-md shadow-sm w-full mt-2">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5">
-                <span className="text-gray-500 sm:text-sm border-r border-gray-400 pr-2">
-                  IDR
-                </span>
+            <div className="relative bg-gray-100 rounded-lg shadow-inner p-3">
+              <div className="absolute inset-y-0 left-4 flex items-center">
+                <span className="text-gray-500 font-medium">IDR</span>
               </div>
               <input
                 id="price"
                 name="price"
                 type="text"
-                placeholder="0.00"
-                className="block w-full rounded-md border-0 py-3 pl-16 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                disabled
                 value={
                   tariff !== 0
                     ? `${parseInt(tariff).toLocaleString("id-ID")}`
-                    : "Price not available"
+                    : "0"
                 }
-                disabled
+                className="w-full bg-transparent pl-16 text-gray-800 text-lg font-medium outline-none"
               />
             </div>
+          </div>
 
-            <label htmlFor="platnomor" className="mt-2 text-gray-400">
-              Plat Nomor Kendaraan
-            </label>
-            {message && <p className="text-sm text-red-500 mt-2 ">{message}</p>}
-            {errors.platNomor && (
-              <p className="text-red-500">{errors.platNomor}</p>
+          {/* Kendaraan */}
+          <div className="flex flex-col w-full mt-2 items-start justify-start">
+            <label className="text-gray-400">Kendaraan</label>
+            <ListComponent
+              id="vehicle-select"
+              name="plateUsers"
+              list={plateUsers}
+              title={"Pilih Kendaraan"}
+              search={"Cari kendaraan"}
+              selected={selectedVehicle}
+              setSelected={setSelectedVehicle}
+              bottom={true}
+            />
+            {errors.selectedVehicle && (
+              <p className="text-red-500">{errors.selectedVehicle}</p>
             )}
-            <div className="relative">
-              <input
-                type="file"
-                name="file"
-                id="file"
-                className="block w-full mt-3 py-3 pl-5 pr-20 text-gray-900 border border-slate-300 rounded-md"
-                onChange={handleFileUpload}
-                accept=".jpg, .png, .jpeg"
-              />
-              <input
-                type="text"
-                name="platnomor"
-                id="platnomor"
-                className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="ex : B123ABC"
-                value={platNomor}
-                onChange={handleChange}
-                disabled={!editEnabled}
-                readOnly
-              />
-              {loadingPlate && (
-                <div className="absolute right-0 top-20 mt-3 mr-5 flex items-center">
-                  <div className="loader"></div>
-                </div>
-              )}
-              {!loadingPlate && editEnabled && (
-                <button
-                  className="absolute right-0 top-20 mt-3 mr-5 text-blue-500"
-                  onClick={handleEdit}
-                >
-                  Edit
-                </button>
-              )}
-            </div>
           </div>
 
-          <div className="col-span-full px-3 w-full">
-            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-5">
-              <div className="text-center">
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="mx-auto h-48 w-auto"
-                  />
-                ) : (
-                  <HiPhoto
-                    aria-hidden="true"
-                    className="mx-auto h-12 w-12 text-gray-300"
-                  />
-                )}
-                <div className="mt-4 flex items-center justify-center text-sm leading-6 text-gray-600">
-                  <label
-                    htmlFor="file-upload"
-                    className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                  >
-                    <span>Upload foto STNK</span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                      accept=".jpg, .png, .jpeg"
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                </div>
-                <p className="text-xs leading-5 text-gray-600">
-                  PNG, JPG up to 10MB
-                </p>
-                {errors.file && <p className="text-red-500">{errors.file}</p>}
-              </div>
-            </div>
-          </div>
-
-          <div className="px-3 flex flex-col justify-start items-start w-full mb-5">
+          {/* Tombol Next */}
+          <div className="flex flex-col w-full mt-5 mb-10">
             <button
-              className="flex items-center justify-center w-full bg-blue-500 text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5"
+              className={`w-full text-white py-3 px-5 rounded-lg shadow-md cursor-pointer mt-5  ${
+                selectedLocation &&
+                selectedTypeVehicle &&
+                selectedPeriode &&
+                selectedProduct &&
+                selectedVehicle
+                  ? "bg-blue-500"
+                  : "bg-gray-500"
+              }`}
               onClick={handleProceed}
+              disabled={
+                !(
+                  selectedLocation &&
+                  selectedTypeVehicle &&
+                  selectedPeriode &&
+                  selectedProduct &&
+                  selectedVehicle
+                )
+              }
             >
               <span>Lanjutkan</span>
             </button>
           </div>
         </div>
       </div>
-
-      {/* Popup Edit */}
-      {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Edit Plat Nomor</h2>
-            <input
-              type="text"
-              className="block w-full rounded-md border-0 mt-3 py-3 pl-5 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="ex : B123ABC"
-              value={platNomor}
-              onChange={handleChange}
-            />
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg mr-2"
-                onClick={closePopup}
-              >
-                Simpan
-              </button>
-              <button
-                className="bg-gray-300 text-black py-2 px-4 rounded-lg"
-                onClick={closePopup}
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

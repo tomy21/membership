@@ -13,6 +13,7 @@ import HistoryPayment from "../components/HistoryPayment";
 import { HistoryPost } from "../../../api/apiProduct";
 import Skeleton from "react-loading-skeleton";
 import HistoryPostComponent from "../components/HistoryPost";
+import { historyParking, Payment } from "../../../api/apiMembershipV2";
 
 function Riwayat() {
   const [data, setData] = useState([]);
@@ -35,7 +36,7 @@ function Riwayat() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const historyResponse = await historyMembers.getHistory();
+        const historyResponse = await Payment.getAllTransaction();
         setListRiwayat(historyResponse?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -48,7 +49,7 @@ function Riwayat() {
       }
 
       try {
-        const historyPost = await HistoryPost.getById();
+        const historyPost = await historyParking.getHistoryByUserId();
         setHistoryPost(historyPost?.data);
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -68,35 +69,63 @@ function Riwayat() {
   };
 
   const handleExport = () => {
-    // Data yang akan diekspor ke Excel
-    const excelData = data.map((row) => ({
-      Id: row.Id,
-      Activity: row.Activity,
-      Price: row.Price,
-      Status: row.Status,
-      CreatedAt: row.CreatedAt,
-    }));
+    try {
+      let data = [];
 
-    // Membuat worksheet
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
+      // Tentukan data berdasarkan tab aktif
+      if (activeTab === "tab1") {
+        data = listRiwayat;
+      } else if (activeTab === "tab2") {
+        data = historyPost;
+      }
 
-    // Membuat workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+      // Validasi jika data kosong
+      if (!data || data.length === 0) {
+        alert("Tidak ada data untuk diekspor.");
+        return;
+      }
 
-    // Konversi ke binary dan simpan
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+      // Map data untuk diubah menjadi format yang sesuai untuk Excel
+      const excelData = data.map((row, index) => ({
+        Id: index + 1,
+        Invoice: row.invoice_id || "-",
+        Virtual_Account: parseInt(row.virtual_account).toFixed() || "-",
+        Product: row.product_name || "-",
+        Price: row.price || 0,
+        Status: row.statusPayment || "-",
+        CreatedAt: row.createAt
+          ? format(new Date(row.createAt), "dd MMM yyyy HH:mm:ss")
+          : "-",
+      }));
 
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `${tabs[currentTab].replace(" ", "_")}.xlsx`);
+      // Membuat worksheet dari data
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Membuat workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+      // Konversi workbook ke buffer binary
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      // Membuat blob untuk file Excel
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      // Simpan file menggunakan nama file dinamis berdasarkan tab aktif
+      const fileName = `${
+        tabs[currentTab]?.replace(" ", "_") || "Exported_Data"
+      }.xlsx`;
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Gagal mengekspor data:", error);
+      alert("Terjadi kesalahan saat mengekspor data. Silakan coba lagi.");
+    }
   };
-
-  const filteredData = data.filter((item) =>
-    item.Activity.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const loadMore = () => {
     if (currentPage < totalPages) {
@@ -111,11 +140,14 @@ function Riwayat() {
 
   return (
     <>
-      <div className="flex w-full space-x-20 justify-start items-center py-3 bg-amber-300">
-        <FaArrowLeftLong className="pl-3 w-10" onClick={() => handleBack()} />
-        <h1 className="text-lg font-semibold px-10">History</h1>
+      <div className="flex w-full space-x-4 items-center py-4 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-md">
+        <FaArrowLeftLong
+          className="pl-3 w-10 cursor-pointer"
+          onClick={handleBack}
+        />
+        <h1 className="text-lg font-semibold px-3">Riwayat </h1>
       </div>
-      <div className="p-4">
+      <div className="p-4 h-screen overflow-auto">
         <div className="flex border-b border-gray-300 mb-4">
           <button
             onClick={() => setActiveTab("tab1")}
@@ -162,7 +194,7 @@ function Riwayat() {
           </button>
         </div>
 
-        <div className="space-y-2 w-full max-h-[80%] overflow-auto">
+        <div className="space-y-2 w-full max-h-[70%] overflow-auto">
           <div className="">
             {activeTab === "tab1" && (
               <div>
@@ -178,7 +210,7 @@ function Riwayat() {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 h-full overflow-y-auto py-2">
                     {isLoading ? (
                       [...Array(5)].map((_, index) => (
                         <div
@@ -219,7 +251,7 @@ function Riwayat() {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col justify-start items-start px-4 space-y-2 min-h-28 max-h-96 overflow-y-auto py-2">
+                  <div className="flex flex-col justify-start items-start px-4 space-y-2 h-full overflow-y-auto py-2">
                     {isLoading ? (
                       [...Array(5)].map((_, index) => (
                         <div

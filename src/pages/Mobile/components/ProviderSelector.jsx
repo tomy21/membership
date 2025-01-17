@@ -7,6 +7,7 @@ const ProviderSelector = ({
   setSelectedProvider,
   filteredProviders,
 }) => {
+  console.log(filteredProviders, selectedProvider);
   return (
     <div className="text-sm w-full text-start">
       <Listbox value={selectedProvider} onChange={setSelectedProvider}>
@@ -15,12 +16,18 @@ const ProviderSelector = ({
             {selectedProvider ? (
               <>
                 <img
-                  src={`/assets/payment/${selectedProvider?.LogoUrl}`}
+                  src={`${
+                    selectedProvider.code_bank === "NATIONALNOBU"
+                      ? "/assets/payment/nobu_logo.png"
+                      : selectedProvider.code_bank === "SKYPOINTS"
+                      ? "/assets/payment/logo.svg"
+                      : "/assets/payment/bca_logo.png"
+                  }`}
                   className="w-7"
-                  alt={selectedProvider?.ProviderName}
+                  alt={selectedProvider?.code_bank}
                 />
                 <span className="block truncate">
-                  {selectedProvider?.ProviderName}
+                  {selectedProvider?.code_bank}
                 </span>
               </>
             ) : (
@@ -33,44 +40,61 @@ const ProviderSelector = ({
               />
             </span>
           </Listbox.Button>
-          <Listbox.Options className="absolute z-20 mt-12 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {filteredProviders.map((provider) => (
-              <Listbox.Option
-                key={provider.Id}
-                value={provider}
-                className={({ active }) =>
-                  `relative cursor-default select-none py-2 pl-3 pr-9 flex flex-row justify-start items-center gap-x-4 ${
-                    active ? "bg-indigo-600 text-white" : "text-gray-900"
-                  }`
-                }
-              >
-                {({ selected, active }) => (
-                  <>
-                    <img
-                      src={`/assets/payment/${provider.LogoUrl}`}
-                      className="w-10"
-                      alt=""
-                    />
-                    <span
-                      className={`block truncate ${
-                        selected ? "font-semibold" : "font-normal"
-                      }`}
-                    >
-                      {provider.ProviderName}
-                    </span>
-                    {selected ? (
+          <Listbox.Options className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            {filteredProviders
+              .filter((provider) =>
+                provider.code_bank === "NATIONALNOBU"
+                  ? provider.code_bank === "NATIONALNOBU" ||
+                    provider.code_bank === "SKYPOINTS"
+                  : true
+              )
+              .map((provider) => (
+                <Listbox.Option
+                  key={provider.id}
+                  value={provider}
+                  className={({ active }) =>
+                    `relative cursor-default select-none py-2 pl-3 pr-9 flex flex-row justify-start items-center gap-x-4 ${
+                      active ? "bg-indigo-600 text-white" : "text-gray-900"
+                    }`
+                  }
+                >
+                  {({ selected, active }) => (
+                    <>
+                      <img
+                        src={`${
+                          provider.code_bank === "NATIONALNOBU"
+                            ? "/assets/payment/nobu_logo.png"
+                            : provider.code_bank === "SKYPOINTS"
+                            ? "/assets/payment/logo.svg"
+                            : "/assets/payment/bca_logo.png"
+                        }`}
+                        className="w-7"
+                        alt={provider?.code_bank}
+                      />
                       <span
-                        className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
-                          active ? "text-white" : "text-indigo-600"
+                        className={`block truncate ${
+                          selected ? "font-semibold" : "font-normal"
                         }`}
                       >
-                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        {provider.code_bank === "NATIONALNOBU"
+                          ? "Nobu"
+                          : provider.code_bank === "SKYPOINTS"
+                          ? "SKY POINTS"
+                          : provider.code_bank}
                       </span>
-                    ) : null}
-                  </>
-                )}
-              </Listbox.Option>
-            ))}
+                      {selected ? (
+                        <span
+                          className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
+                            active ? "text-white" : "text-indigo-600"
+                          }`}
+                        >
+                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                      ) : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
           </Listbox.Options>
         </div>
       </Listbox>
