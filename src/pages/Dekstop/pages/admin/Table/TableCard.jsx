@@ -8,6 +8,7 @@ import { ScaleLoader } from 'react-spinners';
 import { BsFillXCircleFill, BsPatchCheck } from 'react-icons/bs';
 import { IoTrashOutline } from 'react-icons/io5';
 import { MdEditDocument } from 'react-icons/md';
+import Pagination from '../components/Pagination';
 
 export default function TableCard() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +23,7 @@ export default function TableCard() {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [isError, setIsError] = useState(false);
     const [progress, setProgress] = useState(false);
+    const [isMessage, setIsMessage] = useState('');
 
     useEffect(() => {
         fetchData();
@@ -34,9 +36,10 @@ export default function TableCard() {
     const fetchData = async () => {
         try {
             const response = await Card.getAllCard();
+            console.log(response);
             setData(response.data);
-            setTotalPages(response.totalPages);
-            setTotalItems(response.totalItems);
+            // setTotalPages(response.meta.totalPages);
+            // setTotalItems(response.totalItems);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
@@ -107,25 +110,11 @@ export default function TableCard() {
     const handleAddCard = async (value) => {
         setLoading(true);
         try {
-            const response = await Card.createNewCard(value);
-            console.log(response.status === true);
+            console.log(value.length);
 
-            if (response.status === true) {
-                setIsSuccessModalOpen(true);
-
-                // Tutup modal success secara otomatis setelah beberapa saat
-                const interval = setInterval(() => {
-                    setProgress((prev) => {
-                        if (prev >= 100) {
-                            clearInterval(interval); // Hentikan progress
-                            setIsSuccessModalOpen(false); // Tutup modal success
-                        }
-                        return prev + 10; // Tambahkan progress
-                    });
-                }, 300);
-                setProgress(0);
-            } else {
+            if (value.length != 8) {
                 setIsError(true);
+                setIsMessage('Card not valid');
                 const interval = setInterval(() => {
                     setProgress((prev) => {
                         if (prev >= 100) {
@@ -136,6 +125,40 @@ export default function TableCard() {
                     });
                 }, 300);
                 setProgress(0);
+                setDataRFID('');
+            } else {
+                const response = await Card.createNewCard(value);
+
+                if (response.status === true) {
+                    setIsSuccessModalOpen(true);
+                    setIsMessage('Success Add Card');
+                    // Tutup modal success secara otomatis setelah beberapa saat
+                    const interval = setInterval(() => {
+                        setProgress((prev) => {
+                            if (prev >= 100) {
+                                clearInterval(interval); // Hentikan progress
+                                setIsSuccessModalOpen(false); // Tutup modal success
+                            }
+                            return prev + 10; // Tambahkan progress
+                        });
+                    }, 300);
+                    setProgress(0);
+                    setDataRFID('');
+                } else {
+                    setIsError(true);
+                    setIsMessage('Card already exist');
+                    const interval = setInterval(() => {
+                        setProgress((prev) => {
+                            if (prev >= 100) {
+                                clearInterval(interval); // Hentikan progress
+                                setIsError(false); // Tutup modal success
+                            }
+                            return prev + 10; // Tambahkan progress
+                        });
+                    }, 300);
+                    setProgress(0);
+                    setDataRFID('');
+                }
             }
 
             fetchData(); // Refresh data tabel setelah sukses
@@ -265,6 +288,19 @@ export default function TableCard() {
                         </tbody>
                     </table>
                 </div>
+
+                <div className="mt-4 border-t border-slate-300 py-1 px-4 w-full">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItem={totalItems}
+                        limit={LimitData}
+                        onLimitChange={setLimitData}
+                        setPageCurrent={setCurrentPage}
+                        setLimitData={setLimitData}
+                    />
+                </div>
             </div>
 
             {isModalAdd && (
@@ -348,9 +384,14 @@ export default function TableCard() {
                                 size={30}
                                 className="text-green-500"
                             />
-                            <h2 className="text-lg font-semibold text-gray-800">
-                                Success ... !
-                            </h2>
+                            <div className="flex flex-col justify-start items-start">
+                                <h2 className="text-lg font-semibold text-gray-800">
+                                    Success ... !
+                                </h2>
+                                <p className="text-sm text-slate-300">
+                                    {isMessage}
+                                </p>
+                            </div>
                         </div>
 
                         {/* Progress Bar */}
@@ -375,9 +416,14 @@ export default function TableCard() {
                                 size={30}
                                 className="text-red-500"
                             />
-                            <h2 className="text-lg font-semibold text-gray-800">
-                                Failed ... !
-                            </h2>
+                            <div className="flex flex-col justify-start items-start">
+                                <h2 className="text-lg font-semibold text-gray-800">
+                                    Failed ... !
+                                </h2>
+                                <p className="text-sm text-slate-300">
+                                    {isMessage}
+                                </p>
+                            </div>
                         </div>
 
                         {/* Progress Bar */}

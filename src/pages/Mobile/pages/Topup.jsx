@@ -269,7 +269,9 @@ export default function Topup() {
                             {selectedProvider.type_payment === 'VIRTUAL_ACCOUNT'
                                 ? 'VA'
                                 : 'E-Wallet'}{' '}
-                            {selectedProvider.code_bank}
+                            {selectedProvider.code_bank === 'NATIONALNOBU'
+                                ? 'Nobu'
+                                : selectedProvider.code_bank}
                         </p>
                     </div>
 
