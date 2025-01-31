@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Loading from '../pages/Dekstop/components/Loading';
+import Page404 from '../pages/Dekstop/pages/admin/Pages/404Page';
 
 const Layout = React.lazy(() => import('../pages/Dekstop/pages/admin/Layout'));
 const SuccessRegister = React.lazy(() =>
@@ -52,7 +53,8 @@ export default function DekstopAdmin() {
         <Router>
             <Suspense fallback={<Loading />}>
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/" element={<Page404 />} />
+                    <Route path="/admin/login" element={<Login />} />
                     <Route
                         path="/registerSuccess"
                         element={<SuccessRegister />}

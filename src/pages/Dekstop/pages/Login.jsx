@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { userCMS, Users } from '../../../api/apiMembershipV2';
 import { TiWarning } from 'react-icons/ti';
 import { BsPatchCheck } from 'react-icons/bs';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 
 function Login() {
     const [captcha, setCaptcha] = useState('');
@@ -211,6 +212,12 @@ function Login() {
                             <p className="text-base text-gray-400 ">
                                 Silahkan masuk ke akun anda
                             </p>
+                            {/* <div className="flex flex-row justify-start items-center w-full bg-orange-200 py-2 px-3 rouunded">
+                                <AiOutlineInfoCircle className="text-orange-300" />
+                                <h1 className="text-orange-300 font-semibold">
+                                    Maaf halaman ini di peruntukan untuk Admin
+                                </h1>
+                            </div> */}
                         </div>
                         <form
                             onSubmit={handleLogin}
@@ -341,12 +348,12 @@ function Login() {
                             >
                                 Masuk
                             </button>
-                            <p className="flex text-center items-center justify-center text-xs">
+                            {/* <p className="flex text-center items-center justify-center text-xs">
                                 Belum punya akun ?
                                 <span className="text-cyan-600 font-semibold ml-1">
                                     <Link to={'/register'}>Daftar akun</Link>
                                 </span>
-                            </p>
+                            </p> */}
                         </form>
                     </div>
                 </div>
