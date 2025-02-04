@@ -29,11 +29,9 @@ export default function HistoryPayment({ listRiwayat }) {
     };
 
     const handleDetail = async (dataList) => {
-        console.log(dataList);
         const response = await Payment.getAllHistoryVa(
             dataList.virtual_account
         );
-        console.log(response);
         const data = {
             response: {
                 data: {

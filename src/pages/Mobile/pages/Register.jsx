@@ -7,6 +7,7 @@ import Loading from '../components/Loading';
 import { BsPatchCheck } from 'react-icons/bs';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { TiWarning } from 'react-icons/ti';
+import TermsAndCondition from '../components/TermAndCondition';
 
 Modal.setAppElement('#root');
 
@@ -19,6 +20,8 @@ export default function Register() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState('');
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+    const [isTermsVisible, setIsTermsVisible] = useState(false);
     const [formData, setFormData] = useState({
         fullname: '',
         username: '',
@@ -122,6 +125,7 @@ export default function Register() {
         if (!formData.phone_number)
             errors.phone_number = 'Nomor telpone harus diisi';
         if (!formData.pin) errors.pin = 'PIN harus diisi';
+        // if (isTermsAccepted) errors.terms = 'Anda harus menyetujui syarat dan ketentuan';
         if (inputCaptcha !== captcha) errors.captcha = 'Captcha tidak cocok';
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -439,12 +443,17 @@ export default function Register() {
                             </div>
 
                             <div className="w-full">
-                                <label
-                                    htmlFor="email"
-                                    className="block mb-2 text-sm font-medium text-gray-700"
-                                >
-                                    Email
-                                </label>
+                                <div className="flex flex-row space-x-5 justify-start items-center w-full mb-2">
+                                    <label
+                                        htmlFor="email"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Email
+                                    </label>
+                                    <span className="text-[10px] text-blue-500 bg-blue-100 p-1 rounded-full">
+                                        Pastikan email valid
+                                    </span>
+                                </div>
                                 <input
                                     type="email"
                                     id="email"
@@ -572,12 +581,17 @@ export default function Register() {
                             </div>
 
                             <div className="w-full">
-                                <label
-                                    htmlFor="phone_number"
-                                    className="block mb-2 text-sm font-medium text-gray-700"
-                                >
-                                    Nomor Telepon
-                                </label>
+                                <div className="flex flex-row space-x-3 justify-start items-center w-full mb-2">
+                                    <label
+                                        htmlFor="phone_number"
+                                        className="block text-sm font-medium text-gray-700"
+                                    >
+                                        Nomor Telepon
+                                    </label>
+                                    <span className="text-[10px] text-blue-500 bg-blue-100 p-1 rounded-full">
+                                        no handphone whatsapp
+                                    </span>
+                                </div>
                                 <input
                                     type="text"
                                     id="phone_number"
@@ -755,6 +769,23 @@ export default function Register() {
                                 )}
                             </div>
 
+                            <div className="mt-5 flex items-center space-x-3">
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox h-5 w-5 text-blue-600"
+                                    checked={isTermsAccepted}
+                                    onChange={() =>
+                                        setIsTermsAccepted(!isTermsAccepted)
+                                    }
+                                />
+                                <span
+                                    className="text-gray-700 text-sm cursor-pointer"
+                                    onClick={() => setIsTermsVisible(true)}
+                                >
+                                    Saya menyetujui syarat dan ketentuan.
+                                </span>
+                            </div>
+
                             <button
                                 type="submit"
                                 className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -812,6 +843,13 @@ export default function Register() {
                         </button>
                     </div>
                 </div>
+            )}
+
+            {isTermsVisible && (
+                <TermsAndCondition
+                    isVisible={isTermsVisible}
+                    onClose={() => setIsTermsVisible(false)}
+                />
             )}
         </>
     );

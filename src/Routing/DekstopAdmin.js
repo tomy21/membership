@@ -33,7 +33,7 @@ const Dashboard = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/Dashboard')
 );
 const ProtectedRoute = React.lazy(() =>
-    import('../pages/Mobile/components/ProtectedRoute')
+    import('../pages/Dekstop/pages/admin/components/ProtectedRoute')
 );
 const Menu = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/Menu')
