@@ -104,6 +104,7 @@ export const getAllUserMembers = {
     }
   },
 };
+
 export const getMemberByUserId = {
   getByUserId: async (page, limit) => {
     try {
@@ -402,6 +403,45 @@ export const HistoryPost = {
       const response = await apiClient.get(
         `/v01/member/api/history-post/${Card}`
       );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const History = {
+  getAll: async (page, limit) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/history/payment-detail",
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const Transaction = {
+  getAll: async (page, limit) => {
+    try {
+      const response = await apiClient.get(
+        "/v01/member/api/member-master-data",
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw error.response.data;

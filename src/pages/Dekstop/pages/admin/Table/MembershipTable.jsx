@@ -1,243 +1,167 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { format } from "date-fns";
-import { MdCloudDownload, MdOutlineAddCircle } from "react-icons/md";
-import { BsPenFill, BsTrashFill } from "react-icons/bs";
-import { getAllMembers } from "../../../../../api/apiUsers";
-import DetailModal from "./modal/UserDetailProduct";
+import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+import { Users } from '../../../../../api/apiMembershipV2';
+import Pagination from '../components/Pagination';
 
-export default function MembershipTable() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dataProduct, setDataProduct] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [totalItems, setTotalItems] = useState(0);
-  const [selectedItem, setSelectedItem] = useState(null);
+export default function MembershipTable({ tab }) {
+    const [data, setData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [LimitData, setLimitData] = useState(10);
+    const [totalItems, setTotalItems] = useState(1);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+    const fetchData = async () => {
+        try {
+            const response = await Users.getAllUser(
+                currentPage,
+                LimitData,
+                tab === 'all' ? '' : tab
+            );
+            setData(response.data || []);
+            setTotalPages(response.totalPages || 1);
+            setTotalItems(response.total || 1);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
+    };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    useEffect(() => {
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, LimitData, tab]);
 
-  const handleSuccess = (success, message) => {
-    if (success === true) {
-      toast.success(message);
-      fetchData();
-    } else {
-      toast.error(message);
-    }
-    setIsModalOpen(false);
-  };
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('id-ID', {
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
 
-  const fetchData = useCallback(
-    async (page = currentPage, limit = itemsPerPage) => {
-      const response = await getAllMembers.getData(page, limit);
-      setDataProduct(response.data);
-      setTotalPages(response.totalPages);
-      setCurrentPage(response.currentPage);
-      setTotalItems(response.total);
-    },
-    [itemsPerPage, currentPage]
-  );
+    return (
+        <div className="w-full px-3 py-4">
+            <div className="bg-white rounded-lg shadow-lg">
+                <table className="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
+                                #
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Customer Code
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Profil
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Contact
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Address
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Birthday
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Points
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Reward Points
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Status
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tr-lg"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.map((items, index) => (
+                            <tr key={index} className="text-sm">
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {index + 1}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {items.customer_no}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    <div className="flex flex-col justify-start items-start">
+                                        <h1 className="text-gray-800 font-semibold text-sm">
+                                            {items.fullname}
+                                        </h1>
+                                        <p className="text-gray-500 text-xs">
+                                            {items.gender}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    <div className="flex flex-col justify-start items-start">
+                                        <h1 className="text-gray-800 font-semibold text-sm">
+                                            {items.email}
+                                        </h1>
+                                        <p className="text-gray-400 text-xs">
+                                            {items.phone_number}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {items.address}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {format(new Date(items.dob), 'dd-MMM-yyyy')}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {formatCurrency(items.points ?? 0)}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    {formatCurrency(items.reward_points ?? 0)}
+                                </td>
+                                <td className="px-5 py-3 border-b border-gray-200">
+                                    <div className="flex flex-row justify-start items-center gap-x-3">
+                                        <div
+                                            className={`relative h-4 w-4 rounded-full text-xs flex items-center justify-center ${
+                                                items.is_active === 1
+                                                    ? 'bg-green-100'
+                                                    : 'bg-red-100'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`h-2 w-2 rounded-full ${
+                                                    items.is_active === 1
+                                                        ? 'bg-green-500'
+                                                        : 'bg-red-500'
+                                                }`}
+                                            ></div>
+                                            <span className="absolute text-center text-black text-sm font-bold"></span>
+                                        </div>
+                                        <p
+                                            className={`${
+                                                items.is_active === 1
+                                                    ? 'text-green-500'
+                                                    : 'text-red-500'
+                                            }`}
+                                        >
+                                            {items.is_active === 1
+                                                ? 'Active'
+                                                : 'Inactive'}
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-  useEffect(() => {
-    fetchData(currentPage, itemsPerPage);
-  }, [fetchData, currentPage, itemsPerPage]);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
-  return (
-    <>
-      <ToastContainer />
-      <div className="w-full px-2 py-4">
-        <div className="flex justify-between items-center mb-5">
-          <div className="relative">
-            <input
-              type="text"
-              className="w-full py-2 pr-10 pl-4 text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 text-sm"
-              placeholder="Search product"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.9 14.32a8 8 0 111.414-1.414l4.243 4.243a1 1 0 01-1.415 1.415l-4.242-4.243zM8 14a6 6 0 100-12 6 6 0 000 12z"
-                  clipRule="evenodd"
+            <div className="mt-4 border-t border-slate-300 py-1 px-4 w-full">
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItem={totalItems}
+                    limit={LimitData}
+                    onLimitChange={setLimitData}
+                    setPageCurrent={setCurrentPage}
+                    setLimitData={setLimitData}
                 />
-              </svg>
             </div>
-          </div>
-          <div className="flex flex-row justify-center items-center space-x-2">
-            <button className="px-3 py-2 rounded-lg text-green-500 text-xs flex flex-row justify-center items-center space-x-2 border border-slate-200 shadow-inner hover:bg-green-100">
-              <p>Export</p>
-              <MdCloudDownload />
-            </button>
-          </div>
         </div>
-        <div className="inline-block min-w-full shadow-md rounded-lg overflow-auto">
-          <table className="min-w-full leading-normal">
-            <thead>
-              <tr>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  <input type="checkbox" name="" id="" />
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Points
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  #
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataProduct.map((item, index) => (
-                <tr key={item.id} className="text-start">
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <input type="checkbox" name="" id="" />
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <div className="flex items-center">
-                      <div className="">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {item.UserName}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    <div className="flex flex-col justify-start items-start">
-                      <p className="text-gray-900 whitespace-no-wrap">
-                        {item.Email}
-                      </p>
-                      <p className="text-gray-900 whitespace-no-wrap">
-                        {item.PhoneNumber}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.MemberUserDetails &&
-                    item.MemberUserDetails.length > 0 &&
-                    item.MemberUserDetails[0].Points != null
-                      ? item.MemberUserDetails[0].Points
-                      : 0}
-                  </td>
-                  <td className="px-5 py-3 border-b border-gray-200 bg-white text-xs">
-                    {item.EmailConfirmed === 1 ? (
-                      <span className="text-green-400 hover:bg-green-200 border border-green-500 font-bold py-1 px-3 rounded-xl mr-2 cursor-pointer">
-                        Active
-                      </span>
-                    ) : (
-                      <>
-                        <span className="text-red-400 hover:bg-red-200 border border-red-500 font-bold py-1 px-3 rounded-xl mr-2 cursor-pointer">
-                          Inactive
-                        </span>
-                      </>
-                    )}
-                    {item.isDeleted === true && (
-                      <span className="text-red-500 font-bold">Un Active</span>
-                    )}
-                  </td>
-                  <td className="py-3 border-b border-gray-200 bg-white text-xs text-center">
-                    <div className="flex flex-row justify-center items-center gap-x-3">
-                      <BsTrashFill className="text-red-500 text-sm cursor-pointer" />
-                      <div className="border-l border-slate-400 h-4"></div>
-                      <BsPenFill
-                        className="text-sky-500 text-sm cursor-pointer"
-                        onClick={() => {
-                          setSelectedItem(item);
-                          handleOpenModal();
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagging */}
-        <div className="flex justify-between items-center mt-4 px-2">
-          <div className="flex items-center">
-            <span className="text-sm mr-2">Total {totalItems}</span>
-          </div>
-          <div className="flex items-center">
-            <div className="flex flex-row justify-center items-center gap-x-3 mr-3">
-              <span className="ml-2 text-sm text-slate-400">Per page</span>
-              <select
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-                className="border border-gray-300 rounded-md py-1 px-2"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-              </select>
-            </div>
-            <button
-              onClick={() => handlePageChange(currentPage)}
-              disabled={currentPage === 1}
-              className="px-3 py-2 rounded-lg text-gray-500 border border-slate-200 shadow-inner hover:bg-gray-100"
-            >
-              &lt;
-            </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`px-3 py-2 rounded-lg ${
-                  currentPage === i + 1
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-500 border border-slate-200"
-                } mx-1`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-2 rounded-lg text-gray-500 border border-slate-200 shadow-inner hover:bg-gray-100"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
-      </div>
-      {isModalOpen && (
-        <DetailModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          item={selectedItem}
-        />
-      )}
-    </>
-  );
+    );
 }
