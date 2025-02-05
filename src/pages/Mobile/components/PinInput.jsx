@@ -25,7 +25,6 @@ function PinInput() {
     const navigate = useNavigate();
     const inputRefs = useRef([]);
     const location = useLocation();
-    console.log(location.state);
 
     const verifyPin = async (enteredPin) => {
         setLoading(true);
@@ -291,6 +290,7 @@ function PinInput() {
             </div>
         </>
     );
+
 }
 
 export default PinInput;

@@ -105,6 +105,24 @@ export const getAllUserMembers = {
   },
 };
 
+export const getMemberByUserId = {
+  getByUserId: async (page, limit) => {
+    try {
+      const response = await apiClient.get(
+        `/v01/member/api/userProduct/byUser`,
+        {
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
 export const getMemberById = {
   getById: async () => {
     // Check if idMember is provided
