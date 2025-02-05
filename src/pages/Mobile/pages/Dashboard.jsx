@@ -11,31 +11,38 @@ import HistoryPayment from '../components/HistoryPayment';
 import HistoryPostComponent from '../components/HistoryPost';
 import { historyParking, Payment, Users } from '../../../api/apiMembershipV2';
 import LazyLoad from 'react-lazyload';
+import Joyride from 'react-joyride';
 
 const items = [
+    {
+        src: '/assets/vehicles.png',
+        alt: 'List Kendaraan',
+        label: 'Kendaraan',
+        path: '/vehicle-list',
+        toureContent:
+            'Sebelum lakukan transaksi kamu daftarkan dahulu kendaraan kamu.',
+    },
     {
         src: '/assets/membership.png',
         alt: 'Membership',
         label: 'Membership',
         path: '/membership',
+        toureContent:
+            'Klik Membership untuk lakukan pembelian membership dan pastikan kamu sudah daftarkan kendaraan kamu terlebih dahulu.',
     },
     {
         src: '/assets/map.png',
         alt: 'Lokasi',
         label: 'Lokasi',
         path: '/lokasi',
+        toureContent: 'Klik Lokasi untuk melihat lokasi membership.',
     },
     {
         src: '/assets/gift-voucher.png',
         alt: 'Voucher',
         label: 'Voucher',
         path: '/voucher',
-    },
-    {
-        src: '/assets/vehicles.png',
-        alt: 'List Kendaraan',
-        label: 'Kendaraan',
-        path: '/vehicle-list',
+        toureContent: 'Klik Voucher untuk melihat voucher membership.',
     },
 ];
 
@@ -48,6 +55,7 @@ export default function Dashboard() {
     const [memberProduct, setMemberProduct] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [activeTab, setActiveTab] = useState('Payment');
+    const [run, setRun] = useState(false);
     const navigate = useNavigate();
 
     const openModal = (product) => {
@@ -96,6 +104,11 @@ export default function Dashboard() {
             }
         };
 
+        if (!localStorage.getItem('homeToureGuides')) {
+            setRun(true);
+            localStorage.setItem('homeToureGuides', 'true');
+        }
+
         fetchData();
         fetchDataHistoryPayment();
         fetchHistoryParking();
@@ -119,10 +132,46 @@ export default function Dashboard() {
         navigate(`/detailMember/${id}`, { state: { selectedProduct } });
     };
 
+    const dynamicSteps = items.map((item, index) => ({
+        target: `[data-step="step-${index}"]`, // Gunakan selector berbasis data-step
+        content: item.toureContent,
+    }));
+
+    const steps = [
+        {
+            target: '.start-guides',
+            content: 'Apakah kamu ingin mulai menggunakan aplikasi ini?',
+        },
+        {
+            target: '.top-up',
+            content:
+                'Klik di sini untuk top up pointmu, untuk dapat melakukan pembelian dan transaksi parkir. ',
+        },
+        ...dynamicSteps,
+
+        {
+            target: '.history-payment',
+            content: 'Klik di sini untuk melihat riwayat pembayaranmu. ',
+        },
+        {
+            target: '.history-parking',
+            content: 'Klik di sini untuk melihat riwayat parkimu. ',
+        },
+    ];
+
     return (
         <>
+            <Joyride
+                steps={steps}
+                run={run}
+                continuous
+                showProgress
+                showSkipButton
+            />
             <div className="container min-w-screen min-h-screen m-auto">
-                <NavbarMobile />
+                <div className="start-guides">
+                    <NavbarMobile />
+                </div>
 
                 <div className={`w-full bg-amber-300 h-52`}>
                     <SliderComponent
@@ -152,7 +201,7 @@ export default function Dashboard() {
                         </div>
                         {/* Top Up Button */}
                         <button
-                            className="bg-emerald-600 text-white text-sm p-2 font-medium rounded-lg flex items-center space-x-1"
+                            className="bg-emerald-600 text-white text-sm p-2 font-medium rounded-lg flex items-center space-x-1 top-up"
                             onClick={handleTopUp}
                         >
                             <span>Top up</span>
@@ -165,6 +214,7 @@ export default function Dashboard() {
                         <div
                             key={index}
                             className="flex flex-col justify-center items-center"
+                            data-step={`step-${index}`}
                         >
                             <Link to={item.path}>
                                 <div className="bg-gray-200 rounded-lg p-2 shadow-md items-center flex justify-center ">
@@ -196,7 +246,7 @@ export default function Dashboard() {
                 <div className="flex border-b border-gray-300 mb-4">
                     <button
                         onClick={() => setActiveTab('Payment')}
-                        className={`py-2 px-4 text-sm font-semibold ${
+                        className={`py-2 px-4 text-sm font-semibold history-payment ${
                             activeTab === 'Payment'
                                 ? 'border-b-2 border-amber-500 text-amber-500'
                                 : 'text-gray-500'
@@ -206,7 +256,7 @@ export default function Dashboard() {
                     </button>
                     <button
                         onClick={() => setActiveTab('POST')}
-                        className={`py-2 px-4 text-sm font-semibold ${
+                        className={`py-2 px-4 text-sm font-semibold history-parking ${
                             activeTab === 'POST'
                                 ? 'border-b-2 border-amber-500 text-amber-500'
                                 : 'text-gray-500'

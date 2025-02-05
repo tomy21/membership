@@ -10,6 +10,51 @@ const getToken = async () => {
     }
 };
 
+export const pointPayment = {
+    pointPayment: async (idProduct, data) => {
+        try {
+            const token = await getToken();
+            const response = await apiSkyBayarind.post(
+                `/v1/productPurchase/purchasePoints/${idProduct}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            return response;
+        } catch (error) {
+            console.log(error.response.data);
+            return error.response;
+        }
+    },
+
+    extendsPoint: async (productId, plateNumber, bankId) => {
+        try {
+            const token = await getToken();
+            const response = await apiSkyBayarind.post(
+                `/v1/productPurchase/extend-membership-point/${productId}`,
+                {
+                    plate_number: plateNumber,
+                    bank_id: bankId,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            return response;
+        } catch (error) {
+            console.log(error.response.data);
+            return error.response;
+        }
+    },
+};
+
 export const apiBayarindVa = {
     createVa: async (idProduct, data) => {
         try {

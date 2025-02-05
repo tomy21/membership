@@ -49,26 +49,25 @@ export default function HistoryPost({ dataPost }) {
                             </div>
 
                             <div className="flex justify-between items-center w-full">
+                                {items?.type === 'Keluar Area Parkir' && (
+                                    <div className="flex flex-col justify-start items-start">
+                                        <label
+                                            htmlFor="plat_nomor"
+                                            className="text-xs text-slate-400"
+                                        >
+                                            Tariff
+                                        </label>
+                                        <h1 className="text-sm font-semibold">
+                                            {items.type === 'Masuk Area Parkir'
+                                                ? formatCurrency(0)
+                                                : formatCurrency(
+                                                      items?.tariff || 0
+                                                  )}
+                                        </h1>
+                                    </div>
+                                )}
                                 <div className="flex flex-col justify-start items-start">
-                                    <label
-                                        htmlFor="plat_nomor"
-                                        className="text-xs text-slate-400"
-                                    >
-                                        Tariff
-                                    </label>
-                                    <h1 className="text-sm font-semibold">
-                                        {items.type === 'Masuk Area Parkir'
-                                            ? formatCurrency(0)
-                                            : formatCurrency(
-                                                  items?.tariff || 0
-                                              )}
-                                    </h1>
-                                </div>
-                                <div className="flex flex-col justify-start items-start">
-                                    <label
-                                        htmlFor="plat_nomor"
-                                        className="text-xs text-slate-400"
-                                    >
+                                    <label className="text-xs text-slate-400">
                                         Point
                                     </label>
                                     <h1 className="text-sm font-semibold">

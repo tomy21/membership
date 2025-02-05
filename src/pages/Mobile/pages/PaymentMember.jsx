@@ -244,7 +244,7 @@ function PaymentMember() {
                                 : selectedProvider.code_bank}{' '}
                             {selectedType.value === 'VIRTUAL_ACCOUNT'
                                 ? 'VA'
-                                : 'E-Wallet'}
+                                : ''}
                         </p>
                     </div>
 

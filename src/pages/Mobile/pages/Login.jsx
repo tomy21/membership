@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { TiWarning } from 'react-icons/ti';
 import { BsPatchCheck } from 'react-icons/bs';
 import LazyLoad from 'react-lazyload';
+import Joyride from 'react-joyride';
 
 export default function Login() {
     const [captcha, setCaptcha] = useState('');
@@ -18,6 +19,7 @@ export default function Login() {
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState('');
     const [requestEmail, setRequestEmail] = useState(false);
+    const [run, setRun] = useState(false);
     const navigate = useNavigate();
 
     const togglePassword = () => {
@@ -34,29 +36,20 @@ export default function Login() {
 
     const refreshString = () => {
         const upperCaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz';
         const numbers = '0123456789';
 
-        // Gabungkan semua karakter yang ingin dimasukkan dalam captcha
-        const allCharacters = upperCaseLetters + lowerCaseLetters + numbers;
+        const allCharacters = upperCaseLetters + numbers;
 
-        // Membuat captcha dengan memastikan ada huruf besar, huruf kecil, dan angka
         const randomCaptcha = () => {
-            const captchaLength = 6; // panjang CAPTCHA yang diinginkan
+            const captchaLength = 6;
             let captcha = '';
 
-            // Memastikan ada karakter dari setiap jenis
             captcha +=
                 upperCaseLetters[
                     Math.floor(Math.random() * upperCaseLetters.length)
                 ];
-            captcha +=
-                lowerCaseLetters[
-                    Math.floor(Math.random() * lowerCaseLetters.length)
-                ];
             captcha += numbers[Math.floor(Math.random() * numbers.length)];
 
-            // Menambahkan karakter acak sisanya
             for (let i = 3; i < captchaLength; i++) {
                 captcha +=
                     allCharacters[
@@ -64,7 +57,6 @@ export default function Login() {
                     ];
             }
 
-            // Acak urutan captcha
             captcha = captcha
                 .split('')
                 .sort(() => 0.5 - Math.random())
@@ -97,7 +89,14 @@ export default function Login() {
 
     useEffect(() => {
         refreshString();
-    }, []);
+
+        if (!localStorage.getItem('hasSeenTour')) {
+            setRun(true);
+            localStorage.setItem('hasSeenTour', 'true');
+        }
+    }, [run]);
+
+    console.log(localStorage.getItem('hasSeenTour'));
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -185,12 +184,47 @@ export default function Login() {
         }
     };
 
+    const steps = [
+        {
+            target: 'h1',
+            content: 'Selamat datang! Ini adalah halaman login.',
+        },
+        {
+            target: 'input[name="username"]',
+            content: 'Masukkan username atau email Anda di sini.',
+        },
+        {
+            target: 'input[name="password"]',
+            content: 'Masukkan password Anda.',
+        },
+        {
+            target: '.toggle-password',
+            content:
+                'Klik ikon ini untuk melihat atau menyembunyikan password.',
+        },
+        {
+            target: 'button[type="submit"]',
+            content: 'Klik di sini untuk masuk.',
+        },
+        {
+            target: '.daftar',
+            content: 'Belum punya akun? Klik di sini untuk daftar!',
+        },
+    ];
+
     if (loading) {
         return <Loading />;
     }
 
     return (
         <>
+            <Joyride
+                steps={steps}
+                run={run}
+                continuous
+                showProgress
+                showSkipButton
+            />
             <div className="flex min-h-screen flex-col items-center justify-between p-6 md:p-20">
                 <div className="container w-full md:w-[80%] h-full">
                     <div className="flex flex-col items-center space-y-2">
@@ -346,7 +380,7 @@ export default function Login() {
                             </button>
                             <p className="flex text-center items-center justify-center text-xs">
                                 Belum punya akun ?
-                                <span className="text-cyan-600 font-semibold ml-1">
+                                <span className="text-cyan-600 font-semibold ml-1 daftar">
                                     <Link to={'/register'}>Daftar akun</Link>
                                 </span>
                             </p>

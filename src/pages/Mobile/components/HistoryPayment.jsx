@@ -19,12 +19,9 @@ export default function HistoryPayment({ listRiwayat }) {
 
     const fetchDataVirtualAccount = async () => {
         try {
-            const response = await Payment.getAllHistoryVa(
-                listRiwayat.virtual_account
-            );
-            console.log(response);
+            await Payment.getAllHistoryVa(listRiwayat.virtual_account);
         } catch (error) {
-            console.log(error);
+            return null;
         }
     };
 
@@ -49,7 +46,7 @@ export default function HistoryPayment({ listRiwayat }) {
         };
         navigate('/payment_process', { state: data });
     };
-    console.log(listRiwayat);
+
     return (
         <>
             {listRiwayat.map((items, index) => (

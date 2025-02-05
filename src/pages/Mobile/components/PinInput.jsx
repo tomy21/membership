@@ -8,6 +8,7 @@ import {
     apiBayarindExtend,
     apiBayarindTopUp,
     apiBayarindVa,
+    pointPayment,
 } from '../../../api/apiBayarind';
 import Loading from '../components/Loading';
 import ErrorModal from './ErrorModal';
@@ -24,6 +25,7 @@ function PinInput() {
     const navigate = useNavigate();
     const inputRefs = useRef([]);
     const location = useLocation();
+    console.log(location.state);
 
     const verifyPin = async (enteredPin) => {
         setLoading(true);
@@ -33,74 +35,122 @@ function PinInput() {
                 pinVerifikasi: enteredPin,
             });
 
-            if (response.statusCode === 200) {
-                if (location.state.type === 'Member') {
-                    const dataFormTopUp = {
-                        bank_id: location.state.providerId,
-                        plate_number: location.state.plateNumber,
-                    };
-                    const idProduct = location.state.productId;
-
-                    const responseBayarind = await apiBayarindVa.createVa(
-                        idProduct,
-                        dataFormTopUp
-                    );
-
-                    if (responseBayarind.status === 200) {
-                        const data = {
-                            bankProvider: location.state,
-                            response: responseBayarind.data,
+            if (location.state.code_bank !== 'SKYPOINTS') {
+                if (response.statusCode === 200) {
+                    if (location.state.type === 'Member') {
+                        const dataFormTopUp = {
+                            bank_id: location.state.providerId,
+                            plate_number: location.state.plateNumber,
                         };
+                        const idProduct = location.state.productId;
 
-                        navigate('/payment_process', { state: data });
-                    } else {
-                        setErrorMessage(responseBayarind.data.message);
-                        setPin(Array(6).fill(''));
-                        setErrorShowModal(true);
-                    }
-                } else if (location.state.type === 'Extend') {
-                    const responseBayarind = await apiBayarindExtend.extend(
-                        location.state.productId,
-                        location.state.plateNumber,
-                        location.state.providerId
-                    );
+                        const responseBayarind = await apiBayarindVa.createVa(
+                            idProduct,
+                            dataFormTopUp
+                        );
 
-                    console.log(responseBayarind);
-                    if (responseBayarind.status === 200) {
-                        const data = {
-                            bankProvider: location.state,
-                            response: responseBayarind.data,
+                        if (responseBayarind.status === 200) {
+                            const data = {
+                                bankProvider: location.state,
+                                response: responseBayarind.data,
+                            };
+
+                            navigate('/payment_process', { state: data });
+                        } else {
+                            setErrorMessage(responseBayarind.data.message);
+                            setPin(Array(6).fill(''));
+                            setErrorShowModal(true);
+                        }
+                    } else if (location.state.type === 'Extend') {
+                        const responseBayarind = await apiBayarindExtend.extend(
+                            location.state.productId,
+                            location.state.plateNumber,
+                            location.state.providerId
+                        );
+
+                        if (responseBayarind.status === 200) {
+                            const data = {
+                                bankProvider: location.state,
+                                response: responseBayarind.data,
+                            };
+                            navigate('/payment_process', { state: data });
+                        } else {
+                            setErrorMessage(responseBayarind.data.message);
+                            setPin(Array(6).fill(''));
+                            setErrorShowModal(true);
+                        }
+                    } else if (location.state.type === 'topup') {
+                        const dataFormTopUp = {
+                            bank_id: location.state.bank_id,
+                            amount: location.state.amount,
                         };
-                        navigate('/payment_process', { state: data });
-                    } else {
-                        setErrorMessage(responseBayarind.data.message);
-                        setPin(Array(6).fill(''));
-                        setErrorShowModal(true);
-                    }
-                } else if (location.state.type === 'topup') {
-                    const dataFormTopUp = {
-                        bank_id: location.state.bank_id,
-                        amount: location.state.amount,
-                    };
-                    const responseBayarind =
-                        await apiBayarindTopUp.createVaTopup(dataFormTopUp);
+                        const responseBayarind =
+                            await apiBayarindTopUp.createVaTopup(dataFormTopUp);
 
-                    if (responseBayarind.status === true) {
-                        const data = {
-                            bankProvider: location.state,
-                            response: responseBayarind,
-                        };
+                        if (responseBayarind.status === true) {
+                            const data = {
+                                bankProvider: location.state,
+                                response: responseBayarind,
+                            };
 
-                        navigate('/payment_process', { state: data });
-                    } else if (responseBayarind.data.responseCode === '400') {
-                        setErrorMessage(responseBayarind.data.responseMessage);
-                        setPin(Array(6).fill(''));
-                        setErrorShowModal(true);
+                            navigate('/payment_process', { state: data });
+                        } else if (
+                            responseBayarind.data.responseCode === '400'
+                        ) {
+                            setErrorMessage(
+                                responseBayarind.data.responseMessage
+                            );
+                            setPin(Array(6).fill(''));
+                            setErrorShowModal(true);
+                        }
                     }
+                } else {
+                    setErrorMessage(response.message);
+                    setErrorShowModal(true);
                 }
             } else {
-                setErrorMessage(response.message);
-                setErrorShowModal(true);
+                if (response.statusCode === 200) {
+                    if (location.state.type === 'Member') {
+                        const dataFormTopUp = {
+                            bank_id: location.state.providerId,
+                            plate_number: location.state.plateNumber,
+                        };
+                        const idProduct = location.state.productId;
+
+                        const responseBayarind =
+                            await pointPayment.pointPayment(
+                                idProduct,
+                                dataFormTopUp
+                            );
+                        if (responseBayarind.data.status === true) {
+                            setShowModal(true);
+                            setErrorMessage(responseBayarind.data.message);
+                        } else {
+                            setErrorMessage(responseBayarind.data.message);
+                            setPin(Array(6).fill(''));
+                            setErrorShowModal(true);
+                        }
+                    } else {
+                        const responseBayarind =
+                            await pointPayment.extendsPoint(
+                                location.state.productId,
+                                location.state.plateNumber,
+                                location.state.providerId
+                            );
+
+                        if (responseBayarind.data.status === true) {
+                            setShowModal(true);
+                            setErrorMessage(responseBayarind.data.message);
+                        } else {
+                            setErrorMessage(responseBayarind.data.message);
+                            setPin(Array(6).fill(''));
+                            setErrorShowModal(true);
+                        }
+                    }
+                } else {
+                    setErrorMessage(response.message);
+                    setErrorShowModal(true);
+                }
             }
         } catch (err) {
             console.error('Terjadi kesalahan, silahkan coba lagi');
