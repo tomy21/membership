@@ -2,6 +2,9 @@ import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Loading from '../pages/Dekstop/components/Loading';
 import Page404 from '../pages/Dekstop/pages/admin/Pages/404Page';
+import Userprovider from '../pages/Dekstop/context/Userprovider';
+import HistoryPost from '../pages/Dekstop/pages/admin/Pages/HistoryPost';
+import HistoryPOSTProvider from '../pages/Dekstop/context/HistoryPOSTProvider';
 
 const Layout = React.lazy(() => import('../pages/Dekstop/pages/admin/Layout'));
 const SuccessRegister = React.lazy(() =>
@@ -50,44 +53,57 @@ const BankProvider = React.lazy(() =>
 
 export default function DekstopAdmin() {
     return (
-        <Router>
-            <Suspense fallback={<Loading />}>
-                <Routes>
-                    <Route path="/" element={<Page404 />} />
-                    <Route path="/admin/login" element={<Login />} />
-                    <Route
-                        path="/registerSuccess"
-                        element={<SuccessRegister />}
-                    />
-                    <Route
-                        path="/dashboard/*"
-                        element={
-                            <ProtectedRoute>
-                                <Layout />
-                            </ProtectedRoute>
-                        }
-                    >
-                        <Route path="" element={<Dashboard />} />
-                        <Route path="product" element={<MasterProduct />} />
-                        <Route path="membership" element={<Membership />} />
-                        <Route path="menu" element={<Menu />} />
-                        <Route path="card-list" element={<CardList />} />
+        <Userprovider>
+            <Router>
+                <Suspense fallback={<Loading />}>
+                    <Routes>
+                        <Route path="/" element={<Page404 />} />
+                        <Route path="/admin" element={<Login />} />
                         <Route
-                            path="history-transaction"
-                            element={<Transaction />}
+                            path="/registerSuccess"
+                            element={<SuccessRegister />}
                         />
-                        <Route path="location" element={<Location />} />
-                        <Route path="users" element={<Users />} />
-                        <Route path="roles" element={<Roles />} />
-                        <Route path="history-payment" element={<Payment />} />
-                        <Route path="customer" element={<Tenants />} />
                         <Route
-                            path="bank-provider"
-                            element={<BankProvider />}
-                        />
-                    </Route>
-                </Routes>
-            </Suspense>
-        </Router>
+                            path="/admin/dashboard/*"
+                            element={
+                                <ProtectedRoute>
+                                    <Layout />
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route path="" element={<Dashboard />} />
+                            <Route path="product" element={<MasterProduct />} />
+                            <Route path="membership" element={<Membership />} />
+                            <Route path="menu" element={<Menu />} />
+                            <Route path="card-list" element={<CardList />} />
+                            <Route
+                                path="history-transaction"
+                                element={<Transaction />}
+                            />
+                            <Route
+                                path="history-parking"
+                                element={
+                                    <HistoryPOSTProvider>
+                                        <HistoryPost />
+                                    </HistoryPOSTProvider>
+                                }
+                            />
+                            <Route path="location" element={<Location />} />
+                            <Route path="users" element={<Users />} />
+                            <Route path="roles" element={<Roles />} />
+                            <Route
+                                path="history-payment"
+                                element={<Payment />}
+                            />
+                            <Route path="customer" element={<Tenants />} />
+                            <Route
+                                path="bank-provider"
+                                element={<BankProvider />}
+                            />
+                        </Route>
+                    </Routes>
+                </Suspense>
+            </Router>
+        </Userprovider>
     );
 }

@@ -128,7 +128,7 @@ function Login() {
                 });
 
                 setTimeout(() => {
-                    navigate('/dashboard');
+                    navigate('/admin/dashboard');
                 }, 500);
                 refreshString();
             } else {
