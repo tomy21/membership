@@ -208,6 +208,7 @@ export const historyMembers = {
                     params: { page, limit, search, status },
                 }
             );
+            console.log(response);
             return response.data;
         } catch (error) {
             throw error.response.data;

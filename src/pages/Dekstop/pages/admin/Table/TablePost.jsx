@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistoryPOST } from '../../../context/HistoryPOSTProvider';
 import { format } from 'date-fns';
 import Pagination from '../components/Pagination';
 
-export default function TablePost() {
+export default function TablePost({ tab }) {
+    console.log(tab);
     const {
         historyPOST,
         page,
@@ -22,6 +23,12 @@ export default function TablePost() {
     } = useHistoryPOST();
 
     console.log(totalItems);
+
+    useEffect(() => {
+        if (tab) {
+            setStatus(tab);
+        }
+    }, [tab, setStatus]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('id-ID', {
@@ -162,7 +169,7 @@ export default function TablePost() {
                 <Pagination
                     currentPage={page}
                     totalPages={totalPages}
-                    onPageChange={setPage}
+                    setPageCurrent={setPage}
                     totalItem={totalItems}
                     limit={limit}
                     setLimitData={setLimit}

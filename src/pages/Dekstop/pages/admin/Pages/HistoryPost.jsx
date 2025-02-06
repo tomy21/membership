@@ -6,11 +6,11 @@ import TablePost from '../Table/TablePost';
 
 export default function HistoryPost() {
     const [activeTab, setActiveTab] = useState('All');
-    const [tabValue, setTabValue] = useState('');
+    const [tabValue, setTabValue] = useState('All');
     const listTab = [
-        { name: 'All', value: 'all', id: 1 },
-        { name: 'In Area', value: 0, id: 2 },
-        { name: 'Out Area', value: 1, id: 3 },
+        { name: 'All', value: 'All', id: 1 },
+        { name: 'In Area', value: '0', id: 2 },
+        { name: 'Out Area', value: '1', id: 3 },
     ];
     return (
         <>
