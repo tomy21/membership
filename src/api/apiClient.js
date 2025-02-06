@@ -11,7 +11,7 @@ export const apiClient = axios.create({
 });
 
 export const apiSkyBayarind = axios.create({
-    // baseURL: "https://dev-paymentapi.skyparking.online",
-    baseURL: 'https://apimembership.skyparking.online',
+    baseURL: "https://dev-paymentapi.skyparking.online",
+    // baseURL: 'https://apimembership.skyparking.online',
     withCredentials: true,
 });
