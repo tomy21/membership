@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
                     setIsAuthenticated(true);
                 } else {
                     setIsAuthenticated(false);
-                    navigate('/admin/login');
+                    navigate('/admin');
                 }
             } catch (error) {
                 setIsAuthenticated(false);

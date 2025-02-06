@@ -16,7 +16,7 @@ export default function Sidebar() {
     const [listMenu, setListMenu] = useState([
         {
             name: 'Dashboard',
-            link: '/dashboard',
+            link: '/admin/dashboard',
             icon: <LuLayoutDashboard className="mr-2" />,
         },
         {
@@ -24,30 +24,35 @@ export default function Sidebar() {
             icon: <MdOutlineHistoryEdu className="mr-2" />,
             subMenu: [
                 {
+                    name: 'Parking',
+                    icon: <GoDot className="mr-2" />,
+                    link: '/admin/dashboard/history-parking',
+                },
+                {
                     name: 'Transaction',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/history-transaction',
+                    link: '/admin/dashboard/history-transaction',
                 },
                 {
                     name: 'Payment',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/history-payment',
+                    link: '/admin/dashboard/history-payment',
                 },
             ],
         },
         {
             name: 'Customer',
-            link: '/dashboard/customer',
+            link: '/admin/dashboard/customer',
             icon: <MdOutlineCorporateFare className="mr-2" />,
         },
         {
             name: 'Location',
-            link: '/dashboard/location',
+            link: '/admin/dashboard/location',
             icon: <MdOutlineEditLocationAlt className="mr-2" />,
         },
         {
             name: 'Product',
-            link: '/dashboard/product',
+            link: '/admin/dashboard/product',
             icon: <LuFileBox className="mr-2" />,
         },
         {
@@ -57,17 +62,17 @@ export default function Sidebar() {
                 {
                     name: 'User List',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/users',
+                    link: '/admin/dashboard/users',
                 },
                 {
                     name: 'Roles',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/roles',
+                    link: '/admin/dashboard/roles',
                 },
                 {
                     name: 'Menu',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/menu',
+                    link: '/admin/dashboard/menu',
                 },
             ],
         },
@@ -79,12 +84,12 @@ export default function Sidebar() {
                 {
                     name: 'Card List',
                     icon: <GoDot className="mr-2" />,
-                    link: '/dashboard/card-list',
+                    link: '/admin/dashboard/card-list',
                 },
                 {
                     name: 'Card List',
                     icon: <BsBank2 className="mr-2" />,
-                    link: '/dashboard/bank-provider',
+                    link: '/admin/dashboard/bank-provider',
                 },
             ],
         },
@@ -97,13 +102,13 @@ export default function Sidebar() {
     return (
         <>
             <div className="fixed top-0 left-0 w-60 h-full bg-white border-r border-slate-200">
-                <div className="flex flex-row justify-start items-end space-x-3 px-3 py-4">
+                <div className="flex flex-row justify-start items-end space-x-3 px-3 py-4 border-b border-slate-300 w-full">
                     <img
                         src={'/assets/logo.png'}
                         alt="skyparking"
                         className="w-12"
                     />
-                    <h1 className="text-xl font-semibold">SKYPARKING</h1>
+                    <h1 className="text-xl font-semibold">Membership</h1>
                 </div>
 
                 <div className="mt-5 px-3 text-left space-y-2">
