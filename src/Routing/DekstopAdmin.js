@@ -5,6 +5,7 @@ import Page404 from '../pages/Dekstop/pages/admin/Pages/404Page';
 import Userprovider from '../pages/Dekstop/context/Userprovider';
 import HistoryPost from '../pages/Dekstop/pages/admin/Pages/HistoryPost';
 import HistoryPOSTProvider from '../pages/Dekstop/context/HistoryPOSTProvider';
+import PaymentProvider from '../pages/Dekstop/context/PaymentProvider';
 
 const Layout = React.lazy(() => import('../pages/Dekstop/pages/admin/Layout'));
 const SuccessRegister = React.lazy(() =>
@@ -98,7 +99,11 @@ export default function DekstopAdmin() {
                             <Route path="customer" element={<Tenants />} />
                             <Route
                                 path="bank-provider"
-                                element={<BankProvider />}
+                                element={
+                                    <PaymentProvider>
+                                        <BankProvider />
+                                    </PaymentProvider>
+                                }
                             />
                         </Route>
                     </Routes>

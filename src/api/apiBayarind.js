@@ -249,10 +249,17 @@ export const Product = {
 };
 
 export const Card = {
-    getAllCard: async () => {
+    getAllCard: async (page, limit, search) => {
         try {
             const response = await apiSkyBayarind.get(
-                '/v1/card/get-master-card'
+                '/v1/card/get-master-card',
+                {
+                    params: {
+                        page,
+                        limit,
+                        search,
+                    },
+                }
             );
             return response.data;
         } catch (error) {

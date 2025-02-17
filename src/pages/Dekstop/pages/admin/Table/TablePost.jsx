@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistoryPOST } from '../../../context/HistoryPOSTProvider';
 import { format } from 'date-fns';
 import Pagination from '../components/Pagination';
 
-export default function TablePost() {
+export default function TablePost({ tab, tabStatus }) {
     const {
         historyPOST,
         page,
         setPage,
         limit,
-        setLimit,
         totalPages,
-        setTotalPages,
         totalItems,
+        statusMember,
+        setStatusMember,
+        setLimit,
+        setTotalPages,
         setTotalItems,
         search,
         setSearch,
@@ -21,7 +23,19 @@ export default function TablePost() {
         reloadDataHistoryPost,
     } = useHistoryPOST();
 
-    console.log(totalItems);
+    useEffect(() => {
+        if (tab) {
+            setStatus(tab);
+            setStatusMember('');
+            setPage(1);
+        }
+
+        if (tabStatus) {
+            setStatus('All');
+            setStatusMember(tabStatus);
+            setPage(1);
+        }
+    }, [tab, setStatus, tabStatus, setStatusMember]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('id-ID', {
@@ -162,7 +176,7 @@ export default function TablePost() {
                 <Pagination
                     currentPage={page}
                     totalPages={totalPages}
-                    onPageChange={setPage}
+                    setPageCurrent={setPage}
                     totalItem={totalItems}
                     limit={limit}
                     setLimitData={setLimit}

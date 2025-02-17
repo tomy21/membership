@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Users } from '../../../../../api/apiMembershipV2';
+import { Payment, Users } from '../../../../../api/apiMembershipV2';
 import Pagination from '../components/Pagination';
+import { TbListDetails } from 'react-icons/tb';
+import ModalDetailHistory from './modal/ModalDetailHistory';
+import { ScaleLoader } from 'react-spinners';
+import { FaUsersViewfinder } from 'react-icons/fa6';
 
 export default function MembershipTable({ tab }) {
     const [data, setData] = useState([]);
@@ -9,19 +13,27 @@ export default function MembershipTable({ tab }) {
     const [totalPages, setTotalPages] = useState(1);
     const [LimitData, setLimitData] = useState(10);
     const [totalItems, setTotalItems] = useState(1);
+    const [modalDetail, setModalDetail] = useState(false);
+    const [idUsers, setIdUsers] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
+        setLoading(true);
         try {
-            const response = await Users.getAllUser(
-                currentPage,
-                LimitData,
-                tab === 'all' ? '' : tab
-            );
+            // const response = await Users.getAllUser(
+            //     currentPage,
+            //     LimitData,
+            //     tab === 'all' ? '' : tab
+            // );
+            const response = await Payment.getHistoryByLocation();
+            console.log(response.data);
             setData(response.data || []);
             setTotalPages(response.totalPages || 1);
             setTotalItems(response.total || 1);
         } catch (error) {
             console.error('Failed to fetch data:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,116 +48,131 @@ export default function MembershipTable({ tab }) {
         }).format(amount);
     };
 
+    const handleModalDetail = (id) => {
+        setIdUsers(id);
+        setModalDetail(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalDetail(false);
+    };
+
     return (
         <div className="w-full px-3 py-4">
-            <div className="bg-white rounded-lg shadow-lg">
-                <table className="min-w-full leading-normal">
+            <div className="bg-white rounded-lg shadow-lg max-w-full overflow-auto">
+                <table className="max-w-full leading-normal w-full">
                     <thead>
                         <tr>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
+                            <th
+                                rowSpan={2}
+                                className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg"
+                            >
                                 #
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Customer Code
+                            <th
+                                rowSpan={2}
+                                className="px-5 py-4 border-b-2 border-r-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200"
+                            >
+                                Location
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Profil
+                            <th
+                                colSpan={2}
+                                className="px-5 py-4 border-b-2 border-r-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200"
+                            >
+                                Total Members
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Contact
+                            <th
+                                colSpan={3}
+                                className="px-5 py-4 border-b-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200"
+                            >
+                                Income
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Address
+                            <th
+                                rowSpan={2}
+                                className="px-5 py-4 border-b-2 border-l-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200"
+                            >
+                                Action
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Birthday
+                        </tr>
+                        <tr>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
+                                Mobil
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Points
+                            <th className="px-5 py-4 border-b-2 border-r-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Motor
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Reward Points
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Mobil
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Status
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Motor
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tr-lg"></th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Total
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        {data.map((items, index) => (
-                            <tr key={index} className="text-sm">
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {index + 1}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {items.customer_no}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h1 className="text-gray-800 font-semibold text-sm">
-                                            {items.fullname}
-                                        </h1>
-                                        <p className="text-gray-500 text-xs">
-                                            {items.gender}
-                                        </p>
-                                    </div>
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h1 className="text-gray-800 font-semibold text-sm">
-                                            {items.email}
-                                        </h1>
-                                        <p className="text-gray-400 text-xs">
-                                            {items.phone_number}
-                                        </p>
-                                    </div>
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {items.address}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {format(new Date(items.dob), 'dd-MMM-yyyy')}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {formatCurrency(items.points ?? 0)}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    {formatCurrency(items.reward_points ?? 0)}
-                                </td>
-                                <td className="px-5 py-3 border-b border-gray-200">
-                                    <div className="flex flex-row justify-start items-center gap-x-3">
-                                        <div
-                                            className={`relative h-4 w-4 rounded-full text-xs flex items-center justify-center ${
-                                                items.is_active === 1
-                                                    ? 'bg-green-100'
-                                                    : 'bg-red-100'
-                                            }`}
-                                        >
-                                            <div
-                                                className={`h-2 w-2 rounded-full ${
-                                                    items.is_active === 1
-                                                        ? 'bg-green-500'
-                                                        : 'bg-red-500'
-                                                }`}
-                                            ></div>
-                                            <span className="absolute text-center text-black text-sm font-bold"></span>
-                                        </div>
-                                        <p
-                                            className={`${
-                                                items.is_active === 1
-                                                    ? 'text-green-500'
-                                                    : 'text-red-500'
-                                            }`}
-                                        >
-                                            {items.is_active === 1
-                                                ? 'Active'
-                                                : 'Inactive'}
-                                        </p>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="9" className="py-4">
+                                    <div className="flex justify-center items-center w-full">
+                                        <ScaleLoader color="#D7BF36FF" />
                                     </div>
                                 </td>
                             </tr>
-                        ))}
+                        ) : data.length > 0 ? (
+                            data.map((items, index) => (
+                                <tr key={index} className="text-sm">
+                                    <td className="px-5 py-3 border-b text-left border-gray-200">
+                                        {index + 1}
+                                    </td>
+                                    <td className="px-5 py-3 border-b text-left border-gray-200">
+                                        {items.location_name ?? '-'}
+                                    </td>
+
+                                    <td className="px-5 py-3 border-b text-center border-gray-200">
+                                        {items.totalMobil ?? 0}
+                                    </td>
+                                    <td className="px-5 py-3 border-b text-center border-gray-200">
+                                        {items.totalMotor ?? 0}
+                                    </td>
+
+                                    <td className="px-5 py-3 border-b text-center border-gray-200">
+                                        {formatCurrency(
+                                            items.totalAmountMobil ?? 0
+                                        )}
+                                    </td>
+                                    <td className="px-5 py-3 border-b text-center border-gray-200">
+                                        {formatCurrency(
+                                            items.totalAmountMotor ?? 0
+                                        )}
+                                    </td>
+                                    <td className="px-5 py-3 border-b text-center border-gray-200">
+                                        {formatCurrency(items.totalAmount ?? 0)}
+                                    </td>
+
+                                    <td
+                                        className="px-5 py-3 border-b text-center border-gray-200"
+                                        title="view detail customer"
+                                    >
+                                        <div className="w-full text-cyan-700">
+                                            <FaUsersViewfinder
+                                                size={25}
+                                                className="text-center"
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="10" className="text-center py-4">
+                                    No data available
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -162,6 +189,14 @@ export default function MembershipTable({ tab }) {
                     setLimitData={setLimitData}
                 />
             </div>
+
+            {modalDetail && (
+                <ModalDetailHistory
+                    isOpen={modalDetail}
+                    onClose={handleCloseModal}
+                    idUsers={idUsers}
+                />
+            )}
         </div>
     );
 }

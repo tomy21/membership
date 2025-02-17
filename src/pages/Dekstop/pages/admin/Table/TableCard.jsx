@@ -24,10 +24,11 @@ export default function TableCard() {
     const [isError, setIsError] = useState(false);
     const [progress, setProgress] = useState(false);
     const [isMessage, setIsMessage] = useState('');
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         fetchData();
-    }, [currentPage, LimitData]);
+    }, [currentPage, LimitData, search]);
 
     useEffect(() => {
         autoConnectToSerialDevice();
@@ -35,11 +36,15 @@ export default function TableCard() {
 
     const fetchData = async () => {
         try {
-            const response = await Card.getAllCard();
+            const response = await Card.getAllCard(
+                currentPage,
+                LimitData,
+                search
+            );
             console.log(response);
             setData(response.data);
-            // setTotalPages(response.meta.totalPages);
-            // setTotalItems(response.totalItems);
+            setTotalPages(response.page.totalPages);
+            setTotalItems(response.page.totalItems);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
@@ -176,6 +181,8 @@ export default function TableCard() {
                     <input
                         type="search"
                         className="py-2 px-3 border border-slate-300 rounded-lg"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search..."
                     />
                     <button
