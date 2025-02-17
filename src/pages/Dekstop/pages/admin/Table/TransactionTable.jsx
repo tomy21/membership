@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Payment } from '../../../../../api/apiMembershipV2';
 import Pagination from '../components/Pagination';
 import { format } from 'date-fns';
+import { ScaleLoader } from 'react-spinners';
 
 export default function TransactionTable({ tab }) {
     const [orders, setOrders] = useState([]);
@@ -9,8 +10,10 @@ export default function TransactionTable({ tab }) {
     const [totalPages, setTotalPages] = useState(1);
     const [LimitData, setLimitData] = useState(10);
     const [totalItems, setTotalItems] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const response = await Payment.getAllTransaction(
                 currentPage,
@@ -23,6 +26,8 @@ export default function TransactionTable({ tab }) {
             setTotalItems(response.pagination?.total || 1);
         } catch (error) {
             console.error('Failed to fetch data:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,6 +54,9 @@ export default function TransactionTable({ tab }) {
                                 #
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                                Users
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
                                 Transaction ID
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
@@ -72,11 +80,29 @@ export default function TransactionTable({ tab }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="9" className="text-center py-4">
+                                    <div className="flex justify-center items-center w-full">
+                                        <ScaleLoader color="#D7BF36FF" />
+                                    </div>
+                                </td>
+                            </tr>
+                        ) : orders.length > 0 ? (
                             orders.map((order, index) => (
                                 <tr key={index} className="text-sm">
                                     <td className="px-5 py-3 border-b border-gray-200">
                                         {index + 1}
+                                    </td>
+                                    <td className="px-5 py-3 border-b border-gray-200">
+                                        <div className="flex flex-col justify-start items-start">
+                                            <p className="text-gray-900 whitespace-no-wrap font-semibold">
+                                                {order.trxHistoryUser?.fullname}
+                                            </p>
+                                            <p className="whitespace-no-wrap text-slate-400">
+                                                {order.trxHistoryUser?.email}
+                                            </p>
+                                        </div>
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200">
                                         {order.trxId}

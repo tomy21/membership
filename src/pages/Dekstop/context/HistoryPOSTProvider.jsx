@@ -11,6 +11,7 @@ export default function HistoryPOSTProvider({ children }) {
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState('');
+    const [statusMember, setStatusMember] = useState('');
 
     useEffect(() => {
         const fetchHistoryPOST = async () => {
@@ -19,7 +20,8 @@ export default function HistoryPOSTProvider({ children }) {
                     page,
                     limit,
                     search,
-                    status
+                    status,
+                    statusMember
                 );
                 console.log(response);
                 setHistoryPOST(response.data);
@@ -37,7 +39,9 @@ export default function HistoryPOSTProvider({ children }) {
             const response = await historyMembers.getHistoryPost(
                 page,
                 limit,
-                search
+                search,
+                status,
+                statusMember
             );
             setHistoryPOST(response.data);
         } catch (error) {
@@ -55,12 +59,14 @@ export default function HistoryPOSTProvider({ children }) {
                 totalItems,
                 search,
                 status,
+                statusMember,
                 setLimit,
                 setTotalPages,
                 setTotalItems,
                 setSearch,
                 setPage,
                 setStatus,
+                setStatusMember,
                 reloadDataHistoryPost,
             }}
         >

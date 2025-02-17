@@ -1,30 +1,30 @@
-import { apiClient } from "./apiClient";
+import { apiClient } from './apiClient';
 
-export const getAllProvider = {
-  getProvider: async () => {
-    try {
-      const response = await apiClient.get("/v01/member/api/listProvider");
-      return response.data;
-    } catch (error) {
-      throw error.response.data;
-    }
-  },
-};
-
-export const getProviderById = {
-  getById: async (isOpen) => {
-    try {
-      const response = await apiClient.get(
-        "/v01/member/api/listProvider/list",
-        {
-          params: {
-            isOpen,
-          },
+export const ProviderPayment = {
+    getProvider: async (pages, limit, search) => {
+        try {
+            const response = await apiClient.get('/v01/member/api/provider', {
+                params: { pages, limit, search },
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
         }
-      );
-      return response.data;
-    } catch (error) {
-      throw error.response.data;
-    }
-  },
+    },
+
+    getById: async (isOpen) => {
+        try {
+            const response = await apiClient.get(
+                '/v01/member/api/listProvider/list',
+                {
+                    params: {
+                        isOpen,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+    },
 };

@@ -200,12 +200,27 @@ export const historyMembers = {
         }
     },
 
-    getHistoryPost: async (page, limit, search, status) => {
+    getHistoryPost: async (page, limit, search, status, statusMember) => {
         try {
             const response = await apiClient.get(
                 `/v01/member/api/history-post-all`,
                 {
-                    params: { page, limit, search, status },
+                    params: { page, limit, search, status, statusMember },
+                }
+            );
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+    },
+
+    historyGetAllByUserid: async (idUsers, page, limit, search) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/get-history-user-byid/${idUsers}`,
+                {
+                    params: { page, limit, search },
                 }
             );
             console.log(response);

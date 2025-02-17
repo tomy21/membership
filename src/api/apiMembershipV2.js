@@ -373,6 +373,92 @@ export const Payment = {
             console.log(error);
         }
     },
+
+    exportDataPOST: async (startDate, endDate, locationCode) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/export-data`,
+                {
+                    params: {
+                        locationCode,
+                        startDate,
+                        endDate,
+                    },
+                    responseType: 'arraybuffer',
+                }
+            );
+            const fileName = `history_parking_${startDate} sd ${endDate}.xlsx`;
+
+            return {
+                blob: new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                }),
+                fileName,
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    exportDataTransaction: async (startDate, endDate, locationCode) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/export-data`,
+                {
+                    params: { startDate, endDate, locationCode },
+                    responseType: 'arraybuffer',
+                }
+            );
+            const fileName = `History_transaction_${startDate} sd ${endDate}.xlsx`;
+
+            return {
+                blob: new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                }),
+                fileName,
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    exportDataPayment: async (startDate, endDate, locationCode) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/export-data-payment`,
+                {
+                    params: { startDate, endDate, locationCode },
+                    responseType: 'arraybuffer',
+                }
+            );
+            const fileName = `History_Payment_${startDate} sd ${endDate}.xlsx`;
+
+            return {
+                blob: new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                }),
+                fileName,
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    getHistoryByLocation: async (month, year) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/get-history-location`,
+                {
+                    params: {
+                        month,
+                        year,
+                    },
+                }
+            );
+
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 };
 
 export const LokasiMembership = {

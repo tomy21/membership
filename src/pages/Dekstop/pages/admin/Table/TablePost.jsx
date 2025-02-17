@@ -3,17 +3,18 @@ import { useHistoryPOST } from '../../../context/HistoryPOSTProvider';
 import { format } from 'date-fns';
 import Pagination from '../components/Pagination';
 
-export default function TablePost({ tab }) {
-    console.log(tab);
+export default function TablePost({ tab, tabStatus }) {
     const {
         historyPOST,
         page,
         setPage,
         limit,
-        setLimit,
         totalPages,
-        setTotalPages,
         totalItems,
+        statusMember,
+        setStatusMember,
+        setLimit,
+        setTotalPages,
         setTotalItems,
         search,
         setSearch,
@@ -22,13 +23,19 @@ export default function TablePost({ tab }) {
         reloadDataHistoryPost,
     } = useHistoryPOST();
 
-    console.log(totalItems);
-
     useEffect(() => {
         if (tab) {
             setStatus(tab);
+            setStatusMember('');
+            setPage(1);
         }
-    }, [tab, setStatus]);
+
+        if (tabStatus) {
+            setStatus('All');
+            setStatusMember(tabStatus);
+            setPage(1);
+        }
+    }, [tab, setStatus, tabStatus, setStatusMember]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('id-ID', {
