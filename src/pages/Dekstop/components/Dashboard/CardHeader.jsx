@@ -42,7 +42,7 @@ export default function CardHeader({
                         />
                     </div>
                 ) : (
-                    <h1 className="text-4xl font-normal text-gray-800">
+                    <h1 className="text-2xl font-normal text-gray-800">
                         {value}
                     </h1>
                 )}

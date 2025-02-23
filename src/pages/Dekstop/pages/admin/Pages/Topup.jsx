@@ -1,35 +1,31 @@
 import React, { useState } from 'react';
-import HeaderTitle from '../components/HeaderTitle';
 import TapTable from '../../../components/TapTable';
-import TransactionTable from '../Table/TransactionTable';
-import TablePost from '../Table/TablePost';
-import { saveAs } from 'file-saver';
-import { Payment } from '../../../../../api/apiMembershipV2';
+import HeaderTitle from '../components/HeaderTitle';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BarLoader } from 'react-spinners';
+import TableTopup from '../Table/TableTopup';
 import { apiExportData } from '../../../../../api/apiExportData';
 
-export default function HistoryPost() {
+export default function Topup() {
     const [activeTab, setActiveTab] = useState('All');
-    const [tabValue, setTabValue] = useState('All');
-    const [date, setDate] = useState(new Date());
-    const [location, setLocation] = useState('all');
+    const [tabValue, setTabValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const listTab = [
-        { name: 'All', value: 'All', id: 1 },
-        { name: 'In Area', value: '0', id: 2 },
-        { name: 'Out Area', value: '1', id: 3 },
+        { name: 'All', value: 'all', id: 1 },
+        { name: 'Success', value: 'PAID', id: 2 },
+        { name: 'Pending', value: 'PENDING', id: 3 },
+        { name: 'Failed', value: 'FAILED', id: 4 },
     ];
-    const handleExport = async (startDate, endDate, location, statusMember) => {
+    const handleExport = async (startDate, endDate, location) => {
         setIsLoading(true);
         try {
-            const { blob, fileName } = await apiExportData.historyParking(
+            const { blob, fileName } = await apiExportData.historyTransaction(
                 startDate,
                 endDate,
                 location,
-                statusMember
+                'TOPUP'
             );
 
             const url = window.URL.createObjectURL(blob);
@@ -51,7 +47,6 @@ export default function HistoryPost() {
             setIsLoading(false);
         }
     };
-
     return (
         <>
             <ToastContainer />
@@ -60,10 +55,9 @@ export default function HistoryPost() {
                     <BarLoader size={550} color={'#e9d309'} loading={true} />
                 </div>
             )}
-
             <HeaderTitle
-                title={'History Parking'}
-                subtitle={'View history parking'}
+                title={'Transaction Topup'}
+                subtitle={'View Transaction'}
             />
 
             <TapTable
@@ -76,11 +70,7 @@ export default function HistoryPost() {
                 exportAction={handleExport}
             />
             <div className="w-full bg-white rounded-md flex flex-col justify-start items-center">
-                {tabValue === '2' ? (
-                    <TablePost tab={'1'} tabStatus={'NON-MEMBER'} />
-                ) : (
-                    <TablePost tab={tabValue} tabStatus={null} />
-                )}
+                <TableTopup tab={tabValue} />
             </div>
         </>
     );

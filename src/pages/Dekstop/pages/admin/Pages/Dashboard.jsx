@@ -20,7 +20,6 @@ function Dashboard() {
         const fetchData = async () => {
             try {
                 const response = await apiDashboard.valueDashboard();
-                console.log(response);
                 setTotalMemberActive(response.totalMembershipActive);
                 setTotalMemberNonActive(response.totalMembershipNonActive);
                 setTotalRevenue(response.totalPrice.totalPrice);

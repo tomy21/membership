@@ -46,35 +46,36 @@ export default function TransactionTable({ tab }) {
 
     return (
         <div className="w-full px-3 py-4">
-            <div className="bg-white rounded-lg shadow-lg">
-                <table className="min-w-full leading-normal">
+            <div className="bg-white rounded-lg shadow-lg max-w-full overflow-auto">
+                <table className="max-w-full leading-normal w-full">
                     <thead>
                         <tr>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tl-lg whitespace-nowrap">
                                 #
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Users
-                            </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
-                                Transaction ID
-                            </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
                                 Transaction Date
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
+                                Users
+                            </th>
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
+                                Transaction ID
+                            </th>
+
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
                                 Product
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
                                 Payment Method
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
                                 Location
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
                                 Total
                             </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 rounded-tr-lg">
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap rounded-tr-lg">
                                 Payment Status
                             </th>
                         </tr>
@@ -94,38 +95,40 @@ export default function TransactionTable({ tab }) {
                                     <td className="px-5 py-3 border-b border-gray-200">
                                         {index + 1}
                                     </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
-                                        <div className="flex flex-col justify-start items-start">
-                                            <p className="text-gray-900 whitespace-no-wrap font-semibold">
-                                                {order.trxHistoryUser?.fullname}
-                                            </p>
-                                            <p className="whitespace-no-wrap text-slate-400">
-                                                {order.trxHistoryUser?.email}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
-                                        {order.trxId}
-                                    </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         {format(
                                             new Date(order.createdAt),
-                                            'dd-MMM-yyyy HH:mm:ss:SSS'
+                                            'dd-MMM-yyyy HH:mm:ss'
                                         )}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200">
-                                        {order.product_name}
+                                        <div className="flex flex-col justify-start items-start">
+                                            <p className="text-gray-900 whitespace-nowrap font-semibold">
+                                                {order.trxHistoryUser
+                                                    ?.fullname ?? '-'}
+                                            </p>
+                                            <p className="whitespace-nowrap text-slate-400">
+                                                {order.trxHistoryUser?.email ??
+                                                    '-'}
+                                            </p>
+                                        </div>
                                     </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
-                                        {order.transactionType}
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
+                                        {order.trxId ?? '-'}
                                     </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
+                                        {order.product_name ?? '-'}
+                                    </td>
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
+                                        {order.transactionType ?? '-'}
+                                    </td>
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         {order.location_name ?? '-'}
                                     </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         {formatCurrency(order.price ?? 0)}
                                     </td>
-                                    <td className="px-5 py-3 border-b border-gray-200">
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         <div className="flex flex-row justify-start items-center gap-x-3">
                                             <div
                                                 className={`relative h-4 w-4 rounded-full text-xs flex items-center justify-center ${
@@ -174,7 +177,16 @@ export default function TransactionTable({ tab }) {
                                     colSpan="8"
                                     className="py-3 px-3 text-center"
                                 >
-                                    No data available
+                                    <div className="flex flex-col justify-center items-center">
+                                        <img
+                                            src={'/assets/page.png'}
+                                            alt="no-data"
+                                            className="opacity-50 w-32"
+                                        />
+                                        <h1 className="text-slate-400 text-2xl">
+                                            Data no available
+                                        </h1>
+                                    </div>
                                 </td>
                             </tr>
                         )}

@@ -29,9 +29,19 @@ export default function Sidebar() {
                     link: '/admin/dashboard/history-parking',
                 },
                 {
-                    name: 'Transaction',
+                    name: 'Parking Casual',
                     icon: <GoDot className="mr-2" />,
-                    link: '/admin/dashboard/history-transaction',
+                    link: '/admin/dashboard/history-parking-casual',
+                },
+                {
+                    name: 'Membership',
+                    icon: <GoDot className="mr-2" />,
+                    link: '/admin/dashboard/history-transaction-membership',
+                },
+                {
+                    name: 'Topup',
+                    icon: <GoDot className="mr-2" />,
+                    link: '/admin/dashboard/history-transaction-topup',
                 },
                 {
                     name: 'Payment',
@@ -121,7 +131,9 @@ export default function Sidebar() {
                                 to={menu.link}
                                 className={`flex text-base items-center py-3 px-4 rounded-md 
                 ${
-                    location.pathname === menu.link
+                    location.pathname === menu.link ||
+                    (menu.link !== '/admin/dashboard' &&
+                        location.pathname.startsWith(menu.link))
                         ? 'bg-yellow-400 text-slate-50'
                         : 'hover:bg-yellow-400 hover:text-slate-50'
                 }`}

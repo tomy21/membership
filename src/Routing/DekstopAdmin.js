@@ -6,6 +6,8 @@ import Userprovider from '../pages/Dekstop/context/Userprovider';
 import HistoryPost from '../pages/Dekstop/pages/admin/Pages/HistoryPost';
 import HistoryPOSTProvider from '../pages/Dekstop/context/HistoryPOSTProvider';
 import PaymentProvider from '../pages/Dekstop/context/PaymentProvider';
+import HistoryCasualProvider from '../pages/Dekstop/context/HistoryCasualProvider';
+import UserMembershipProvider from '../pages/Dekstop/context/UserMembershipProvider';
 
 const Layout = React.lazy(() => import('../pages/Dekstop/pages/admin/Layout'));
 const SuccessRegister = React.lazy(() =>
@@ -19,6 +21,9 @@ const MasterProduct = React.lazy(() =>
 );
 const Transaction = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/Transaction')
+);
+const Topup = React.lazy(() =>
+    import('../pages/Dekstop/pages/admin/Pages/Topup')
 );
 const Location = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/Location')
@@ -48,8 +53,14 @@ const CardList = React.lazy(() =>
 const Users = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/Users')
 );
+const ListMembers = React.lazy(() =>
+    import('../pages/Dekstop/pages/admin/Pages/ListUserMembers')
+);
 const BankProvider = React.lazy(() =>
     import('../pages/Dekstop/pages/admin/Pages/BankProvider')
+);
+const ParkingCasual = React.lazy(() =>
+    import('../pages/Dekstop/pages/admin/Pages/ParkingCasual')
 );
 
 export default function DekstopAdmin() {
@@ -78,8 +89,12 @@ export default function DekstopAdmin() {
                             <Route path="menu" element={<Menu />} />
                             <Route path="card-list" element={<CardList />} />
                             <Route
-                                path="history-transaction"
+                                path="history-transaction-membership"
                                 element={<Transaction />}
+                            />
+                            <Route
+                                path="history-transaction-topup"
+                                element={<Topup />}
                             />
                             <Route
                                 path="history-parking"
@@ -96,7 +111,24 @@ export default function DekstopAdmin() {
                                 path="history-payment"
                                 element={<Payment />}
                             />
+                            <Route
+                                path="history-parking-casual"
+                                element={
+                                    <HistoryCasualProvider>
+                                        <ParkingCasual />
+                                    </HistoryCasualProvider>
+                                }
+                            />
                             <Route path="customer" element={<Tenants />} />
+                            <Route
+                                path="customer/list-members"
+                                element={
+                                    <UserMembershipProvider>
+                                        <ListMembers />
+                                    </UserMembershipProvider>
+                                }
+                            />
+
                             <Route
                                 path="bank-provider"
                                 element={

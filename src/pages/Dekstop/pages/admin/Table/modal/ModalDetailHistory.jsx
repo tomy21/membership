@@ -4,6 +4,10 @@ import { historyMembers } from '../../../../../../api/apiUsers';
 import { format } from 'date-fns';
 import Pagination from '../../components/Pagination';
 import { ScaleLoader } from 'react-spinners';
+import { GoDownload } from 'react-icons/go';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { apiExportData } from '../../../../../../api/apiExportData';
 
 export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
     const [loading, setLoading] = useState(false);
@@ -13,6 +17,8 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
     const [totalItems, setTotalItems] = useState(1);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,7 +29,6 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
                     limit,
                     search
                 );
-                console.log(response.data);
                 setData(response.data);
             } catch (error) {
                 console.error('Failed to fetch data:', error);
@@ -36,7 +41,7 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
             }, 1000);
             fetchData();
         }
-    }, [isOpen]);
+    }, [isOpen, startDate, endDate, page, limit, search]);
 
     const handleClose = () => {
         onClose();
@@ -48,9 +53,45 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
         }).format(amount);
     };
 
+    const handleExport = async () => {
+        setLoading(true);
+        try {
+            const { blob, fileName } = await apiExportData.historyPointUser(
+                startDate,
+                endDate,
+                idUsers
+            );
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            toast.success('Data berhasil diunduh!', {
+                position: 'top-right',
+            });
+            setStartDate(null);
+            setEndDate(null);
+        } catch (error) {
+            toast.error(error, {
+                position: 'top-right',
+            });
+            setStartDate(null);
+            setEndDate(null);
+        } finally {
+            setLoading(false);
+            setStartDate(null);
+            setEndDate(null);
+        }
+    };
+
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <ToastContainer />
             {loading ? (
                 <ScaleLoader size={150} color={'#ffff'} loading={true} />
             ) : (
@@ -83,15 +124,59 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
                     )}
 
                     <div className="px-6 py-4">
-                        <table className="table table-hover w-full">
-                            <thead className="border-b border-slate-300">
+                        <div className="flex justify-between items-center w-full">
+                            <div>
+                                <input
+                                    type="text"
+                                    className="w-72 p-2 border border-slate-300 rounded-lg"
+                                    placeholder="Search"
+                                />
+                            </div>
+                            <div className="flex flex-row space-x-3">
+                                <div className="flex flex-row justify-center items-center space-x-3">
+                                    <label>Start Date</label>
+                                    <input
+                                        type="date"
+                                        name="startDate"
+                                        value={startDate}
+                                        onChange={(e) =>
+                                            setStartDate(e.target.value)
+                                        }
+                                        className="border border-slate-400 px-3 py-2 rounded"
+                                    />
+                                </div>
+                                <div className="flex flex-row justify-center items-center space-x-3">
+                                    <label>End Date</label>
+                                    <input
+                                        type="date"
+                                        name="endDate"
+                                        value={endDate}
+                                        onChange={(e) =>
+                                            setEndDate(e.target.value)
+                                        }
+                                        className="border border-slate-400 px-3 py-2 rounded"
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleExport}
+                                    className="flex items-center space-x-1 bg-cyan-500 hover:bg-cyan-700 text-white py-2 px-4 rounded"
+                                >
+                                    <GoDownload className="mr-2" />
+                                    <span className="text-sm">Export</span>
+                                </button>
+                            </div>
+                        </div>
+                        <table className="table table-hover w-full mt-2">
+                            <thead className="border-y border-slate-300">
                                 <tr>
-                                    <th className="p-2">No</th>
-                                    <th className="p-2">Date</th>
-                                    <th className="p-2">Description</th>
+                                    <th className="p-2 text-start">No</th>
+                                    <th className="p-2 text-start">Date</th>
+                                    <th className="p-2 text-start">
+                                        Description
+                                    </th>
                                     <th className="p-2">Debit</th>
                                     <th className="p-2">Kredit</th>
-                                    <th className="p-2">Current Point</th>
+                                    <th className="p-2">Balance Point</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -103,7 +188,10 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
                                             </td>
                                             <td className="p-2 text-sm border-b border-slate-400">
                                                 {format(
-                                                    new Date(item.date),
+                                                    new Date(item.date)
+                                                        .toISOString()
+                                                        .replace('T', ' ')
+                                                        .replace('Z', ''),
                                                     'dd-MMM-yyyy HH:mm:ss'
                                                 )}
                                             </td>
