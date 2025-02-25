@@ -15,6 +15,7 @@ function Dashboard() {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [cardUsed, setCardUsed] = useState(0);
     const [cardUnUsed, setCardUnUsed] = useState(0);
+    const [balancePoints, setBalancePoints] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +24,7 @@ function Dashboard() {
                 setTotalMemberActive(response.totalMembershipActive);
                 setTotalMemberNonActive(response.totalMembershipNonActive);
                 setTotalRevenue(response.totalPrice.totalPrice);
+                setBalancePoints(response.totalBalancePoint);
                 setCardUsed(response.CardUsed);
                 setCardUnUsed(response.CardNotUsed);
             } catch (error) {
@@ -37,6 +39,11 @@ function Dashboard() {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+    const formatCurrencyNoIdr = (amount) => {
+        return new Intl.NumberFormat('id-ID', {
             maximumFractionDigits: 0,
         }).format(amount);
     };
@@ -78,8 +85,8 @@ function Dashboard() {
                         icon={<FaRegAddressCard />}
                     />
                     <CardHeader
-                        title={'Total Parking'}
-                        value={'10'}
+                        title={'Total Balance Point'}
+                        value={formatCurrencyNoIdr(balancePoints)}
                         value2={'10'}
                         label={'In Area'}
                         label2={'Out Area'}

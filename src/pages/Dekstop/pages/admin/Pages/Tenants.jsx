@@ -8,8 +8,8 @@ export default function Tenants() {
     const [activeTab, setActiveTab] = useState('Berbayar');
     const listTab = [
         { name: 'Berbayar', id: 1 },
-        { name: 'Compliment', id: 2 },
-        { name: 'B2B', id: 3 },
+        // { name: 'Compliment', id: 2 },
+        // { name: 'B2B', id: 3 },
     ];
     return (
         <>

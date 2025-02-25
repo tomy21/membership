@@ -41,6 +41,13 @@ export default function CardHeader({
                             textColor="text-red-500"
                         />
                     </div>
+                ) : title === 'Total Balance Point' ? (
+                    <div className="flex flex-row justify-start items-end space-x-3">
+                        <h1 className="text-2xl font-normal text-gray-800">
+                            {value}
+                        </h1>
+                        <span className="text-xs text-slate-300">Points</span>
+                    </div>
                 ) : (
                     <h1 className="text-2xl font-normal text-gray-800">
                         {value}

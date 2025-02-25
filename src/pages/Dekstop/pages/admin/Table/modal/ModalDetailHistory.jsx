@@ -41,7 +41,7 @@ export default function ModalDetailHistory({ isOpen, onClose, idUsers }) {
             }, 1000);
             fetchData();
         }
-    }, [isOpen, startDate, endDate, page, limit, search]);
+    }, [isOpen, page, limit, search]);
 
     const handleClose = () => {
         onClose();
