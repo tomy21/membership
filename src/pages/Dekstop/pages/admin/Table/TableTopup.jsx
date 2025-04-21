@@ -1,41 +1,40 @@
-import React, { useEffect } from 'react';
-import { useHistoryPOST } from '../../../context/HistoryPOSTProvider';
-import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 import Pagination from '../components/Pagination';
+import { Payment } from '../../../../../api/apiMembershipV2';
+import { ScaleLoader } from 'react-spinners';
+import { format } from 'date-fns';
 
-export default function TablePost({ tab, tabStatus }) {
-    const {
-        historyPOST,
-        page,
-        setPage,
-        limit,
-        totalPages,
-        totalItems,
-        statusMember,
-        setStatusMember,
-        setLimit,
-        setTotalPages,
-        setTotalItems,
-        search,
-        setSearch,
-        status,
-        setStatus,
-        reloadDataHistoryPost,
-    } = useHistoryPOST();
+export default function TableTopup({ tab }) {
+    const [orders, setOrders] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [LimitData, setLimitData] = useState(10);
+    const [totalItems, setTotalItems] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const response = await Payment.getAllTransactionTopup(
+                currentPage,
+                LimitData,
+                tab === 'all' ? '' : tab
+            );
+
+            setOrders(response.data || []);
+            setTotalPages(response.pagination?.totalPages || 1);
+            setTotalItems(response.pagination?.total || 1);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        if (tab) {
-            setStatus(tab);
-            setStatusMember('');
-            setPage(1);
-        }
-
-        if (tabStatus) {
-            setStatus('All');
-            setStatusMember(tabStatus);
-            setPage(1);
-        }
-    }, [tab, setStatus, tabStatus, setStatusMember]);
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, LimitData, tab]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('id-ID', {
@@ -55,117 +54,110 @@ export default function TablePost({ tab, tabStatus }) {
                                 #
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Customer
+                                Transaction Date
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Location
+                                Users
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Status Membership
+                                Transaction ID
+                            </th>
+
+                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
+                                Product
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Plate Number
+                                Payment Method
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                In Time
-                            </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Out Time
-                            </th>
-                            <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap">
-                                Tariff
+                                Total
                             </th>
                             <th className="px-5 py-4 border-b-2 border-gray-500 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-200 whitespace-nowrap rounded-tr-lg">
-                                Status
+                                Payment Status
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {historyPOST.length > 0 ? (
-                            historyPOST.map((data, index) => (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="9" className="text-center py-4">
+                                    <div className="flex justify-center items-center w-full">
+                                        <ScaleLoader color="#D7BF36FF" />
+                                    </div>
+                                </td>
+                            </tr>
+                        ) : orders.length > 0 ? (
+                            orders.map((order, index) => (
                                 <tr key={index} className="text-sm">
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         {index + 1}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        <div className="flex flex-col justify-start items-start w-full">
-                                            <h1 className="font-semibold text-sm">
-                                                {data.userHistoryPost
-                                                    ?.fullname ?? '-'}
-                                            </h1>
-                                            <h1 className="font-normal text-sm text-gray-400">
-                                                {data.userHistoryPost?.email ??
-                                                    '-'}
-                                            </h1>
+                                        {format(
+                                            new Date(order.createdAt),
+                                            'dd-MMM-yyyy HH:mm:ss'
+                                        )}
+                                    </td>
+                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
+                                        <div className="flex flex-col justify-start items-start">
+                                            <p className="text-gray-900 whitespace-no-wrap font-semibold">
+                                                {order.trxHistoryUser?.fullname}
+                                            </p>
+                                            <p className="whitespace-no-wrap text-slate-400">
+                                                {order.trxHistoryUser?.email}
+                                            </p>
                                         </div>
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {data.location_name ?? '-'}
+                                        {order.trxId}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {data.status_member ?? '-'}
+                                        {order.product_name}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {data.plate_number}
+                                        {order.transactionType}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {data.gate_in_time === null
-                                            ? '-'
-                                            : format(
-                                                  new Date(data.gate_in_time)
-                                                      .toISOString()
-                                                      .replace('T', ' ')
-                                                      .replace('Z', ''),
-                                                  'dd-MMM-yyyy HH:mm:ss'
-                                              )}
-                                    </td>
-                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {data.gate_out_time === null
-                                            ? '-'
-                                            : format(
-                                                  new Date(data.gate_out_time)
-                                                      .toISOString()
-                                                      .replace('T', ' ')
-                                                      .replace('Z', ''),
-                                                  'dd-MMM-yyyy HH:mm:ss'
-                                              )}
-                                    </td>
-                                    <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
-                                        {formatCurrency(data.tariff ?? 0)}
+                                        {formatCurrency(order.price ?? 0)}
                                     </td>
                                     <td className="px-5 py-3 border-b border-gray-200 whitespace-nowrap">
                                         <div className="flex flex-row justify-start items-center gap-x-3">
                                             <div
                                                 className={`relative h-4 w-4 rounded-full text-xs flex items-center justify-center ${
-                                                    data.is_close === 1
+                                                    order.statusPayment ===
+                                                    'PAID'
                                                         ? 'bg-green-100'
+                                                        : order.statusPayment ===
+                                                          'PENDING'
+                                                        ? 'bg-yellow-100'
                                                         : 'bg-red-100'
                                                 }`}
                                             >
                                                 <div
                                                     className={`h-2 w-2 rounded-full ${
-                                                        data.is_close === 1
+                                                        order.statusPayment ===
+                                                        'PAID'
                                                             ? 'bg-green-500'
+                                                            : order.statusPayment ===
+                                                              'PENDING'
+                                                            ? 'bg-yellow-500'
                                                             : 'bg-red-500'
                                                     }`}
                                                 ></div>
                                                 <span className="absolute text-center text-black text-sm font-bold"></span>
                                             </div>
                                             <p
-                                                className={
-                                                    data.is_close === 1
+                                                className={`${
+                                                    order.statusPayment ===
+                                                    'PAID'
                                                         ? 'text-green-500'
+                                                        : order.statusPayment ===
+                                                          'PENDING'
+                                                        ? 'text-yellow-500'
                                                         : 'text-red-500'
-                                                }
+                                                }`}
                                             >
-                                                {data.is_close === 1
-                                                    ? data.gate_out_time ===
-                                                      null
-                                                        ? 'Check out'
-                                                        : 'Out Area'
-                                                    : data.gate_in_time === null
-                                                    ? 'Check in'
-                                                    : 'In Area'}
+                                                {order.statusPayment}
                                             </p>
                                         </div>
                                     </td>
@@ -196,12 +188,14 @@ export default function TablePost({ tab, tabStatus }) {
 
             <div className="mt-4 border-t border-slate-300 py-1 px-4 w-full">
                 <Pagination
-                    currentPage={page}
+                    currentPage={currentPage}
                     totalPages={totalPages}
-                    setPageCurrent={setPage}
+                    onPageChange={setCurrentPage}
                     totalItem={totalItems}
-                    limit={limit}
-                    setLimitData={setLimit}
+                    limit={LimitData}
+                    onLimitChange={setLimitData}
+                    setPageCurrent={setCurrentPage}
+                    setLimitData={setLimitData}
                 />
             </div>
         </div>

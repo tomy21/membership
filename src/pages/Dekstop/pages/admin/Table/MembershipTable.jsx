@@ -6,6 +6,7 @@ import { TbListDetails } from 'react-icons/tb';
 import ModalDetailHistory from './modal/ModalDetailHistory';
 import { ScaleLoader } from 'react-spinners';
 import { FaUsersViewfinder } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
 
 export default function MembershipTable({ tab }) {
     const [data, setData] = useState([]);
@@ -20,11 +21,6 @@ export default function MembershipTable({ tab }) {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // const response = await Users.getAllUser(
-            //     currentPage,
-            //     LimitData,
-            //     tab === 'all' ? '' : tab
-            // );
             const response = await Payment.getHistoryByLocation();
             console.log(response.data);
             setData(response.data || []);
@@ -154,14 +150,19 @@ export default function MembershipTable({ tab }) {
                                     </td>
 
                                     <td
-                                        className="px-5 py-3 border-b text-center border-gray-200"
+                                        className="px-5 py-3 border-b text-center items-center border-gray-200 cursor-pointer "
                                         title="view detail customer"
                                     >
-                                        <div className="w-full text-cyan-700">
-                                            <FaUsersViewfinder
-                                                size={25}
-                                                className="text-center"
-                                            />
+                                        <div className="w-full flex justify-center text-cyan-700 hover:text-cyan-500">
+                                            <Link
+                                                to="/admin/dashboard/customer/list-members"
+                                                state={{
+                                                    locationCode:
+                                                        items.location_code,
+                                                }}
+                                            >
+                                                <FaUsersViewfinder size={25} />
+                                            </Link>
                                         </div>
                                     </td>
                                 </tr>
@@ -169,7 +170,16 @@ export default function MembershipTable({ tab }) {
                         ) : (
                             <tr>
                                 <td colSpan="10" className="text-center py-4">
-                                    No data available
+                                    <div className="flex flex-col justify-center items-center">
+                                        <img
+                                            src={'/assets/page.png'}
+                                            alt="no-data"
+                                            className="opacity-50 w-32"
+                                        />
+                                        <h1 className="text-slate-400 text-2xl">
+                                            Data no available
+                                        </h1>
+                                    </div>
                                 </td>
                             </tr>
                         )}

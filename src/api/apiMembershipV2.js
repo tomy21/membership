@@ -168,12 +168,13 @@ export const Users = {
 };
 
 export const MembershipProduct = {
-    getAll: async (page, limit) => {
+    getAll: async (page, limit, vehicleType) => {
         try {
             const response = await apiClient.get(`/v01/member/api/product`, {
                 params: {
                     page,
                     limit,
+                    vehicleType,
                 },
             });
             return response.data;
@@ -354,6 +355,24 @@ export const Payment = {
             console.log(error);
         }
     },
+    getAllTransactionTopup: async (page, limit, status, search) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/transaction-topup`,
+                {
+                    params: {
+                        page,
+                        limit,
+                        status,
+                        search,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 
     getAllPayment: async (page, limit, status, search) => {
         try {
@@ -374,52 +393,6 @@ export const Payment = {
         }
     },
 
-    exportDataPOST: async (startDate, endDate, locationCode) => {
-        try {
-            const response = await apiClient.get(
-                `/v01/member/api/export-data`,
-                {
-                    params: {
-                        locationCode,
-                        startDate,
-                        endDate,
-                    },
-                    responseType: 'arraybuffer',
-                }
-            );
-            const fileName = `history_parking_${startDate} sd ${endDate}.xlsx`;
-
-            return {
-                blob: new Blob([response.data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                }),
-                fileName,
-            };
-        } catch (error) {
-            console.log(error);
-        }
-    },
-    exportDataTransaction: async (startDate, endDate, locationCode) => {
-        try {
-            const response = await apiClient.get(
-                `/v01/member/api/history/export-data`,
-                {
-                    params: { startDate, endDate, locationCode },
-                    responseType: 'arraybuffer',
-                }
-            );
-            const fileName = `History_transaction_${startDate} sd ${endDate}.xlsx`;
-
-            return {
-                blob: new Blob([response.data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                }),
-                fileName,
-            };
-        } catch (error) {
-            console.log(error);
-        }
-    },
     exportDataPayment: async (startDate, endDate, locationCode) => {
         try {
             const response = await apiClient.get(

@@ -189,8 +189,15 @@ export default function TablePayment({ tab }) {
                         ) : (
                             <tr>
                                 <td colSpan="12" className="text-center py-4">
-                                    <div className="flex justify-center items-center w-full">
-                                        <h1>No data available </h1>
+                                    <div className="flex flex-col justify-center items-center">
+                                        <img
+                                            src={'/assets/page.png'}
+                                            alt="no-data"
+                                            className="opacity-50 w-32"
+                                        />
+                                        <h1 className="text-slate-400 text-2xl">
+                                            Data no available
+                                        </h1>
                                     </div>
                                 </td>
                             </tr>

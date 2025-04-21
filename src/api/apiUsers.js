@@ -208,7 +208,22 @@ export const historyMembers = {
                     params: { page, limit, search, status, statusMember },
                 }
             );
-            console.log(response);
+
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+    },
+
+    getHistoryCasual: async (page, limit, search, month) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history-post-casual`,
+                {
+                    params: { page, limit, search, month },
+                }
+            );
+
             return response.data;
         } catch (error) {
             throw error.response.data;
@@ -223,7 +238,21 @@ export const historyMembers = {
                     params: { page, limit, search },
                 }
             );
-            console.log(response);
+
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+    },
+
+    historyByLocation: async (locationCode, page, limit, search) => {
+        try {
+            const response = await apiClient.get(
+                `/v01/member/api/history/transaction-history-bylocation/${locationCode}`,
+                {
+                    params: { page, limit, search },
+                }
+            );
             return response.data;
         } catch (error) {
             throw error.response.data;

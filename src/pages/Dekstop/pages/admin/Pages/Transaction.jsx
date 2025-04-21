@@ -6,6 +6,7 @@ import { Payment } from '../../../../../api/apiMembershipV2';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BarLoader } from 'react-spinners';
+import { apiExportData } from '../../../../../api/apiExportData';
 
 export default function Transaction() {
     const [activeTab, setActiveTab] = useState('All');
@@ -21,10 +22,11 @@ export default function Transaction() {
     const handleExport = async (startDate, endDate, location) => {
         setIsLoading(true);
         try {
-            const { blob, fileName } = await Payment.exportDataTransaction(
+            const { blob, fileName } = await apiExportData.historyTransaction(
                 startDate,
                 endDate,
-                location
+                location,
+                'MEMBERSHIP'
             );
 
             const url = window.URL.createObjectURL(blob);
@@ -54,7 +56,10 @@ export default function Transaction() {
                     <BarLoader size={550} color={'#e9d309'} loading={true} />
                 </div>
             )}
-            <HeaderTitle title={'Transaction'} subtitle={'View Transaction'} />
+            <HeaderTitle
+                title={'Transaction Membership'}
+                subtitle={'View Transaction'}
+            />
 
             <TapTable
                 listTab={listTab}

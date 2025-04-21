@@ -1,81 +1,78 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { historyMembers } from '../../../api/apiUsers';
 
-const HistoryPOSTContext = createContext();
+const UserMemberByLocationContext = createContext();
 
-export default function HistoryPOSTProvider({ children }) {
-    const [historyPOST, setHistoryPOST] = useState([]);
+export default function UserMembershipProvider({ children }) {
+    const [data, setData] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(1);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
-    const [status, setStatus] = useState('');
-    const [statusMember, setStatusMember] = useState('');
+    const [locationCode, setLocationCode] = useState('');
 
     useEffect(() => {
-        const fetchHistoryPOST = async () => {
+        if (!locationCode) return;
+        const fetchData = async () => {
             try {
-                const response = await historyMembers.getHistoryPost(
+                const response = await historyMembers.historyByLocation(
+                    locationCode,
                     page,
                     limit,
-                    search,
-                    status,
-                    statusMember
+                    search
                 );
-                setHistoryPOST(response.data);
+                setData(response.data);
                 setTotalPages(response.totalPages);
-                setTotalItems(response.total);
+                setTotalItems(response.totalItems);
+                setLimit(response.limit);
             } catch (error) {
                 console.log(error);
             }
         };
-        fetchHistoryPOST();
-    }, [page, limit, search, status]);
 
-    const reloadDataHistoryPost = async () => {
+        fetchData();
+    }, [locationCode, page, limit, search]);
+
+    const reloadData = async () => {
         try {
-            const response = await historyMembers.getHistoryPost(
+            const response = await historyMembers.historyByLocation(
+                locationCode,
                 page,
                 limit,
-                search,
-                status,
-                statusMember
+                search
             );
-            setHistoryPOST(response.data);
+            setData(response.data);
         } catch (error) {
             alert('Failed to reload service types.');
         }
     };
-
     return (
-        <HistoryPOSTContext.Provider
+        <UserMemberByLocationContext.Provider
             value={{
-                historyPOST,
+                data,
                 page,
                 limit,
                 totalPages,
                 totalItems,
                 search,
-                status,
-                statusMember,
+                locationCode,
                 setLimit,
                 setTotalPages,
                 setTotalItems,
                 setSearch,
                 setPage,
-                setStatus,
-                setStatusMember,
-                reloadDataHistoryPost,
+                setLocationCode,
+                reloadData,
             }}
         >
             {children}
-        </HistoryPOSTContext.Provider>
+        </UserMemberByLocationContext.Provider>
     );
 }
 
-export const useHistoryPOST = () => {
-    const context = useContext(HistoryPOSTContext);
+export const useUserLocation = () => {
+    const context = useContext(UserMemberByLocationContext);
     if (!context) {
         throw new Error(
             'useHistoryPOST must be used within a HistoryPOSTProvider'
